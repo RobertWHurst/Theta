@@ -1,0 +1,6 @@
+{
+  "extends": "x2",
+  "env": {
+    "mocha": true
+  }
+}
