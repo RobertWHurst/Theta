@@ -1,6 +1,6 @@
 {
   "name": "theta-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An express like framework for web sockets",
   "main": "index.js",
   "author": "Robert Hurst <robertwhurst@gmail.com>",
