@@ -1,53 +1,53 @@
-const assert = require('assert');
-const sinon  = require('sinon');
-const Theta  = require('../lib/theta');
+import assert from 'assert'
+import sinon from 'sinon'
+import Theta from '../src/theta'
+import Message from '../src/message'
 
+describe('new Theta(config) -> theta', () => {
+  it('create create an instance', () => {
+    new Theta()
+  })
 
-describe.skip('new Theta(opts) -> theta', () => {
+  it('exposes the config', () => {
+    const config = 'CONFIG'
+    const theta = new Theta(config)
+    assert.strictEqual(theta.config, 'CONFIG')
+  })
 
+  it('exposes the message prototype', () => {
+    const theta = new Theta()
+    assert.ok(theta.message instanceof Message)
+  })
 
-  describe('theta.classify(classifyFn(socket, cb(err, path))) -> theta', () => {
+  describe('theta.classify(classifyFn) -> theta', () => {
+    it('saves the classifyFn to the theta instance and executes it correctly', async () => {
+      const theta = new Theta()
+      const classifyFn = sinon.stub().resolves('PATH')
 
-    it('saves the classifyFn to the theta instance', () => {
-      const theta      = new Theta();
-      const classifyFn = () => {};
-      theta.classify(classifyFn);
-      assert.equal(theta.classifyFn, classifyFn);
-    });
-  });
+      theta.classify(classifyFn)
+      const path = await theta.classifyFn('DATA')
 
+      assert.strictEqual(path, 'PATH')
+      sinon.assert.calledWith(classifyFn, 'DATA')
+    })
 
-  describe('theta.encode(encodeFn(data, cb(err, encodedData))) -> theta', () => {
+    it('can capture from an exception and convert it to a rejection', () => {
+      const theta = new Theta()
+      const classifyFn = () => { throw new Error('ERROR') }
 
-    it('saves the encodeFn to the theta instance', () => {
-      const theta    = new Theta();
-      const encodeFn = () => {};
-      theta.encode(encodeFn);
-      assert.equal(theta.encodeFn, encodeFn);
-    });
-  });
+      theta.classify(classifyFn)
 
+      assert.rejects(theta.classifyFn('DATA'))
+    })
 
-  describe('theta.decode(decodeFn(encodedData, cb(err, data))) -> theta', () => {
+    it('supports a function with a callback', async () => {
+      const theta = new Theta()
+      const classifyFn = (data, cb) => cb(null, 'PATH')
 
-    it('saves the decodeFn to the theta instance', () => {
-      const theta    = new Theta();
-      const decodeFn = () => {};
-      theta.decode(decodeFn);
-      assert.equal(theta.decodeFn, decodeFn);
-    });
-  });
+      theta.classify(classifyFn)
 
-
-  describe('theta.handle([pathPattern], handlerFn(socket, next)) -> theta', () => {
-
-    it('calls router.handle passing the arguments', () => {
-      const theta     = new Theta();
-      const handlerFn = () => {};
-      theta.handle('test.pattern', handlerFn);
-      sinon.stub(theta.router, 'handle');
-      sinon.assert.calledOnce(theta.router.handle);
-      sinon.assert.calledWith(theta.router.handle, 'test.pattern', handlerFn);
-    });
-  });
-});
+      const path = await theta.classifyFn('DATA')
+      assert.strictEqual(path, 'PATH')
+    })
+  })
+})
