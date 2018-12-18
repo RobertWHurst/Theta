@@ -1,4 +1,3 @@
-import { v4String } from 'uuid/interfaces'
 import Theta from './theta'
 import Server from './server'
 import Socket from './socket'
@@ -19,12 +18,11 @@ export default class ConnectionManager {
     socket.on('close', () => this.removeByUuid(socket.uuid))
   }
 
-  findByUuid (uuid: v4String) {
-    const localSocket = this._localSockets.find(s => s.uuid === uuid)
-    if (localSocket) { return localSocket }
+  findByUuid (uuid: string): Socket | undefined {
+    return this._localSockets.find(s => s.uuid === uuid)
   }
 
-  removeByUuid (uuid: v4String) {
+  removeByUuid (uuid: string) {
     const connectionIndex = this._localSockets.findIndex(s => s.uuid === uuid)
     if (connectionIndex === -1) { return null }
     return this._localSockets.splice(connectionIndex, 1)

@@ -1,19 +1,27 @@
 import uuid from 'uuid/v4'
+import WebSocket from 'ws'
+import { EventEmitter } from 'events'
 import Theta from './theta'
 import Server from './server'
 import Message from './message'
+import { Handler } from './router'
 import SocketRouter from './socket-router'
-import { EventEmitter } from 'events'
-import { HandlerFn } from './types';
+import Context from './context'
 
-export default class Socket extends EventEmitter {
+declare interface Socket {
+  on (event: 'error', handler: (err: any, context: Context) => void): this
+  on (event: 'message', handler: (context: Context) => void): this
+  on (event: 'close', handler: () => void): this
+}
+
+class Socket extends EventEmitter {
   theta: Theta
   uuid: string
   _router: SocketRouter
   _server: Server
-  _rawSocket: any
+  _rawSocket: WebSocket
 
-  constructor (theta: Theta, server: Server, rawSocket: any) {
+  constructor (theta: Theta, server: Server, rawSocket: WebSocket) {
     super()
 
     Object.setPrototypeOf(this, theta.socket)
@@ -24,16 +32,16 @@ export default class Socket extends EventEmitter {
     this._server = server
     this._rawSocket = rawSocket
 
-    this._rawSocket.on('message', (d, f) => this._handleRawMesssage(d, f))
+    this._rawSocket.on('message', d => this._handleRawMesssage(d))
   }
 
-  handle (pattern: string, handlerFn: HandlerFn) {
+  handle (pattern: string, handlerFn: Handler) {
     this._router.handle(pattern, handlerFn)
   }
 
   async send (data: any) {
-    if (!this.theta.encodeFn) { return }
-    const encodedData = await this.theta.encodeFn(data)
+    if (!this.theta.encoder) { return }
+    const encodedData = await this.theta.encoder(data)
     this._rawSocket.send(encodedData)
   }
 
@@ -45,18 +53,25 @@ export default class Socket extends EventEmitter {
     this._router.clearRouterHandlers()
   }
 
-  async _handleRawMesssage (data: any, flags: object) {
+  async _handleRawMesssage (data: WebSocket.Data) {
     let message
     try {
-      message = await Message.fromEncodedData(this.theta, this._server, data, flags)
+      message = await Message.fromEncodedData(this.theta, data)
     } catch (err) {
-      return this.emit('error', err)
+      this.emit('error', err)
+      return
     }
+
+    const context = new Context(message, this)
+
     try {
-      await this._router.route(message, this)
+      await this._router.route(context)
     } catch (err) {
-      return this.emit('error', err, message)
+      this.emit('error', err, message)
+      return
     }
-    this.emit('message', message)
+    this.emit('message', context)
   }
 }
+
+export default Socket

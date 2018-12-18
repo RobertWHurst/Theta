@@ -1,49 +1,32 @@
-import Router from './router'
-import Theta from './theta';
-import Socket from './socket';
-import { HandlerFn, Handler } from './types';
-import Context from './context';
+import Router, { Handler } from './router'
 
 export default class SocketRouter extends Router {
-  handle(pattern?: string | HandlerFn | Router, fn?: HandlerFn | Router): void {
-    if (pattern && !fn) {
-      fn = pattern as HandlerFn | Router
-      pattern = ''
-    }
-    if (!fn) {
-      throw new Error('fn is required')
-    }
-    if (fn instanceof Router) {
+  _errorHandlerChain: undefined
+
+  handle (pattern?: string | Handler | Router, handler?: Handler | Router): void {
+    if (handler instanceof Router) {
       throw new Error('Cannot use routers as handlers for sockets')
     }
-    const handler: Handler = { fn }
-    pattern && (handler.pattern = pattern as string)
-    this._handlers.push(handler)
+    if (pattern && !handler) {
+      handler = pattern as Handler
+      pattern = undefined
+    }
+
+    typeof pattern === 'string'
+      ? super.handle(pattern, handler as Handler)
+      : super.handle(handler as Handler)
   }
 
-  handleError(pattern?: string | HandlerFn, fn?: HandlerFn): never {
-    throw new Error('Cannot use error handlers for sockets')
+  handleError (): never {
+    throw new Error('Cannot handle errors on socket router')
   }
 
   clearRouterHandlers () {
-    this._handlers.length = 0
+    this._handlerChain = undefined
   }
 
-  async routeErr (context: Context, err: Error) {
-    context.error = err
-    await context.next()
-  }
-
-  _executeHandlerFn (handler, ...args) {
-    const cb = args.pop()
-    try {
-      handler.fn(...args, cb)
-    } catch (err) { cb(err) }
-
-    const handlerIndex = this._handlers.indexOf(handler)
-    if (handlerIndex > -1) {
-      this._handlers.splice(handlerIndex, 1)
-    }
+  routeError (): never {
+    throw new Error('routeErr cannot be called on sockets')
   }
 }
 

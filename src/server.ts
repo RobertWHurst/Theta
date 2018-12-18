@@ -1,11 +1,10 @@
 import http from 'http'
 import https from 'https'
-import { Server as WebSocketServer } from 'ws'
+import { default as WebSocket, Server as WebSocketServer } from 'ws'
 import Theta from './theta'
 import ConnectionManager from './connection-manager'
 import Socket from './socket'
-import Message from './message'
-import Router from './router';
+import Router from './router'
 
 export default class Server {
   theta: Theta
@@ -22,7 +21,7 @@ export default class Server {
     this._setupHttpServer()
     this._setupSocketServer()
   }
-  
+
   listen (...args: any[]): void {
     if (!this._httpServer) { return }
     this._httpServer.listen(...args)
@@ -55,24 +54,17 @@ export default class Server {
       server: this._httpServer
     })
 
-    this._socketServer.on('connection', rawSocket => this._handleConnection(rawSocket))
+    this._socketServer.on('connection', r => this._handleConnection(r))
   }
 
-  _handleConnection (rawSocket) {
+  _handleConnection (rawSocket: WebSocket) {
     const socket = new Socket(this.theta, this, rawSocket)
     this.connectionManager.add(socket)
 
-    socket.on('message', (message) => {
-      this.router.route(message, socket, (err) => {
-        if (err) { throw err }
-      })
-    })
-    socket.on('error', (err, message) => {
+    socket.on('message', async (context) => { await this.router.route(context) })
+    socket.on('error', async (err, context) => {
       socket.clearRouterHandlers()
-      message || (message = new Message(this.theta, this))
-      this.router.routeErr(err, message, socket, () => {
-        socket.send({ error: err.message || err.toString() })
-      })
+      await this.router.routeError(err, context)
     })
   }
 }

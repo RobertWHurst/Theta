@@ -1,39 +1,32 @@
+import WebSocket from 'ws'
 import Theta from './theta'
-import Server from './server'
 
 export default class Message {
-  static async fromEncodedData (theta: Theta, server: Server, encodedData: any, flags: object) {
-    const message = new this(theta, server)
-    await message.fromEncodedData(encodedData, flags)
+  static async fromEncodedData (theta: Theta, encodedData: WebSocket.Data): Promise<Message> {
+    const message = new this(theta)
+    await message.fromEncodedData(encodedData)
+    return message
   }
 
-  data: any
+  data?: WebSocket.Data
   path: string
   _theta: Theta
-  _server: Server
 
-  constructor (theta: Theta, server: Server) {
+  constructor (theta: Theta) {
     Object.setPrototypeOf(this, theta.message)
     this._theta = theta
-    this._server = server
     this.path = ''
   }
 
-  async fromEncodedData (encodedData: any, flags: object) {
-    if (!this._theta.decodeFn || !this._theta.classifyFn) {
-      throw new Error(
-        'Cannot create message from encoded data. Theta is missing a ' +
-        'decodeFn or classifyFn'
-      );
-    }
-    this.data = await this._theta.decodeFn(encodedData, flags)
-    this.path = await this._theta.classifyFn(this.data)
+  async fromEncodedData (encodedData: WebSocket.Data) {
+    this.data = await this._theta.decoder(encodedData)
+    this.path = await this._theta.classifier(this.data)
   }
 
   toEncodedData () {
-    if (!this._theta.encodeFn) {
-      throw new Error('Cannot encode message. Theta is missing a encodeFn');
+    if (!this._theta.encoder) {
+      throw new Error('Cannot encode message. Theta is missing a encoder')
     }
-    return this._theta.encodeFn(this.data)
+    return this._theta.encoder(this.data)
   }
 }
