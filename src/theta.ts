@@ -1,14 +1,18 @@
 import http from 'http'
 import https from 'https'
 import WebSocket from 'ws'
-import { default as Router, Handler } from './router'
+import Router from './router'
 import Server from './server'
 import Socket from './socket'
 import Message from './message'
+import Context from './context'
 
+export type Plugin = (theta: Theta, opts?: object) => void
 export type Classifier = (data: any) => Promise<string>
+export type Responder = (status: string, data?: any, err?: Error) => Promise<any>
 export type Encoder = (data: any) => Promise<any>
 export type Decoder = (encodedData: WebSocket.Data) => Promise<any>
+export type Handler = (context: Context) => (Promise<void> | void)
 
 export interface Config {
   server?: http.Server | https.Server
@@ -17,11 +21,15 @@ export interface Config {
   path?: string,
   clientTracking?: boolean,
   handleProtocols?: any,
-  maxPayload?: number
+  maxPayload?: number,
+  handlerTimeout?: number
 }
 
-const defaultClassifier: Classifier = async (message) =>
-  message.data && message.data.path || ''
+const defaultClassifier: Classifier = async (data) => data && data.path || ''
+const defaultResponder: Responder = async (status, data, err) =>
+  err ? { error: err } :
+  data ? { status, data } :
+  { status }
 const defaultEncoder: Encoder = async (data) => JSON.stringify(data)
 const defaultDecoder: Decoder = async (encodedData) =>
   typeof encodedData === 'string' ? JSON.parse(encodedData) : {}
@@ -30,6 +38,7 @@ export default class Theta {
 
   config: Config
   classifier: Classifier
+  responder: Responder
   encoder: Encoder
   decoder: Decoder
   message: Object
@@ -47,12 +56,22 @@ export default class Theta {
     this.server = new Server(this)
 
     this.classifier = defaultClassifier
+    this.responder = defaultResponder
     this.encoder = defaultEncoder
     this.decoder = defaultDecoder
   }
 
+  plugin (plugin: Plugin, opts?: object) {
+    plugin(this, opts)
+  }
+
   classify (classifier: Classifier): this {
     this.classifier = classifier
+    return this
+  }
+
+  respond (responder: Responder): this {
+    this.responder = responder
     return this
   }
 

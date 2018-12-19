@@ -31,14 +31,5 @@ describe('new Theta(config) -> theta', () => {
       assert.strictEqual(path, 'PATH')
       sinon.assert.calledWith(classifier, 'DATA')
     })
-
-    it('can capture from an exception and convert it to a rejection', async () => {
-      const theta = new Theta()
-      const classifier = () => { throw new Error('ERROR') }
-
-      theta.classify(classifier)
-
-      await assert.rejects((theta.classifier as Function)('DATA'))
-    })
   })
 })

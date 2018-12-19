@@ -1,20 +1,26 @@
-import Router, { Handler } from './router'
+import Router from './router'
+import { Handler } from './theta'
+import Context from './context'
 
 export default class SocketRouter extends Router {
   _errorHandlerChain: undefined
 
-  handle (pattern?: string | Handler | Router, handler?: Handler | Router): void {
-    if (handler instanceof Router) {
-      throw new Error('Cannot use routers as handlers for sockets')
-    }
-    if (pattern && !handler) {
+  async handle (pattern: string, handler?: Handler): Promise<Context>
+  async handle (handler: Handler): Promise<Context>
+  async handle (pattern?: string | Handler, handler?: Handler): Promise<Context> {
+    if (typeof pattern !== 'string') {
       handler = pattern as Handler
       pattern = undefined
     }
-
-    typeof pattern === 'string'
-      ? super.handle(pattern, handler as Handler)
-      : super.handle(handler as Handler)
+    return new Promise((resolve) => {
+      const handlerWrapper = async (ctx: Context) => {
+        if (handler) { await handler(ctx) }
+        resolve(ctx)
+      }
+      typeof pattern === 'string'
+        ? super.handle(pattern, handlerWrapper)
+        : super.handle(handlerWrapper)
+    })
   }
 
   handleError (): never {
@@ -23,10 +29,6 @@ export default class SocketRouter extends Router {
 
   clearRouterHandlers () {
     this._handlerChain = undefined
-  }
-
-  routeError (): never {
-    throw new Error('routeErr cannot be called on sockets')
   }
 }
 

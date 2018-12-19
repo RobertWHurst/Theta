@@ -1,17 +1,20 @@
 import uuid from 'uuid/v4'
 import WebSocket from 'ws'
 import { EventEmitter } from 'events'
-import Theta from './theta'
+import Theta, { Handler } from './theta'
 import Server from './server'
 import Message from './message'
-import { Handler } from './router'
 import SocketRouter from './socket-router'
 import Context from './context'
 
 declare interface Socket {
-  on (event: 'error', handler: (err: any, context: Context) => void): this
+  on (event: 'error', handler: (err: Error) => void): this
   on (event: 'message', handler: (context: Context) => void): this
   on (event: 'close', handler: () => void): this
+
+  emit (event: 'error', err: Error): boolean
+  emit (event: 'message', context: Context): boolean
+  emit (event: 'close'): boolean
 }
 
 class Socket extends EventEmitter {
@@ -20,6 +23,7 @@ class Socket extends EventEmitter {
   _router: SocketRouter
   _server: Server
   _rawSocket: WebSocket
+  _currentStatus: string
 
   constructor (theta: Theta, server: Server, rawSocket: WebSocket) {
     super()
@@ -31,18 +35,40 @@ class Socket extends EventEmitter {
     this._router = new SocketRouter(this.theta)
     this._server = server
     this._rawSocket = rawSocket
+    this._currentStatus = 'ok'
 
-    this._rawSocket.on('message', d => this._handleRawMesssage(d))
+    this._rawSocket.on('message', d => this._handleRawMessage(d))
   }
 
-  handle (pattern: string, handlerFn: Handler) {
-    this._router.handle(pattern, handlerFn)
+  async handle (pattern: string, handler?: Handler): Promise<Context>
+  async handle (handler: Handler): Promise<Context>
+  async handle (pattern?: string | Handler, handler?: Handler): Promise<Context> {
+    return this._router.handle(pattern as any, handler as any)
   }
 
-  async send (data: any) {
-    if (!this.theta.encoder) { return }
+  status (status: string): this {
+    this._currentStatus = status
+    return this
+  }
+
+  sendStatus (status: string): Promise<void> {
+    return this.status(status).send()
+  }
+
+  async send (data?: any): Promise<void> {
+    const status = this._currentStatus
+    this._currentStatus = 'ok'
+    data = await this.theta.responder(status, data)
     const encodedData = await this.theta.encoder(data)
-    this._rawSocket.send(encodedData)
+
+    // NOTE: We wait a tick so that the handler has time to register additional
+    // in-route handlers with the socket router before the client responds.
+    await new Promise((resolve) => {
+      process.nextTick(() => {
+        this._rawSocket.send(encodedData)
+        resolve()
+      })
+    })
   }
 
   to (uuid: string) {
@@ -53,7 +79,7 @@ class Socket extends EventEmitter {
     this._router.clearRouterHandlers()
   }
 
-  async _handleRawMesssage (data: WebSocket.Data) {
+  async _handleRawMessage (data: WebSocket.Data) {
     let message
     try {
       message = await Message.fromEncodedData(this.theta, data)
@@ -63,13 +89,8 @@ class Socket extends EventEmitter {
     }
 
     const context = new Context(message, this)
-
-    try {
-      await this._router.route(context)
-    } catch (err) {
-      this.emit('error', err, message)
-      return
-    }
+    await this._router.route(context)
+    if (context._handled) { return }
     this.emit('message', context)
   }
 }

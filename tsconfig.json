@@ -1,16 +1,21 @@
 {
   "compilerOptions": {
-    "target": "es6",  
+    "target": "es6",
     "module": "commonjs",
-    "outDir": "./dist",  
-    "rootDir": "./src", 
-    "strict": true, 
+    "declaration": true,
+    "lib": ["esnext"],
+    "plugins": [{
+      "name": "typescript-tslint-plugin",
+      "ignoreDefinitionFiles": true
+    }],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
     "esModuleInterop": true,
-    "noImplicitReturns": true,
     "noImplicitAny": true,
+    "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "lib": ["esnext"]
   }
 }

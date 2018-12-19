@@ -61,10 +61,11 @@ export default class Server {
     const socket = new Socket(this.theta, this, rawSocket)
     this.connectionManager.add(socket)
 
-    socket.on('message', async (context) => { await this.router.route(context) })
-    socket.on('error', async (err, context) => {
-      socket.clearRouterHandlers()
-      await this.router.routeError(err, context)
+    socket.on('error', err => { throw err })
+    socket.on('message', async (context) => {
+      await this.router.route(context)
+      if (context._handled) { return }
+      await context.sendStatus('not-handled')
     })
   }
 }
