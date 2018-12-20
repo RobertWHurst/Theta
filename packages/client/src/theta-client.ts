@@ -3,8 +3,10 @@ export type Encoder = (path: string, data: any) => Promise<any>
 export type Decoder = (encodedData: any) => Promise<any>
 export type Handler = (data: any) => (Promise<void> | void)
 
-export const defaultEncoder: Encoder = async (path, data) =>
-  JSON.stringify(typeof data === 'object' ? { ...data, path } : { path, data })
+export const defaultEncoder: Encoder = async (path, data) => JSON.stringify(
+  typeof data === 'object' ? { ...data, path } :
+  data ? { path, data } : { path }
+)
 export const defaultDecoder: Decoder = async (encodedData) => JSON.parse(encodedData)
 
 export default class ThetaClient {
@@ -48,7 +50,7 @@ export default class ThetaClient {
     this._handler = handler
   }
 
-  async send (path: string, data: any) {
+  async send (path: string, data?: any) {
     const encodedData = await this.encoder(path, data)
     process.nextTick(() => { this._webSocket.send(encodedData) })
   }

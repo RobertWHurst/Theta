@@ -11,11 +11,11 @@ than HTTP, with the goal of enabling a new class of real time applications.
 Install via NPM or Yarn
 
 ```sh
-yarn add theta-app
+yarn add @theta/core
 ```
 or 
 ```sh
-npm install theta-app --save
+npm install @theta/core --save
 ```
 
 ## Getting Started
@@ -24,7 +24,7 @@ Creating a server is easy and similar to express
 
 ```js
 // SERVER SIDE
-const theta = require('theta-app')
+const theta = require('@theta/core')
 
 const app = theta()
 
@@ -38,18 +38,13 @@ app.listen(3000)
 To interact with our new server create a websocket in the browser
 ```js
 // CLIENT SIDE
-const socket = new WebSocket('ws://localhost:3000')
+import ThetaClient from 'https://cdn.jsdelivr.net/npm/@theta/client'
 
-socket.addEventListener('open', () => {
-  const message = {
-    path: '/greet/Robert'
-  }
+const thetaClient = new ThetaClient('ws://localhost:3000')
 
-  socket.send(JSON.stringify(message))
-})
-
-socket.addEventListener('message', (e) => {
-  console.log(e.data)
+thetaClient.send('/greet/Robert')
+thetaClient.handle((data) => {
+  console.log(data)
 })
 ```
 
@@ -69,7 +64,7 @@ after the first message.
 
 ```js
 // SERVER SIDE
-const theta = require('theta-app')
+const theta = require('@theta/core')
 
 const app = theta()
 
