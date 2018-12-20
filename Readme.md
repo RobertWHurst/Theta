@@ -1,5 +1,5 @@
 
-![ϴ](http://i.imgur.com/GYry72P.png)
+<p align="center"><img alt="ϴ" src="http://i.imgur.com/GYry72P.png"></p>
 
 ϴ (Theta) is a webSocket server framework inspired by Koa and Express.
 
@@ -88,3 +88,4 @@ This could be a problem if the client never responds, but Theta handles this
 with a timeout. If the timeout elapses the handle method on the context will
 reject with a timeout error. We could catch this error, or allow it to propagate
 to theta's router. If this happens an error handler will be invoked.
+

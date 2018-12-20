@@ -49,21 +49,21 @@ export default class HandlerChain {
   }
 
   async _callHandler (context: Context) {
-    const timeout = (
+    const timeout =
       typeof context._timeout === 'number' ? context._timeout :
       typeof this.theta.config.handlerTimeout === 'number' ? this.theta.config.handlerTimeout :
       10000
-    )
 
     let timeoutId: any
-    const timeoutPromise = new Promise((_, reject) => {
-      timeoutId = setTimeout(() => { reject(new TimeoutError(context)) }, timeout)
-    })
-
     const handlerPromise = (async () => {
       await this.handler(context)
       clearTimeout(timeoutId)
     })()
+    if (timeout === 0) { return handlerPromise }
+
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutId = setTimeout(() => { reject(new TimeoutError(context)) }, timeout)
+    })
 
     await Promise.race([timeoutPromise, handlerPromise])
   }
