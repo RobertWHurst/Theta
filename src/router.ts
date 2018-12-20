@@ -2,6 +2,7 @@
 import Theta, { Handler } from './theta'
 import Context from './context'
 import HandlerChain from './handler-chain'
+import Pattern from './pattern'
 
 export default class Router {
   theta: Theta
@@ -28,7 +29,7 @@ export default class Router {
       handler = c => router.route(c)
     }
 
-    const nextLink = new HandlerChain(this.theta, pattern as string, handler)
+    const nextLink = new HandlerChain(this.theta, new Pattern(pattern as string), handler)
 
     this._handlerChain
       ? this._handlerChain.push(nextLink)
@@ -38,12 +39,12 @@ export default class Router {
   handleError (handler: Handler): void
   handleError (pattern: string, handler: Handler): void
   handleError (pattern?: string | Handler, handler?: Handler): void {
-    if (pattern && !handler) {
+    if (typeof pattern !== 'string') {
       handler = pattern as Handler
       pattern = undefined
     }
 
-    const nextLink = new HandlerChain(this.theta, pattern as string, handler as Handler, true)
+    const nextLink = new HandlerChain(this.theta, new Pattern(pattern as string), handler as Handler, true)
 
     this._errorHandlerChain
       ? this._errorHandlerChain.push(nextLink)

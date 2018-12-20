@@ -1,6 +1,7 @@
 import Message from './message'
 import Socket from './socket'
 import Theta, { Handler } from './theta'
+import Pattern, { Params } from './pattern'
 
 type NextHandler = () => Promise<void>
 
@@ -14,9 +15,14 @@ export default class Context {
   _nextHandler?: NextHandler
 
   constructor (message: Message, socket: Socket) {
+    Object.setPrototypeOf(this, socket.theta.context)
     this.message = message
     this.socket = socket
   }
+
+  get uuid (): string { return this.socket.uuid }
+  get path (): string { return this.message.path }
+  get params (): Params { return this.message.params }
 
   status (status: string): this {
     this.socket.status(status)
@@ -44,5 +50,11 @@ export default class Context {
 
   setTimeout (timeout: number) {
     this._timeout = timeout
+  }
+
+  _tryToApplyPattern (pattern: Pattern): boolean {
+    if (!this.message._tryToApplyPattern(pattern)) { return false }
+    this._handled = true
+    return true
   }
 }

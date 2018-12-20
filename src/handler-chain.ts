@@ -1,5 +1,6 @@
 import Theta, { Handler } from './theta'
 import Context from './context'
+import Pattern from './pattern'
 
 export class TimeoutError extends Error {
   constructor (context: Context) {
@@ -9,12 +10,12 @@ export class TimeoutError extends Error {
 
 export default class HandlerChain {
   theta: Theta
-  pattern: string
+  pattern: Pattern
   handler: Handler
   continueOnError: boolean
   nextLink?: HandlerChain
 
-  constructor (theta: Theta, pattern: string, handler: Handler, continueOnError: boolean = false) {
+  constructor (theta: Theta, pattern: Pattern, handler: Handler, continueOnError: boolean = false) {
     this.theta = theta
     this.pattern = pattern
     this.handler = handler
@@ -28,10 +29,9 @@ export default class HandlerChain {
       await this.nextLink.route(context)
     }
 
-    if (!this._matchesPath(context.message.path)) {
+    if (!context._tryToApplyPattern(this.pattern)) {
       await context.next()
     }
-    context._handled = true
 
     try {
       await this._callHandler(context)
@@ -46,13 +46,6 @@ export default class HandlerChain {
     this.nextLink
       ? this.nextLink.push(endLink)
       : this.nextLink = endLink
-  }
-
-  _matchesPath (path: string) {
-    const chunks = path.split('.')
-    return chunks
-      .map((_, i) => chunks.slice(0, i + 1).join('.'))
-      .includes(this.pattern)
   }
 
   async _callHandler (context: Context) {

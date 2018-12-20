@@ -41,6 +41,7 @@ export default class Theta {
   responder: Responder
   encoder: Encoder
   decoder: Decoder
+  context: Object
   message: Object
   socket: Object
   router: Router
@@ -49,6 +50,7 @@ export default class Theta {
   constructor (config: Config = {}) {
     this.config = config
 
+    this.context = Object.create(Context.prototype)
     this.message = Object.create(Message.prototype)
     this.socket = Object.create(Socket.prototype)
 

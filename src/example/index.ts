@@ -14,13 +14,13 @@ server.on('request', (req, res) => {
 
 const app = theta({ server })
 
-app.handle('foo', async (ctx) => {
-  console.log('before res')
+app.handle('foo/:value', async (ctx) => {
+  console.log('before res', ctx.params)
   await ctx.next()
   console.log('after res')
 })
 
-app.handle('foo', async (ctx) => {
+app.handle('foo/*', async (ctx) => {
   console.log('sending hi from foo')
   await ctx.send('hi')
   console.log('waiting for bar')

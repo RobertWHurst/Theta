@@ -21,7 +21,7 @@
         }
       })
 
-      socket.send(JSON.stringify({ path: 'foo' }))
+      socket.send(JSON.stringify({ path: `foo/${Date.now()}` }))
     });
   </script>
 </body>
