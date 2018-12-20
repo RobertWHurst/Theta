@@ -38,9 +38,10 @@ export default class Context {
     await this.socket.send(data)
   }
 
-  async handle (pattern: string, handler?: Handler): Promise<Context>
-  async handle (handler: Handler): Promise<Context>
-  async handle (pattern?: string | Handler, handler?: Handler): Promise<Context> {
+  handle (pattern: string, handler: Handler): void
+  handle (handler: Handler): void
+  async handle (pattern: string): Promise<Context>
+  handle (pattern?: string | Handler, handler?: Handler): Promise<Context> | void {
     return this.socket.handle(pattern as any, handler as any)
   }
 

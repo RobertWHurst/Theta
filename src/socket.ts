@@ -40,9 +40,10 @@ class Socket extends EventEmitter {
     this._rawSocket.on('message', d => this._handleRawMessage(d))
   }
 
-  async handle (pattern: string, handler?: Handler): Promise<Context>
-  async handle (handler: Handler): Promise<Context>
-  async handle (pattern?: string | Handler, handler?: Handler): Promise<Context> {
+  handle (pattern: string, handler: Handler): void
+  handle (handler: Handler): void
+  async handle (pattern: string): Promise<Context>
+  handle (pattern?: string | Handler, handler?: Handler): Promise<Context> | void {
     return this._router.handle(pattern as any, handler as any)
   }
 
@@ -63,12 +64,7 @@ class Socket extends EventEmitter {
 
     // NOTE: We wait a tick so that the handler has time to register additional
     // in-route handlers with the socket router before the client responds.
-    await new Promise((resolve) => {
-      process.nextTick(() => {
-        this._rawSocket.send(encodedData)
-        resolve()
-      })
-    })
+    process.nextTick(() => { this._rawSocket.send(encodedData) })
   }
 
   to (uuid: string) {

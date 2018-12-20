@@ -64,6 +64,7 @@ export default class Server {
     socket.on('error', err => { throw err })
     socket.on('message', async (context) => {
       await this.router.route(context)
+      socket.clearRouterHandlers()
       if (context._handled) { return }
       await context.sendStatus('not-handled')
     })
