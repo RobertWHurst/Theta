@@ -92,6 +92,11 @@ export default class Theta {
     return this
   }
 
+  handleError (pathPattern: string, handler: Handler): this {
+    this.router.handleError(pathPattern, handler)
+    return this
+  }
+
   listen (...args: any[]) {
     return this.server.listen(...args)
   }
