@@ -5,10 +5,9 @@
   ],
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "tsc -b packages/*",
+    "build": "lerna run build",
     "test": "lerna run test",
-    "clean": "rimraf packages/**/lib",
-    "prepare": "yarn build"
+    "clean": "rimraf packages/**/lib"
   },
   "devDependencies": {
     "@types/assert": "^1.4.0",

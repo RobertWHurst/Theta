@@ -8,5 +8,11 @@
   "license": "MIT",
   "files": [
     "lib"
-  ]
+  ],
+  "scripts": {
+    "test": "mocha -r ts-node/register src/test/*.spec.ts",
+    "build": "tsc",
+    "clean": "rimraf lib",
+    "prepare": "yarn build"
+  }
 }
