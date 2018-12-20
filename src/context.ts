@@ -23,6 +23,7 @@ export default class Context {
   get uuid (): string { return this.socket.uuid }
   get path (): string { return this.message.path }
   get params (): Params { return this.message.params }
+  get data (): any { return this.message.data }
 
   status (status: string): this {
     this.socket.status(status)
