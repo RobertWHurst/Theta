@@ -10,8 +10,9 @@
     "lib"
   ],
   "scripts": {
-    "test": "mocha -r ts-node/register src/test/*.spec.ts",
     "build": "tsc",
+    "test": "nyc mocha -r ts-node/register src/test/*.spec.ts",
+    "coverage-report": "nyc report --reporter=html && open ./coverage/index.html",
     "clean": "rimraf lib",
     "prepare": "yarn build"
   },

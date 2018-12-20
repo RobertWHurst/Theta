@@ -40,9 +40,12 @@ To interact with our new server create a websocket in the browser
 // CLIENT SIDE
 import thetaClient from 'https://cdn.jsdelivr.net/npm/@theta/client'
 
-const client = thetaClient('ws://localhost:3000')
+const client = thetaClient()
+
+client.connect('ws://localhost:3000')
 
 client.send('/greet/Robert')
+
 client.handle((data) => {
   console.log(data)
 })

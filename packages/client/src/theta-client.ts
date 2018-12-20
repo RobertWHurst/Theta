@@ -12,20 +12,34 @@ export const defaultDecoder: Decoder = async (encodedData) => JSON.parse(encoded
 export default class ThetaClient {
   encoder: Encoder
   decoder: Decoder
-  _webSocket: WebSocket
+  _pendingSendData: any[]
+  _webSocket?: WebSocket
   _asyncHandler?: Handler
   _handler?: Handler
 
-  constructor (url: string) {
+  constructor () {
     this.encoder = defaultEncoder
     this.decoder = defaultDecoder
+    this._pendingSendData = []
+  }
 
-    this._webSocket = new WebSocket(url)
-    this._webSocket.addEventListener('message', async (event) => {
+  async connect (url: string): Promise<void> {
+    const webSocket = new WebSocket(url)
+    this._webSocket = webSocket
+
+    webSocket.addEventListener('message', async (event) => {
       const data = await this.decoder(event.data)
       if (this._asyncHandler) { this._asyncHandler(data); this._asyncHandler = undefined }
       if (this._handler) { this._handler(data) }
     })
+
+    await new Promise((resolve) => {
+      const connect = () => { webSocket.removeEventListener('connect', connect); resolve() }
+      webSocket.addEventListener('connect', connect)
+    })
+
+    this._pendingSendData.forEach(d => webSocket.send(d))
+    this._pendingSendData.length = 0
   }
 
   plugin (plugin: Plugin, opts?: object): this {
@@ -52,6 +66,12 @@ export default class ThetaClient {
 
   async send (path: string, data?: any) {
     const encodedData = await this.encoder(path, data)
-    process.nextTick(() => { this._webSocket.send(encodedData) })
+    process.nextTick(() => {
+      if (this._webSocket) {
+        this._webSocket.send(encodedData)
+        return
+      }
+      this._pendingSendData.push(encodedData)
+    })
   }
 }
