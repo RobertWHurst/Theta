@@ -38,12 +38,12 @@ app.listen(3000)
 To interact with our new server create a websocket in the browser
 ```js
 // CLIENT SIDE
-import ThetaClient from 'https://cdn.jsdelivr.net/npm/@theta/client'
+import thetaClient from 'https://cdn.jsdelivr.net/npm/@theta/client'
 
-const thetaClient = new ThetaClient('ws://localhost:3000')
+const client = thetaClient('ws://localhost:3000')
 
-thetaClient.send('/greet/Robert')
-thetaClient.handle((data) => {
+client.send('/greet/Robert')
+client.handle((data) => {
   console.log(data)
 })
 ```
