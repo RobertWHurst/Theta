@@ -28,7 +28,8 @@ export interface Config {
 const defaultClassifier: Classifier = async (data) => data && data.path || ''
 const defaultResponder: Responder = async (status, data, err) =>
   err ? { error: err } :
-  data ? { status, data } :
+  typeof data === 'object' ? { ...data, status } :
+  data ? { data, status } :
   { status }
 const defaultEncoder: Encoder = async (data) => JSON.stringify(data)
 const defaultDecoder: Decoder = async (encodedData) =>
