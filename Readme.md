@@ -59,7 +59,7 @@ We should see the following in the console
 { "status": "ok", "greeting": "Hello Robert" }
 ```
 
-# Going Beyond Request Response Cycle
+# Going Beyond the Request Response Cycle
 
 Web sockets enable us to have a proper back and forth with our client and server,
 beyond what the HTTP request response cycle offers us. With theta it's possible
