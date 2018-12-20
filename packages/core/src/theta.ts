@@ -25,14 +25,13 @@ export interface Config {
   handlerTimeout?: number
 }
 
-const defaultClassifier: Classifier = async (data) => data && data.path || ''
-const defaultResponder: Responder = async (status, data, err) =>
+export const defaultClassifier: Classifier = async (data) => data && data.path || ''
+export const defaultResponder: Responder = async (status, data, err) =>
   err ? { error: err } :
   typeof data === 'object' ? { ...data, status } :
-  data ? { data, status } :
-  { status }
-const defaultEncoder: Encoder = async (data) => JSON.stringify(data)
-const defaultDecoder: Decoder = async (encodedData) =>
+  data ? { data, status } : { status }
+export const defaultEncoder: Encoder = async (data) => JSON.stringify(data)
+export const defaultDecoder: Decoder = async (encodedData) =>
   typeof encodedData === 'string' ? JSON.parse(encodedData) : {}
 
 export default class Theta {
@@ -64,8 +63,9 @@ export default class Theta {
     this.decoder = defaultDecoder
   }
 
-  plugin (plugin: Plugin, opts?: object) {
+  plugin (plugin: Plugin, opts?: object): this {
     plugin(this, opts)
+    return this
   }
 
   classify (classifier: Classifier): this {
@@ -98,11 +98,13 @@ export default class Theta {
     return this
   }
 
-  listen (...args: any[]) {
-    return this.server.listen(...args)
+  listen (...args: any[]): this {
+    this.server.listen(...args)
+    return this
   }
 
-  close (...args: any[]) {
-    return this.server.close(...args)
+  close (...args: any[]): this {
+    this.server.close(...args)
+    return this
   }
 }

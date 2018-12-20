@@ -1,0 +1,12 @@
+{
+  "name": "@theta/client",
+  "version": "0.0.0",
+  "description": "A client for Theta, an express like framework for web sockets",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.js",
+  "author": "Robert Hurst <robertwhurst@gmail.com>",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "extends": "tslint-config-standard",
   "linterOptions": {
-    "exclude": ["dist"]
+    "exclude": ["packages/*/lib"]
   }
 }

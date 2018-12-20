@@ -1,0 +1,20 @@
+{
+  "name": "@theta/core",
+  "version": "0.0.0",
+  "description": "An express like framework for web sockets",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.js",
+  "author": "Robert Hurst <robertwhurst@gmail.com>",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "uuid": "^3.0.1",
+    "ws": "^2.3.1"
+  },
+  "devDependencies": {
+    "@types/uuid": "^3.4.4",
+    "@types/ws": "^6.0.1"
+  }
+}

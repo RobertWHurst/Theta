@@ -8,14 +8,16 @@
       "name": "typescript-tslint-plugin",
       "ignoreDefinitionFiles": true
     }],
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "@theta/*": ["./packages/*/src"]
+    },
     "strict": true,
     "esModuleInterop": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": true
   }
 }

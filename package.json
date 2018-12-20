@@ -1,35 +1,25 @@
 {
-  "name": "theta-app",
-  "version": "0.2.0",
-  "description": "An express like framework for web sockets",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.js",
-  "author": "Robert Hurst <robertwhurst@gmail.com>",
-  "license": "MIT",
-  "scripts": {
-    "test": "mocha -r ts-node/register \"./src/**/*.spec.ts\"",
-    "example": "node -r ts-node/register \"./src/example/index.ts\"",
-    "build": "tsc",
-    "prepublish": "npm run build"
-  },
-  "files": [
-    "./dist/*.js"
+  "private": true,
+  "workspaces": [
+    "packages/*"
   ],
-  "dependencies": {
-    "uuid": "^3.0.1",
-    "ws": "^2.3.1"
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "build": "tsc -b packages/*",
+    "test": "lerna run test",
+    "clean": "rimraf packages/**/lib",
+    "prepare": "yarn build"
   },
   "devDependencies": {
     "@types/assert": "^1.4.0",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.0",
     "@types/sinon": "^5.0.5",
-    "@types/uuid": "^3.4.4",
-    "@types/ws": "^6.0.1",
+    "lerna": "^3.7.1",
+    "rimraf": "^2.6.2",
     "mocha": "^3.3.0",
     "pre-commit": "^1.2.2",
     "sinon": "^2.1.0",
-    "standard": "^12.0.1",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "tslint-config-standard": "^8.0.1",
