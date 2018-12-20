@@ -1,5 +1,5 @@
 
-# ϴ
+![ϴ](http://i.imgur.com/GYry72P.png)
 
 ϴ (Theta) is a webSocket server framework inspired by Koa and Express.
 
