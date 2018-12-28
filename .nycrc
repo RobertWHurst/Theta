@@ -4,7 +4,7 @@
   "statements": 80,
   "functions": 80,
   "branches": 80,
-  "reporter": ["text-summary"],
+  "reporter": ["text-summary", "lcov"],
   "extension": [".ts"],
   "exclude": ["**/*.d.ts", "**/test/**/*.ts"]
 }

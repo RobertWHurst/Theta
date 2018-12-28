@@ -17,8 +17,7 @@
     "test": "nyc mocha -r ts-node/register src/test/*.spec.ts",
     "cover": "nyc check-coverage",
     "coverage-report": "nyc report --reporter=html && open ./coverage/index.html",
-    "clean": "rimraf lib",
-    "prepare": "yarn build"
+    "clean": "rimraf lib"
   },
   "dependencies": {
     "pre-commit": "^1.2.2",

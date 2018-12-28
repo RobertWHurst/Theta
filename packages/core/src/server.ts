@@ -10,16 +10,15 @@ export default class Server {
   theta: Theta
   router: Router
   connectionManager: ConnectionManager
-  _httpServer?: http.Server | https.Server
-  _socketServer?: WebSocketServer
+  _httpServer: http.Server | https.Server
+  _socketServer: WebSocketServer
 
   constructor (theta: Theta) {
     this.theta = theta
     this.router = theta.router
     this.connectionManager = new ConnectionManager(theta, this)
-
-    this._setupHttpServer()
-    this._setupSocketServer()
+    this._httpServer = this._setupHttpServer()
+    this._socketServer = this._setupSocketServer()
   }
 
   listen (...args: any[]): void {
@@ -32,20 +31,18 @@ export default class Server {
     this._httpServer.close(...args)
   }
 
-  _setupHttpServer () {
+  _setupHttpServer (): http.Server | https.Server {
     if (this.theta.config.server) {
-      this._httpServer = this.theta.config.server
-      return
+      return this.theta.config.server
     }
     if (this.theta.config.ssl) {
-      this._httpServer = https.createServer(this.theta.config.ssl)
-      return
+      return https.createServer(this.theta.config.ssl)
     }
-    this._httpServer = http.createServer()
+    return http.createServer()
   }
 
-  _setupSocketServer () {
-    this._socketServer = new WebSocketServer({
+  _setupSocketServer (): WebSocketServer {
+    const socketServer = new WebSocketServer({
       backlog: this.theta.config.backlog,
       handleProtocols: this.theta.config.handleProtocols,
       path: this.theta.config.path,
@@ -53,8 +50,8 @@ export default class Server {
       maxPayload: this.theta.config.maxPayload,
       server: this._httpServer
     })
-
-    this._socketServer.on('connection', r => this._handleConnection(r))
+    socketServer.on('connection', r => this._handleConnection(r))
+    return socketServer
   }
 
   _handleConnection (rawSocket: WebSocket) {
