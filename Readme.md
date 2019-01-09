@@ -71,7 +71,7 @@ const theta = require('@theta/core')
 
 const app = theta()
 
-app.handle('/greet', (ctx) => {
+app.handle('/greet', async (ctx) => {
 
   ctx.send({ message: 'What is your name?' })
 
