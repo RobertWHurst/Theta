@@ -50,8 +50,9 @@ export default class Context {
     await this._nextHandler()
   }
 
-  setTimeout (timeout: number) {
+  timeout (timeout: number) {
     this._timeout = timeout
+    return this
   }
 
   _tryToApplyPattern (pattern: Pattern): boolean {

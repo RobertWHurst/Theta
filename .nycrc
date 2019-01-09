@@ -1,5 +1,4 @@
 {
-  "check-coverage": true,
   "per-file": true,
   "lines": 80,
   "statements": 80,
@@ -7,5 +6,5 @@
   "branches": 80,
   "reporter": ["text-summary"],
   "extension": [".ts"],
-  "exclude": ["**/*.d.ts"]
+  "exclude": ["**/*.d.ts", "**/test/**/*.ts"]
 }

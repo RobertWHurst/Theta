@@ -1,6 +1,9 @@
 {
   "name": "@theta/core",
   "version": "0.0.0",
+  "engines": {
+    "node": ">=10.15.0"
+  },
   "description": "An express like framework for web sockets",
   "main": "./lib/index.js",
   "types": "./lib/index.d.js",
@@ -12,6 +15,7 @@
   "scripts": {
     "build": "tsc",
     "test": "nyc mocha -r ts-node/register src/test/*.spec.ts",
+    "cover": "nyc check-coverage",
     "coverage-report": "nyc report --reporter=html && open ./coverage/index.html",
     "clean": "rimraf lib",
     "prepare": "yarn build"
@@ -23,6 +27,8 @@
   },
   "devDependencies": {
     "@types/uuid": "^3.4.4",
-    "@types/ws": "^6.0.1"
+    "@types/ws": "^6.0.1",
+    "lerna": "^3.7.1",
+    "rimraf": "^2.6.2"
   }
 }
