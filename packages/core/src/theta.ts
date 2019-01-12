@@ -63,7 +63,7 @@ export default class Theta {
     this.decoder = defaultDecoder
   }
 
-  plugin (plugin: Plugin, opts?: object): this {
+  plugin (plugin: Plugin, opts?: any): this {
     plugin(this, opts)
     return this
   }
@@ -88,13 +88,17 @@ export default class Theta {
     return this
   }
 
-  handle (pathPattern: string, handler: Handler): this {
-    this.router.handle(pathPattern, handler)
+  handle (pattern: string, handler?: Handler | Router): this
+  handle (handler: Handler | Router): this
+  handle (pattern?: string | Handler | Router, handler?: Handler | Router): this {
+    this.router.handle(pattern as any, handler)
     return this
   }
 
-  handleError (pathPattern: string, handler: Handler): this {
-    this.router.handleError(pathPattern, handler)
+  handleError (handler: Handler | Router): this
+  handleError (pattern: string, handler: Handler | Router): this
+  handleError (pattern?: string | Handler | Router, handler?: Handler | Router): this {
+    this.router.handleError(pattern as any, handler as any)
     return this
   }
 

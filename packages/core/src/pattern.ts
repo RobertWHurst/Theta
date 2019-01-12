@@ -30,7 +30,7 @@ export class Segment {
     }
 
     if (raw[i] === '(' && raw[raw.length - 1] === ')') {
-      this.subPatternStr = raw.slice(i + 1, raw.length - 2)
+      this.subPatternStr = raw.slice(i + 1, raw.length - 1)
     } else {
       this.subPatternStr = this.keyName ? `(?<${this.keyName}>[^/]+)` : '[^/]+'
     }

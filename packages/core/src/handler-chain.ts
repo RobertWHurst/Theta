@@ -31,6 +31,7 @@ export default class HandlerChain {
 
     if (!context._tryToApplyPattern(this.pattern)) {
       await context.next()
+      return
     }
 
     try {
@@ -52,7 +53,7 @@ export default class HandlerChain {
     const timeout =
       typeof context._timeout === 'number' ? context._timeout :
       typeof this.theta.config.handlerTimeout === 'number' ? this.theta.config.handlerTimeout :
-      10000
+      0
 
     let timeoutId: any
     const handlerPromise = (async () => {

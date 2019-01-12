@@ -36,12 +36,17 @@ export default class Router {
       : this._handlerChain = nextLink
   }
 
-  handleError (handler: Handler): void
-  handleError (pattern: string, handler: Handler): void
-  handleError (pattern?: string | Handler, handler?: Handler): void {
+  handleError (handler: Handler | Router): void
+  handleError (pattern: string, handler: Handler | Router): void
+  handleError (pattern?: string | Handler | Router, handler?: Handler | Router): void {
     if (typeof pattern !== 'string') {
-      handler = pattern as Handler
+      handler = pattern as Handler | Router
       pattern = undefined
+    }
+
+    if (handler instanceof Router) {
+      const router = handler
+      handler = c => router.route(c)
     }
 
     const nextLink = new HandlerChain(this.theta, new Pattern(pattern as string), handler as Handler, true)
