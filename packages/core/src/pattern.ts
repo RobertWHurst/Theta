@@ -4,58 +4,119 @@ export interface Params {
 
 export class Segment {
   raw: string
-  type: 'capture' | 'fixed' | 'key' | 'wildcard'
+  type: 'fixed' | 'key' | 'wildcard'
   subPatternStr: string
   keyName?: string
 
   constructor (raw: string) {
     this.raw = raw
-    this.type = (
-      raw[0] === ':' ? 'key' :
-      raw[0] === '*' ? 'wildcard' :
-      'fixed'
-    )
+
+    const s = raw
+    let c = ''
+    let p = ''
+    let t = 0
+    let esc = false
+    let pnEsc = false
+    let pnEr = false
+
+    for (let i = 0; i < s.length; i += 1) {
+      if (i === 0 && s[i] === ':') {
+        t = 1
+      } else if (i === 0 && s[i] === '*') {
+        t = 2
+      } else if (!pnEsc && s[i] === '\\') {
+        if (esc) {
+          esc = false
+          c += '\\'
+        } else {
+          esc = true
+        }
+      } else if (!esc && !pnEsc && s[i] === '(') {
+        pnEsc = true
+      } else if (pnEsc && s[i] === ')') {
+        if (i !== s.length - 1) {
+          pnEr = true
+          break
+        }
+        p = c
+      } else {
+        c += s[i]
+      }
+    }
+    if (pnEr) {
+      throw new Error('Invalid pattern segment: Characters found after segment regular expression')
+    }
+
+    this.type = ['fixed', 'key', 'wildcard'][t] as any
 
     if (this.type === 'fixed') {
-      this.subPatternStr = this.raw
+      this.subPatternStr = c
       return
     }
 
-    let i = 1
     if (this.type === 'key') {
-      this.keyName = ''
-      for (;i < raw.length && raw[i] !== '('; i += 1) {
-        this.keyName += raw[i]
-      }
+      this.keyName = c
     }
 
-    if (raw[i] === '(' && raw[raw.length - 1] === ')') {
-      this.subPatternStr = raw.slice(i + 1, raw.length - 1)
-    } else {
-      this.subPatternStr = this.keyName ? `(?<${this.keyName}>[^/]+)` : '[^/]+'
-    }
+    this.subPatternStr = p || (this.keyName ? `(?<${this.keyName}>[^/]+)` : '[^/]+')
   }
 }
 
 export default class Pattern {
   raw: string
+  namespace: string
+  capture: boolean
   pattern: RegExp
   segments: Segment[]
 
   constructor (raw: string) {
+    const s = raw
+    let c = ''
+    let n = ''
+    let sa = []
+    let cap = false
+    let esc = false
+    let pnEsc = false
 
-    if (raw[0] === '/') { raw = raw.slice(1) }
+    for (let i = 0; i < s.length; i += 1) {
+      if (!pnEsc && s[i] === '\\') {
+        if (esc) {
+          esc = false
+          c += '\\'
+        } else {
+          esc = true
+        }
+      } else if (!esc && !pnEsc && s[i] === '(') {
+        c += '('
+        pnEsc = true
+      } else if (pnEsc && s[i] === ')') {
+        c += ')'
+        pnEsc = false
+      } else if (!esc && !pnEsc && !n && s[i] === '@') {
+        n = c
+        c = ''
+      } else if (!esc && !pnEsc && s[i] === '/') {
+        c && sa.push(c)
+        c = ''
+      } else if (!esc && !pnEsc && i === s.length - 1 && s[i] === '+') {
+        cap = true
+      } else {
+        c += s[i]
+      }
+    }
+    c && sa.push(c)
 
-    this.raw = raw
+    this.capture = cap
+    this.namespace = n
+    this.segments = sa.map(s => new Segment(s))
 
-    let capture = false
-    if (raw[raw.length - 1] === '+') { raw = raw.slice(0, raw.length - 1); capture = true }
-    if (raw[raw.length - 1] === '/') { raw = raw.slice(0, raw.length - 1) }
-
-    this.segments = raw.split('/').map(s => new Segment(s))
-
-    const patternStrTerminal = capture ? '/.+' : '$'
+    const patternStrTerminal = cap ? '/.+' : '$'
     const patternStr = `^${this.segments.map(s => s.subPatternStr).join('/')}${patternStrTerminal}`
+
+    this.raw = ''
+    n && (this.raw += `${n}@`)
+    this.raw += this.segments.map(se => se.raw).join('/')
+    cap && (this.raw += '/+')
 
     this.pattern = new RegExp(patternStr)
   }
