@@ -1,5 +1,8 @@
 
 <p align="center"><img alt="ϴ" src="http://i.imgur.com/GYry72P.png"></p>
+<p align="center">
+  <a href="https://circleci.com/gh/RobertWHurst/Theta"><img src="https://circleci.com/gh/RobertWHurst/Theta.svg?style=svg"></a>
+</p>
 
 ϴ (Theta) is a webSocket server framework inspired by Koa and Express.
 
