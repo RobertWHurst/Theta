@@ -6,62 +6,62 @@ describe('new Pattern(raw: string)', () => {
   it('can parse basic/path', () => {
     const pattern = new Pattern('basic/path')
     assert.equal(pattern.raw, 'basic/path')
-    assert.equal(pattern.pattern.source, '^basic\\/path$')
+    assert.equal(pattern.pattern.source, '^(basic\\/path)$')
   })
 
   it('can parse /basic/path', () => {
     const pattern = new Pattern('/basic/path')
     assert.equal(pattern.raw, 'basic/path')
-    assert.equal(pattern.pattern.source, '^basic\\/path$')
+    assert.equal(pattern.pattern.source, '^(basic\\/path)$')
   })
 
   it('can parse basic/path/', () => {
     const pattern = new Pattern('basic/path/')
     assert.equal(pattern.raw, 'basic/path')
-    assert.equal(pattern.pattern.source, '^basic\\/path$')
+    assert.equal(pattern.pattern.source, '^(basic\\/path)$')
   })
 
   it('can parse :key/path', () => {
     const pattern = new Pattern(':key/path')
     assert.equal(pattern.raw, ':key/path')
-    assert.equal(pattern.pattern.source, '^(?<key>[^\\/]+)\\/path$')
+    assert.equal(pattern.pattern.source, '^((?<key>[^\\/]+)\\/path)$')
   })
 
   it('can parse */path', () => {
     const pattern = new Pattern('*/path')
     assert.equal(pattern.raw, '*/path')
-    assert.equal(pattern.pattern.source, '^[^\\/]+\\/path$')
+    assert.equal(pattern.pattern.source, '^([^\\/]+\\/path)$')
   })
 
   it('can parse *([a-z]+)/path', () => {
     const pattern = new Pattern('*([a-z]+)/path')
     assert.equal(pattern.raw, '*([a-z]+)/path')
-    assert.equal(pattern.pattern.source, '^[a-z]+\\/path$')
+    assert.equal(pattern.pattern.source, '^([a-z]+\\/path)$')
   })
 
   it('can parse path/+', () => {
     const pattern = new Pattern('path/+')
     assert.equal(pattern.raw, 'path/+')
-    assert.equal(pattern.pattern.source, '^path\\/.+')
+    assert.equal(pattern.pattern.source, '^(path\\/.+)')
   })
 
   it('correctly handles escapes', () => {
     const pattern = new Pattern('escaped\\/path\\#chars\\\\in')
     assert.equal(pattern.raw, 'escaped\\/path#chars\\\\in')
-    assert.equal(pattern.pattern.source, '^escaped\\/path#chars\\\\in$')
+    assert.equal(pattern.pattern.source, '^(escaped\\/path#chars\\\\in)$')
   })
 
   it('correctly handles namespaces', () => {
-    const pattern = new Pattern('namespace@and/path')
-    assert.equal(pattern.raw, 'namespace@and/path')
-    assert.equal(pattern.namespace, 'namespace')
-    assert.equal(pattern.pattern.source, '^and\\/path$')
+    const pattern = new Pattern('ns@and/path')
+    assert.equal(pattern.raw, 'ns@and/path')
+    assert.equal(pattern.namespace, 'ns')
+    assert.equal(pattern.pattern.source, '^ns@(and\\/path)$')
   })
 
   it('escapes regex chars outside of the segment\'s pattern', () => {
     const pattern = new Pattern('$basic/path')
     assert.equal(pattern.raw, '$basic/path')
-    assert.equal(pattern.pattern.source, '^\\$basic\\/path$')
+    assert.equal(pattern.pattern.source, '^(\\$basic\\/path)$')
   })
 
   it('throws if a segment\'s pattern contains a regular expression group', () => {
@@ -81,65 +81,73 @@ describe('new Pattern(raw: string)', () => {
     it('can match path /basic/path', () => {
       const pattern = new Pattern('basic/path')
       const path = '/basic/path'
-      const params: any = pattern.tryMatch(path)
-      assert.ok(params)
-      assert.equal(Object.keys(params).length, 0)
+      const match: any = pattern.tryMatch(path)
+      assert.ok(match)
+      assert.equal(Object.keys(match.params).length, 0)
     })
 
     it('can match path basic/path', () => {
       const pattern = new Pattern('basic/path')
       const path = 'basic/path'
-      const params: any = pattern.tryMatch(path)
-      assert.ok(params)
-      assert.equal(Object.keys(params).length, 0)
+      const match: any = pattern.tryMatch(path)
+      assert.ok(match)
+      assert.equal(Object.keys(match.params).length, 0)
     })
 
     it('can match value/path with pattern :key/path', () => {
       const pattern = new Pattern(':key/path')
       const path = 'value/path'
-      const params: any = pattern.tryMatch(path)
-      assert.ok(params)
-      assert.equal(Object.keys(params).length, 1)
-      assert.equal(params.key, 'value')
+      const match: any = pattern.tryMatch(path)
+      assert.ok(match)
+      assert.equal(Object.keys(match.params).length, 1)
+      assert.equal(match.params.key, 'value')
     })
 
     it('can match path value/path with pattern */path', () => {
       const pattern = new Pattern('*/path')
       const path = 'value/path'
-      const params: any = pattern.tryMatch(path)
-      assert.ok(params)
-      assert.equal(Object.keys(params).length, 0)
+      const match: any = pattern.tryMatch(path)
+      assert.ok(match)
+      assert.equal(Object.keys(match.params).length, 0)
     })
 
     it('can match path value/path with pattern */path', () => {
       const pattern = new Pattern('*/path')
       const path = 'value/path'
-      const params: any = pattern.tryMatch(path)
-      assert.ok(params)
-      assert.equal(Object.keys(params).length, 0)
+      const match: any = pattern.tryMatch(path)
+      assert.ok(match)
+      assert.equal(Object.keys(match.params).length, 0)
     })
 
     it('can match path $basic/path with pattern $basic/path', () => {
       const pattern = new Pattern('$basic/path')
       const path = '$basic/path'
-      const params: any = pattern.tryMatch(path)
-      assert.ok(params)
-      assert.equal(Object.keys(params).length, 0)
+      const match: any = pattern.tryMatch(path)
+      assert.ok(match)
+      assert.equal(Object.keys(match.params).length, 0)
     })
 
     it('can match path path/with/several/segments with pattern path/+', () => {
       const pattern = new Pattern('path/+')
       const path = 'path/with/several/segments'
-      const params: any = pattern.tryMatch(path)
-      assert.ok(params)
-      assert.equal(Object.keys(params).length, 0)
+      const match: any = pattern.tryMatch(path)
+      assert.ok(match)
+      assert.equal(Object.keys(match.params).length, 0)
+    })
+
+    it('correctly isolates the namespace', () => {
+      const pattern = new Pattern('ns@basic/path')
+      const path = 'ns@basic/path'
+      const match: any = pattern.tryMatch(path)
+      assert.ok(match)
+      assert.equal(match.namespace, 'ns')
+      assert.equal(match.path, 'basic/path')
     })
 
     it('does not match missing keys path/:key', () => {
       const pattern = new Pattern('path/:key')
       const path = 'path'
-      const params: any = pattern.tryMatch(path)
-      assert.ok(!params)
+      assert.ok(!pattern.tryMatch(path))
     })
 
     it('does not match unrelated paths', () => {

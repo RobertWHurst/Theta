@@ -4,7 +4,7 @@ import Theta, {
   defaultClassifier,
   defaultDecoder,
   defaultEncoder,
-  defaultResponder
+  defaultFormatter
 } from '../theta'
 import Message from '../message'
 
@@ -58,9 +58,9 @@ describe('new Theta(config: Config)', () => {
       const theta = new Theta()
       const responder = 'RESPONDER' as any
 
-      theta.respond(responder)
+      theta.format(responder)
 
-      assert.equal(theta.responder, 'RESPONDER')
+      assert.equal(theta.formatter, 'RESPONDER')
     })
   })
 
@@ -198,24 +198,18 @@ describe('defaultEncoder(data: any) => Promise<any>', () => {
 
 describe('defaultResponder(status: string, data?: any, err?: Error) => Promise<any>', () => {
 
-  it('takes a status and object, adds the status to the object and resolves it', async () => {
-    const res = await defaultResponder('ok', { key: 'val' })
-    assert.deepEqual(res, { status: 'ok', key: 'val' })
-  })
-
-  it('excludes status and the object contents if given an error', async () => {
-    const error = new Error('Test error')
-    const res = await defaultResponder('ok', { key: 'val' }, error)
-    assert.deepEqual(res, { error })
+  it('takes a status, path, and object, adds the status to the object and resolves it', async () => {
+    const res = await defaultFormatter('ok', 'ns', { key: 'val' })
+    assert.deepEqual(res, { status: 'ok', path: 'ns', key: 'val' })
   })
 
   it('will add data as a property if it is not an object', async () => {
-    const res = await defaultResponder('ok', 'DATA')
-    assert.deepEqual(res, { status: 'ok', data: 'DATA' })
+    const res = await defaultFormatter('ok', 'ns', 'DATA')
+    assert.deepEqual(res, { status: 'ok', path: 'ns', data: 'DATA' })
   })
 
-  it('can resolve an object with only the status given', async () => {
-    const res = await defaultResponder('ok')
-    assert.deepEqual(res, { status: 'ok' })
+  it('can resolve an object with only the status and path given', async () => {
+    const res = await defaultFormatter('ok', 'ns')
+    assert.deepEqual(res, { status: 'ok', path: 'ns' })
   })
 })

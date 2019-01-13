@@ -49,7 +49,12 @@ export default class Router {
       handler = c => router.route(c)
     }
 
-    const nextLink = new HandlerChain(this.theta, new Pattern(pattern as string), handler as Handler, true)
+    const nextLink = new HandlerChain(
+      this.theta,
+      new Pattern(pattern as string),
+      handler as Handler,
+      true
+    )
 
     this._errorHandlerChain
       ? this._errorHandlerChain.push(nextLink)

@@ -9,17 +9,21 @@ export default class Message {
     return message
   }
 
+  namespace: string
   path: string
   data?: any
   params: Params
   _theta: Theta
+  _path: string
 
   constructor (theta: Theta, path: string = '', data?: any) {
     Object.setPrototypeOf(this, theta.message)
-    this._theta = theta
-    this.path = path
+    this.namespace = ''
+    this.path = ''
     this.data = data
     this.params = {}
+    this._theta = theta
+    this._path = path
   }
 
   async fromEncodedData (encodedData: WebSocket.Data) {
@@ -35,9 +39,11 @@ export default class Message {
   }
 
   _tryToApplyPattern (pattern: Pattern): boolean {
-    const params = pattern.tryMatch(this.path)
-    if (!params) { return false }
-    this.params = params
+    const match = pattern.tryMatch(this._path)
+    if (!match) { return false }
+    this.namespace = match.namespace
+    this.path = match.path
+    this.params = match.params
     return true
   }
 }

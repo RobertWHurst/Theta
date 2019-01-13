@@ -24,6 +24,7 @@ class Socket extends EventEmitter {
   _server: Server
   _rawSocket: WebSocket
   _currentStatus: string
+  _currentNamespace: string
 
   constructor (theta: Theta, server: Server, rawSocket: WebSocket) {
     super()
@@ -36,6 +37,7 @@ class Socket extends EventEmitter {
     this._server = server
     this._rawSocket = rawSocket
     this._currentStatus = 'ok'
+    this._currentNamespace = ''
 
     this._rawSocket.on('message', d => this._handleRawMessage(d))
   }
@@ -59,7 +61,9 @@ class Socket extends EventEmitter {
   async send (data?: any): Promise<void> {
     const status = this._currentStatus
     this._currentStatus = 'ok'
-    data = await this.theta.responder(status, data)
+    const path = this._currentNamespace
+    this._currentNamespace = ''
+    data = await this.theta.formatter(status, path, data)
     const encodedData = await this.theta.encoder(data)
 
     // NOTE: We wait a tick so that the handler has time to register additional

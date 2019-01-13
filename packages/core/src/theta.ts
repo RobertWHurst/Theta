@@ -1,6 +1,5 @@
 import http from 'http'
 import https from 'https'
-import WebSocket from 'ws'
 import Router from './router'
 import Server from './server'
 import Socket from './socket'
@@ -9,9 +8,9 @@ import Context from './context'
 
 export type Plugin = (theta: Theta, opts?: object) => void
 export type Classifier = (data: any) => Promise<string>
-export type Responder = (status: string, data?: any, err?: Error) => Promise<any>
+export type Formatter = (status: string, path: string, data?: any) => Promise<any>
 export type Encoder = (data: any) => Promise<any>
-export type Decoder = (encodedData: WebSocket.Data) => Promise<any>
+export type Decoder = (encodedData: any) => Promise<any>
 export type Handler = (context: Context) => (Promise<void> | void)
 
 export interface Config {
@@ -26,10 +25,9 @@ export interface Config {
 }
 
 export const defaultClassifier: Classifier = async (data) => data && data.path || ''
-export const defaultResponder: Responder = async (status, data, err) =>
-  err ? { error: err } :
-  typeof data === 'object' ? { ...data, status } :
-  data ? { data, status } : { status }
+export const defaultFormatter: Formatter = async (status, path, data) =>
+  typeof data === 'object' ? { ...data, status, path } :
+  data ? { data, status, path } : { status, path }
 export const defaultEncoder: Encoder = async (data) => JSON.stringify(data)
 export const defaultDecoder: Decoder = async (encodedData) =>
   typeof encodedData === 'string' ? JSON.parse(encodedData) : {}
@@ -38,7 +36,7 @@ export default class Theta {
 
   config: Config
   classifier: Classifier
-  responder: Responder
+  formatter: Formatter
   encoder: Encoder
   decoder: Decoder
   context: Object
@@ -58,7 +56,7 @@ export default class Theta {
     this.server = new Server(this)
 
     this.classifier = defaultClassifier
-    this.responder = defaultResponder
+    this.formatter = defaultFormatter
     this.encoder = defaultEncoder
     this.decoder = defaultDecoder
   }
@@ -73,8 +71,8 @@ export default class Theta {
     return this
   }
 
-  respond (responder: Responder): this {
-    this.responder = responder
+  format (formatter: Formatter): this {
+    this.formatter = formatter
     return this
   }
 

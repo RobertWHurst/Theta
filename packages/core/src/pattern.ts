@@ -1,3 +1,9 @@
+export interface Match {
+  namespace: string,
+  path: string,
+  params: Params
+}
+
 export interface Params {
   [key: string]: string
 }
@@ -91,6 +97,7 @@ export class Segment {
 export default class Pattern {
   raw: string
   namespace: string
+  path: string
   capture: boolean
   pattern: RegExp
   segments: Segment[]
@@ -146,18 +153,25 @@ export default class Pattern {
     this.capture = cap
     this.namespace = n
     this.segments = sa.map(s => new Segment(s))
+    this.path = this.segments.map(s => s.subPatternStr).join('/')
 
-    const patternStrTerminal = cap ? '/.+' : '$'
-    const patternStr = `^${this.segments.map(s => s.subPatternStr).join('/')}${patternStrTerminal}`
+    let patternStr = '^'
+    n && (patternStr += `${n}@`)
+    patternStr += `(${this.path}${cap ? '/.+)' : ')$'}`
 
     this.pattern = new RegExp(patternStr)
   }
 
-  tryMatch (path: string): Params | void {
+  tryMatch (path: string): Match | void {
     if (path[0] === '/') { path = path.slice(1) }
 
     const matches = path.match(this.pattern)
     if (!matches) { return }
-    return matches.groups || {}
+
+    return {
+      namespace: this.namespace,
+      path: matches[1],
+      params: matches.groups || {}
+    }
   }
 }
