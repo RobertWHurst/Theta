@@ -46,14 +46,18 @@ describe('new Pattern(raw: string)', () => {
     assert.equal(pattern.pattern.source, '^and\\/path$')
   })
 
-  it('throws if characters show up after a segment\'s pattern', () => {
-    assert.throws(() => { new Pattern('*([a-z]+)invalid/path') }, /after/)
-  })
-
   it('escapes regex chars outside of the segment\'s pattern', () => {
     const pattern = new Pattern('$basic/path')
     assert.equal(pattern.raw, '$basic/path')
     assert.equal(pattern.pattern.source, '^\\$basic\\/path$')
+  })
+
+  it('throws if a segment\'s pattern contains a regular expression group', () => {
+    assert.throws(() => { new Pattern('*(([a-z]+))/path') }, /groups/)
+  })
+
+  it('throws if a segment\'s pattern is trailed by additional characters', () => {
+    assert.throws(() => { new Pattern('*([a-z]+)invalid/path') }, /found after/)
   })
 
   it('throws if key name contains invalid characters', () => {
