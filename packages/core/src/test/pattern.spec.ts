@@ -9,12 +9,6 @@ describe('new Pattern(raw: string)', () => {
     assert.equal(pattern.pattern.source, '^basic\\/path$')
   })
 
-  it('can parse basic/path', () => {
-    const pattern = new Pattern('basic/path')
-    assert.equal(pattern.raw, 'basic/path')
-    assert.equal(pattern.pattern.source, '^basic\\/path$')
-  })
-
   it('can parse :key/path', () => {
     const pattern = new Pattern(':key/path')
     assert.equal(pattern.raw, ':key/path')
@@ -37,6 +31,33 @@ describe('new Pattern(raw: string)', () => {
     const pattern = new Pattern('path/+')
     assert.equal(pattern.raw, 'path/+')
     assert.equal(pattern.pattern.source, '^path\\/.+')
+  })
+
+  it('correctly handles escapes', () => {
+    const pattern = new Pattern('escaped\\/path\\#chars\\\\in')
+    assert.equal(pattern.raw, 'escaped\\/path#chars\\\\in')
+    assert.equal(pattern.pattern.source, '^escaped\\/path#chars\\\\in$')
+  })
+
+  it('correctly handles namespaces', () => {
+    const pattern = new Pattern('namespace@and/path')
+    assert.equal(pattern.raw, 'namespace@and/path')
+    assert.equal(pattern.namespace, 'namespace')
+    assert.equal(pattern.pattern.source, '^and\\/path$')
+  })
+
+  it('throws if characters show up after a segment\'s pattern', () => {
+    assert.throws(() => { new Pattern('*([a-z]+)invalid/path') }, /after/)
+  })
+
+  it('escapes regex chars outside of the segment\'s pattern', () => {
+    const pattern = new Pattern('$basic/path')
+    assert.equal(pattern.raw, '$basic/path')
+    assert.equal(pattern.pattern.source, '^\\$basic\\/path$')
+  })
+
+  it('throws if key name contains invalid characters', () => {
+    assert.throws(() => { new Pattern(':$[]key([a-z]+)/path') }, /key names/)
   })
 
   describe('#tryMatch(path: string): Params', () => {

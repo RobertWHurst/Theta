@@ -8,45 +8,70 @@ export class Segment {
   subPatternStr: string
   keyName?: string
 
-  constructor (raw: string) {
-    this.raw = raw
-
-    const s = raw
+  constructor (src: string) {
+    const s = src
     let c = ''
+    let r = ''
     let p = ''
     let t = 0
     let esc = false
     let pnEsc = false
-    let pnEr = false
+    let pnEr = 0
 
+    const rxEscChars = ['(', ')', '^', '$']
     for (let i = 0; i < s.length; i += 1) {
       if (i === 0 && s[i] === ':') {
         t = 1
+        r += ':'
       } else if (i === 0 && s[i] === '*') {
         t = 2
+        r += '*'
       } else if (!pnEsc && s[i] === '\\') {
         if (esc) {
           esc = false
-          c += '\\'
+          c += '\\\\'
+          r += '\\\\'
         } else {
           esc = true
         }
       } else if (!esc && !pnEsc && s[i] === '(') {
         pnEsc = true
+        r += '('
       } else if (pnEsc && s[i] === ')') {
         if (i !== s.length - 1) {
-          pnEr = true
+          pnEr = 1
           break
         }
-        p = c
+        r += ')'
+      } else if (pnEsc) {
+        if (s[i] === '(') {
+          pnEr = 2
+          break
+        }
+        p += s[i]
+        r += s[i]
       } else {
-        c += s[i]
+        if (t === 1 && /[^a-zA-Z0-9_-]/.test(s[i])) {
+          pnEr = 3
+          break
+        }
+        c += rxEscChars.includes(s[i]) ? `\\${s[i]}` : s[i]
+        r += s[i]
       }
     }
-    if (pnEr) {
-      throw new Error('Invalid pattern segment: Characters found after segment regular expression')
+    switch (pnEr) {
+      case 1: throw new Error(
+        'Invalid pattern segment: Characters found after segment regular expression'
+      )
+      case 2: throw new Error(
+        'Invalid pattern segment: Cannot use regular expression groups within segement patterns'
+      )
+      case 3: throw new Error(
+        'Invalid pattern segment: Cannot use regular expression control characters in key names'
+      )
     }
 
+    this.raw = r
     this.type = ['fixed', 'key', 'wildcard'][t] as any
 
     if (this.type === 'fixed') {
@@ -58,7 +83,8 @@ export class Segment {
       this.keyName = c
     }
 
-    this.subPatternStr = p || (this.keyName ? `(?<${this.keyName}>[^/]+)` : '[^/]+')
+    p || (p = '[^/]+')
+    this.subPatternStr = this.keyName ? `(?<${this.keyName}>${p})` : p
   }
 }
 
@@ -69,8 +95,9 @@ export default class Pattern {
   pattern: RegExp
   segments: Segment[]
 
-  constructor (raw: string) {
-    const s = raw
+  constructor (src: string) {
+    const s = src
+    let r = ''
     let c = ''
     let n = ''
     let sa = []
@@ -82,41 +109,46 @@ export default class Pattern {
       if (!pnEsc && s[i] === '\\') {
         if (esc) {
           esc = false
-          c += '\\'
+          c += '\\\\'
+          r += '\\\\'
         } else {
           esc = true
         }
       } else if (!esc && !pnEsc && s[i] === '(') {
         c += '('
+        r += '('
         pnEsc = true
       } else if (pnEsc && s[i] === ')') {
         c += ')'
+        r += ')'
         pnEsc = false
       } else if (!esc && !pnEsc && !n && s[i] === '@') {
         n = c
         c = ''
+        r += '@'
       } else if (!esc && !pnEsc && s[i] === '/') {
         c && sa.push(c)
+        c && (r += '/')
         c = ''
       } else if (!esc && !pnEsc && i === s.length - 1 && s[i] === '+') {
         cap = true
+        r += '+'
       } else {
+        esc && (s[i] === '(' || s[i] === ')' || s[i] === '@' || s[i] === '/') && (r += '\\')
+        r += s[i]
+        esc && (esc = false)
         c += s[i]
       }
     }
     c && sa.push(c)
 
+    this.raw = r
     this.capture = cap
     this.namespace = n
     this.segments = sa.map(s => new Segment(s))
 
     const patternStrTerminal = cap ? '/.+' : '$'
     const patternStr = `^${this.segments.map(s => s.subPatternStr).join('/')}${patternStrTerminal}`
-
-    this.raw = ''
-    n && (this.raw += `${n}@`)
-    this.raw += this.segments.map(se => se.raw).join('/')
-    cap && (this.raw += '/+')
 
     this.pattern = new RegExp(patternStr)
   }
