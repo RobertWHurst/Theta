@@ -128,7 +128,7 @@ export default class Pattern {
         r += '@'
       } else if (!esc && !pnEsc && s[i] === '/') {
         c && sa.push(c)
-        c && (r += '/')
+        c && i !== s.length - 1 && (r += '/')
         c = ''
       } else if (!esc && !pnEsc && i === s.length - 1 && s[i] === '+') {
         cap = true

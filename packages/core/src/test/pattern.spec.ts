@@ -3,8 +3,20 @@ import { strict as assert } from 'assert'
 
 describe('new Pattern(raw: string)', () => {
 
+  it('can parse basic/path', () => {
+    const pattern = new Pattern('basic/path')
+    assert.equal(pattern.raw, 'basic/path')
+    assert.equal(pattern.pattern.source, '^basic\\/path$')
+  })
+
   it('can parse /basic/path', () => {
     const pattern = new Pattern('/basic/path')
+    assert.equal(pattern.raw, 'basic/path')
+    assert.equal(pattern.pattern.source, '^basic\\/path$')
+  })
+
+  it('can parse basic/path/', () => {
+    const pattern = new Pattern('basic/path/')
     assert.equal(pattern.raw, 'basic/path')
     assert.equal(pattern.pattern.source, '^basic\\/path$')
   })
@@ -82,7 +94,7 @@ describe('new Pattern(raw: string)', () => {
       assert.equal(Object.keys(params).length, 0)
     })
 
-    it('pattern :key/path can match value/path', () => {
+    it('can match value/path with pattern :key/path', () => {
       const pattern = new Pattern(':key/path')
       const path = 'value/path'
       const params: any = pattern.tryMatch(path)
@@ -91,7 +103,7 @@ describe('new Pattern(raw: string)', () => {
       assert.equal(params.key, 'value')
     })
 
-    it('pattern */path can match path value/path', () => {
+    it('can match path value/path with pattern */path', () => {
       const pattern = new Pattern('*/path')
       const path = 'value/path'
       const params: any = pattern.tryMatch(path)
@@ -99,7 +111,23 @@ describe('new Pattern(raw: string)', () => {
       assert.equal(Object.keys(params).length, 0)
     })
 
-    it('pattern path/+ can match path path/with/several/segments', () => {
+    it('can match path value/path with pattern */path', () => {
+      const pattern = new Pattern('*/path')
+      const path = 'value/path'
+      const params: any = pattern.tryMatch(path)
+      assert.ok(params)
+      assert.equal(Object.keys(params).length, 0)
+    })
+
+    it('can match path $basic/path with pattern $basic/path', () => {
+      const pattern = new Pattern('$basic/path')
+      const path = '$basic/path'
+      const params: any = pattern.tryMatch(path)
+      assert.ok(params)
+      assert.equal(Object.keys(params).length, 0)
+    })
+
+    it('can match path path/with/several/segments with pattern path/+', () => {
       const pattern = new Pattern('path/+')
       const path = 'path/with/several/segments'
       const params: any = pattern.tryMatch(path)
