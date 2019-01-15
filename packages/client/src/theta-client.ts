@@ -1,3 +1,5 @@
+import Channel from './channel'
+
 export type Plugin = (thetaClient: ThetaClient, opts?: object) => void
 export type Encoder = (path: string, data: any) => Promise<any>
 export type Decoder = (encodedData: any) => Promise<any>
@@ -9,23 +11,18 @@ export const defaultEncoder: Encoder = async (path, data) => JSON.stringify(
 )
 export const defaultDecoder: Decoder = async (encodedData) => JSON.parse(encodedData)
 
-export const channelChars: string[] = []
-for (let i = 0; i <= 9; i += 1) { channelChars.push(String.fromCharCode(i + 48)) }
-for (let i = 0; i <= 26; i += 1) { channelChars.push(String.fromCharCode(i + 97)) }
-
 export default class ThetaClient {
   encoder: Encoder
   decoder: Decoder
-  _channel: string
+  _channels: { [s: string]: Channel }
   _pendingSendData: any[]
-  _webSocket?: WebSocket
-  _asyncHandler?: Handler
   _handler?: Handler
+  _webSocket?: WebSocket
 
   constructor () {
     this.encoder = defaultEncoder
     this.decoder = defaultDecoder
-    this._channel = ''
+    this._channels = {}
     this._pendingSendData = []
   }
 
@@ -35,8 +32,12 @@ export default class ThetaClient {
 
     webSocket.addEventListener('message', async (event) => {
       const data = await this.decoder(event.data)
-      if (this._asyncHandler) { this._asyncHandler(data); this._asyncHandler = undefined }
-      if (this._handler) { this._handler(data) }
+      const channel = data.channel && this._channels[data.channel]
+      if (channel._handler) {
+        channel._handler(data)
+      } else if (this._handler) {
+        this._handler(data)
+      }
     })
 
     await new Promise((resolve) => {
@@ -63,10 +64,14 @@ export default class ThetaClient {
     return this
   }
 
-  handle (handler: Handler): void
-  async handle (): Promise<any>
-  handle (handler?: Handler): Promise<any> | void {
-    if (!handler) { return new Promise((resolve) => { this._asyncHandler = resolve }) }
+  channel (fn: (channel: Channel) => Promise<void> | void): Channel {
+    const channel = new Channel(this)
+    this._channels[channel._channel] = channel
+    if (fn) { fn(channel) }
+    return channel
+  }
+
+  handle (handler: Handler): void {
     this._handler = handler
   }
 
@@ -79,15 +84,5 @@ export default class ThetaClient {
       }
       this._pendingSendData.push(encodedData)
     })
-  }
-
-  channel (channel: string = this._generateChannel(), fn?: (thetaClient: this) => void): this {
-    this._channel = channel
-    if (fn) { fn(this) }
-    return this
-  }
-
-  _generateChannel (): string {
-    return ''
   }
 }

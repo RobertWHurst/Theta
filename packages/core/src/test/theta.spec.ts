@@ -1,4 +1,4 @@
-import { strict as assert } from 'assert'
+import assert from 'assert'
 import sinon from 'sinon'
 import Theta, {
   defaultClassifier,
@@ -18,7 +18,7 @@ describe('new Theta(config: Config)', () => {
   it('exposes the config', () => {
     const config = {}
     const theta = new Theta(config)
-    assert.equal(theta.config, config)
+    assert.strictEqual(theta.config, config)
   })
 
   it('exposes the message prototype', () => {
@@ -48,7 +48,7 @@ describe('new Theta(config: Config)', () => {
 
       theta.classify(classifier)
 
-      assert.equal(theta.classifier, 'CLASSIFIER')
+      assert.strictEqual(theta.classifier, 'CLASSIFIER')
     })
   })
 
@@ -60,7 +60,7 @@ describe('new Theta(config: Config)', () => {
 
       theta.format(responder)
 
-      assert.equal(theta.formatter, 'RESPONDER')
+      assert.strictEqual(theta.formatter, 'RESPONDER')
     })
   })
 
@@ -72,7 +72,7 @@ describe('new Theta(config: Config)', () => {
 
       theta.encode(encoder)
 
-      assert.equal(theta.encoder, 'ENCODER')
+      assert.strictEqual(theta.encoder, 'ENCODER')
     })
   })
 
@@ -84,7 +84,7 @@ describe('new Theta(config: Config)', () => {
 
       theta.decode(decoder)
 
-      assert.equal(theta.decoder, 'DECODER')
+      assert.strictEqual(theta.decoder, 'DECODER')
     })
   })
 
@@ -146,7 +146,7 @@ describe('new Theta(config: Config)', () => {
       const theta = new Theta()
       const listen = sinon.stub(theta.server, 'listen')
 
-      assert.equal(theta.listen('A1', 'A2', 'A3'), theta)
+      assert.strictEqual(theta.listen('A1', 'A2', 'A3'), theta)
 
       sinon.assert.calledOnce(listen)
       sinon.assert.calledWith(listen, 'A1', 'A2', 'A3')
@@ -159,7 +159,7 @@ describe('new Theta(config: Config)', () => {
       const theta = new Theta()
       const close = sinon.stub(theta.server, 'close')
 
-      assert.equal(theta.close('A1', 'A2', 'A3'), theta)
+      assert.strictEqual(theta.close('A1', 'A2', 'A3'), theta)
 
       sinon.assert.calledOnce(close)
       sinon.assert.calledWith(close, 'A1', 'A2', 'A3')
@@ -170,29 +170,29 @@ describe('new Theta(config: Config)', () => {
 describe('defaultClassifier(data: any) => Promise<string>', () => {
 
   it('takes an object with a path property and resolves it\'s value', async () => {
-    assert.equal((await defaultClassifier({ path: 'PATH' })), 'PATH')
+    assert.strictEqual((await defaultClassifier({ path: 'PATH' })), 'PATH')
   })
 
   it('resolves an empty string if no path property is set', async () => {
-    assert.equal((await defaultClassifier({})), '')
+    assert.strictEqual((await defaultClassifier({})), '')
   })
 })
 
 describe('defaultDecoder(encodedData: any) => Promise<any>', () => {
 
   it('takes a JSON string, parses it, and resolves the parsed object', async () => {
-    assert.deepEqual((await defaultDecoder('{"path":"PATH"}')), { path: 'PATH' })
+    assert.deepStrictEqual((await defaultDecoder('{"path":"PATH"}')), { path: 'PATH' })
   })
 
   it('if a non JSON string is provided it resolves an empty object', async () => {
-    assert.deepEqual((await defaultDecoder(Buffer.allocUnsafe(0))), {})
+    assert.deepStrictEqual((await defaultDecoder(Buffer.allocUnsafe(0))), {})
   })
 })
 
 describe('defaultEncoder(data: any) => Promise<any>', () => {
 
   it('takes an object, encodes it as JSON, and resolves it', async () => {
-    assert.equal((await defaultEncoder({ key: 'val' })), '{"key":"val"}')
+    assert.strictEqual((await defaultEncoder({ key: 'val' })), '{"key":"val"}')
   })
 })
 
@@ -200,16 +200,16 @@ describe('defaultResponder(status: string, data?: any, err?: Error) => Promise<a
 
   it('takes a status, path, and object, adds the status to the object and resolves it', async () => {
     const res = await defaultFormatter('ok', 'ns', { key: 'val' })
-    assert.deepEqual(res, { status: 'ok', channel: 'ns', key: 'val' })
+    assert.deepStrictEqual(res, { status: 'ok', channel: 'ns', key: 'val' })
   })
 
   it('will add data as a property if it is not an object', async () => {
     const res = await defaultFormatter('ok', 'ns', 'DATA')
-    assert.deepEqual(res, { status: 'ok', channel: 'ns', data: 'DATA' })
+    assert.deepStrictEqual(res, { status: 'ok', channel: 'ns', data: 'DATA' })
   })
 
   it('can resolve an object with only the status and path given', async () => {
     const res = await defaultFormatter('ok', 'ns')
-    assert.deepEqual(res, { status: 'ok', channel: 'ns' })
+    assert.deepStrictEqual(res, { status: 'ok', channel: 'ns' })
   })
 })

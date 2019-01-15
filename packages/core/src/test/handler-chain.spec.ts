@@ -1,4 +1,4 @@
-import { strict as assert } from 'assert'
+import assert from 'assert'
 import sinon from 'sinon'
 import HandlerChain from '../handler-chain'
 import theta from './fixture/theta'
@@ -22,7 +22,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
 
       await handlerChain.route(ctx)
 
-      assert.equal(ctx.theta, t)
+      assert.strictEqual(ctx.theta, t)
     })
 
     it('attaches _nextHandler to the context which calls nextLink.route when executed', async () => {
@@ -54,7 +54,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
 
       await handlerChain.route(ctx)
 
-      assert.equal(ctx.error, err)
+      assert.strictEqual(ctx.error, err)
     })
 
     it('calls the next link\'s handler after an error if continueOnError is set to true', async () => {
@@ -67,7 +67,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
 
       await handlerChain.route(ctx)
 
-      assert.equal(ctx.error, err)
+      assert.strictEqual(ctx.error, err)
       sinon.assert.calledOnce(route)
       sinon.assert.calledWith(route, ctx)
     })
@@ -131,7 +131,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
     it('does not continue on errors by default', async () => {
       const handlerChain = new HandlerChain(theta(), pattern(), 'HANDLER' as any)
 
-      assert.equal(handlerChain.continueOnError, false)
+      assert.strictEqual(handlerChain.continueOnError, false)
     })
   })
 
@@ -145,7 +145,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
       const secondaryHandlerChain = new HandlerChain(theta(), pattern(), secondaryHandler, false)
       handlerChain.push(secondaryHandlerChain)
 
-      assert.equal(handlerChain.nextLink, secondaryHandlerChain)
+      assert.strictEqual(handlerChain.nextLink, secondaryHandlerChain)
     })
 
     it('anyways adds links to the end of the chain', () => {
@@ -160,8 +160,8 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
       const tertiaryHandlerChain = new HandlerChain(theta(), pattern(), tertiaryHandler, false)
       handlerChain.push(tertiaryHandlerChain)
 
-      assert.equal(handlerChain.nextLink, secondaryHandlerChain)
-      assert.equal(secondaryHandlerChain.nextLink, tertiaryHandlerChain)
+      assert.strictEqual(handlerChain.nextLink, secondaryHandlerChain)
+      assert.strictEqual(secondaryHandlerChain.nextLink, tertiaryHandlerChain)
     })
   })
 })

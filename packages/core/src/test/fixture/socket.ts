@@ -1,12 +1,12 @@
-import fixture, { Fixture } from './fixture'
+import fixture from './fixture'
 import theta from './theta'
 
 export default fixture({
-  theta: theta(),
   uuid: 'UUID',
+  theta: theta(),
   status () {},
   async sendStatus () {},
   async send () {},
   handle () {},
-  channel (): Fixture { return this as Fixture }
+  _router: {}
 })
