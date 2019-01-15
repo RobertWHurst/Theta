@@ -7,8 +7,6 @@ import Message from './message'
 import SocketRouter from './socket-router'
 import Context from './context'
 
-type ChannelFn = (socket: Socket) => void
-
 declare interface Socket {
   on (event: 'error', handler: (err: Error) => void): this
   on (event: 'message', handler: (context: Context) => void): this
@@ -40,18 +38,6 @@ class Socket extends EventEmitter {
     this._currentStatus = 'ok'
 
     this._rawSocket.on('message', d => this._handleRawMessage(d))
-  }
-
-  channel (fn?: ChannelFn): this
-  channel (channel: string, fn?: ChannelFn): this
-  channel (channel?: string | ChannelFn, fn?: ChannelFn): this {
-    if (typeof channel !== 'string') {
-      fn = channel
-      channel = ''
-    }
-    this._router._channel = channel || this._generateChannel()
-    if (fn) { fn(this) }
-    return this
   }
 
   status (status: string): this {

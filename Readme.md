@@ -77,8 +77,7 @@ const app = theta()
 app.handle('/greet', async (ctx) => {
 
   ctx.send({ message: 'What is your name?' })
-
-  ctx = await ctx.handle('/name')
+  ctx = await ctx.handle()
 
   ctx.send({ message: `Hello ${ctx.data.name}` })
 })

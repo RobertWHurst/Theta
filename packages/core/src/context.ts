@@ -4,7 +4,6 @@ import Theta, { Handler } from './theta'
 import Pattern, { Params } from './pattern'
 
 type NextHandler = () => Promise<void>
-type ChannelFn = (context: Context) => void
 
 export default class Context {
   message: Message
@@ -26,41 +25,27 @@ export default class Context {
   get params (): Params { return this.message.params }
   get data (): any { return this.message.data }
 
-  channel (channel: string): this
-  channel (fn?: ChannelFn): this
-  channel (channel?: string | ChannelFn, fn?: ChannelFn): this {
-    if (typeof channel !== 'string') {
-      fn = channel
-      channel = ''
-    }
-    this.socket.channel(channel, () => { fn && fn(this) })
-    return this
-  }
-
   status (status: string): this {
     this.socket.status(status)
     return this
   }
 
   async sendStatus (status: string): Promise<void> {
-    return this.socket
-      .channel(this.message.channel)
-      .sendStatus(status)
+    this._setChannel()
+    return this.socket.sendStatus(status)
   }
 
   async send (data?: any): Promise<void> {
-    await this.socket
-      .channel(this.message.channel)
-      .send(data)
+    this._setChannel()
+    await this.socket.send(data)
   }
 
   handle (pattern: string, handler: Handler): void
   handle (handler: Handler): void
   async handle (pattern: string): Promise<Context>
   handle (pattern?: string | Handler, handler?: Handler): Promise<Context> | void {
-    return this.socket
-      .channel(this.message.channel)
-      .handle(pattern as any, handler as any)
+    this._setChannel()
+    return this.socket.handle(pattern as any, handler as any)
   }
 
   async next () {
@@ -77,5 +62,9 @@ export default class Context {
     if (!this.message._tryToApplyPattern(pattern)) { return false }
     this._handled = true
     return true
+  }
+
+  _setChannel () {
+    this.socket._router._channel = this.message.channel
   }
 }

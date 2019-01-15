@@ -9,7 +9,9 @@ export const defaultEncoder: Encoder = async (path, data) => JSON.stringify(
 )
 export const defaultDecoder: Decoder = async (encodedData) => JSON.parse(encodedData)
 
-export const channelChars = []
+export const channelChars: string[] = []
+for (let i = 0; i <= 9; i += 1) { channelChars.push(String.fromCharCode(i + 48)) }
+for (let i = 0; i <= 26; i += 1) { channelChars.push(String.fromCharCode(i + 97)) }
 
 export default class ThetaClient {
   encoder: Encoder
