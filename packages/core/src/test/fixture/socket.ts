@@ -1,4 +1,4 @@
-import fixture from './fixture'
+import fixture, { Fixture } from './fixture'
 import theta from './theta'
 
 export default fixture({
@@ -7,5 +7,6 @@ export default fixture({
   status () {},
   async sendStatus () {},
   async send () {},
-  handle () {}
+  handle () {},
+  channel (): Fixture { return this as Fixture }
 })

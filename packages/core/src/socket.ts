@@ -24,7 +24,6 @@ class Socket extends EventEmitter {
   _server: Server
   _rawSocket: WebSocket
   _currentStatus: string
-  _currentNamespace: string
 
   constructor (theta: Theta, server: Server, rawSocket: WebSocket) {
     super()
@@ -37,16 +36,13 @@ class Socket extends EventEmitter {
     this._server = server
     this._rawSocket = rawSocket
     this._currentStatus = 'ok'
-    this._currentNamespace = ''
 
     this._rawSocket.on('message', d => this._handleRawMessage(d))
   }
 
-  handle (pattern: string, handler: Handler): void
-  handle (handler: Handler): void
-  async handle (pattern: string): Promise<Context>
-  handle (pattern?: string | Handler, handler?: Handler): Promise<Context> | void {
-    return this._router.handle(pattern as any, handler as any)
+  channel (channel: string): this {
+    this._router._channel = channel
+    return this
   }
 
   status (status: string): this {
@@ -61,14 +57,21 @@ class Socket extends EventEmitter {
   async send (data?: any): Promise<void> {
     const status = this._currentStatus
     this._currentStatus = 'ok'
-    const path = this._currentNamespace
-    this._currentNamespace = ''
-    data = await this.theta.formatter(status, path, data)
+    const channel = this._router._channel || this._generateChannel()
+    this._router._channel = ''
+    data = await this.theta.formatter(status, channel, data)
     const encodedData = await this.theta.encoder(data)
 
     // NOTE: We wait a tick so that the handler has time to register additional
     // in-route handlers with the socket router before the client responds.
     process.nextTick(() => { this._rawSocket.send(encodedData) })
+  }
+
+  handle (pattern: string, handler: Handler): void
+  handle (handler: Handler): void
+  async handle (pattern: string): Promise<Context>
+  handle (pattern?: string | Handler, handler?: Handler): Promise<Context> | void {
+    return this._router.handle(pattern as any, handler as any)
   }
 
   to (uuid: string) {
@@ -92,6 +95,10 @@ class Socket extends EventEmitter {
     await this._router.route(context)
     if (context._handled) { return }
     this.emit('message', context)
+  }
+
+  _generateChannel () {
+    return ''
   }
 }
 

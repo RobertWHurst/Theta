@@ -4,6 +4,7 @@ import Context from './context'
 
 export default class SocketRouter extends Router {
   _errorHandlerChain: undefined
+  _channel?: string
 
   handle (pattern: string, handler: Handler): void
   handle (handler: Handler): void
@@ -13,6 +14,8 @@ export default class SocketRouter extends Router {
       handler = pattern as Handler
       pattern = undefined
     }
+
+    if (this._channel) { pattern = `${this._channel}@${pattern}` }
 
     if (!handler) {
       return new Promise((resolve) => {

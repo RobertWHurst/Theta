@@ -9,7 +9,7 @@ export default class Message {
     return message
   }
 
-  namespace: string
+  channel: string
   path: string
   data?: any
   params: Params
@@ -18,7 +18,7 @@ export default class Message {
 
   constructor (theta: Theta, path: string = '', data?: any) {
     Object.setPrototypeOf(this, theta.message)
-    this.namespace = ''
+    this.channel = ''
     this.path = ''
     this.data = data
     this.params = {}
@@ -41,7 +41,7 @@ export default class Message {
   _tryToApplyPattern (pattern: Pattern): boolean {
     const match = pattern.tryMatch(this._path)
     if (!match) { return false }
-    this.namespace = match.namespace
+    this.channel = match.channel
     this.path = match.path
     this.params = match.params
     return true

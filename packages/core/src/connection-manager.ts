@@ -15,7 +15,7 @@ export default class ConnectionManager {
 
   add (socket: Socket) {
     this._localSockets.push(socket)
-    socket.on('close', () => this.removeByUuid(socket.uuid))
+    socket.on('close', () => { this.removeByUuid(socket.uuid) })
   }
 
   findByUuid (uuid: string): Socket | undefined {

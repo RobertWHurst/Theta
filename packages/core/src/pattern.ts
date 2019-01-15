@@ -1,5 +1,5 @@
 export interface Match {
-  namespace: string,
+  channel: string,
   path: string,
   params: Params
 }
@@ -7,6 +7,8 @@ export interface Match {
 export interface Params {
   [key: string]: string
 }
+
+const rxEscChars = ['(', ')', '[', ']', '{', '}', '^', '$', '+', '*']
 
 export class Segment {
   raw: string
@@ -24,7 +26,6 @@ export class Segment {
     let pnEsc = false
     let pnEr = 0
 
-    const rxEscChars = ['(', ')', '^', '$']
     for (let i = 0; i < s.length; i += 1) {
       if (i === 0 && s[i] === ':') {
         t = 1
@@ -96,8 +97,6 @@ export class Segment {
 
 export default class Pattern {
   raw: string
-  namespace: string
-  path: string
   capture: boolean
   pattern: RegExp
   segments: Segment[]
@@ -129,8 +128,9 @@ export default class Pattern {
         c += ')'
         r += ')'
         pnEsc = false
-      } else if (!esc && !pnEsc && !n && s[i] === '@') {
-        n = c
+      } else if (!esc && !pnEsc && sa.length === 0 && s[i] === '@') {
+        c = c.split('').map(c => rxEscChars.includes(c) ? `\\${c}` : c).join('')
+        n = n ? `${n}|${c}` : c
         c = ''
         r += '@'
       } else if (!esc && !pnEsc && s[i] === '/') {
@@ -151,26 +151,22 @@ export default class Pattern {
 
     this.raw = r
     this.capture = cap
-    this.namespace = n
     this.segments = sa.map(s => new Segment(s))
-    this.path = this.segments.map(s => s.subPatternStr).join('/')
 
-    let patternStr = '^'
-    n && (patternStr += `${n}@`)
-    patternStr += `(${this.path}${cap ? '/.+)' : ')$'}`
+    const patternStr = '^' +
+      (n ? `(${n})@` : `(?:([^@]+)@)?`) +
+      `(/?${this.segments.map(s => s.subPatternStr).join('/')}${cap ? '/.+)' : '/?)$'}`
 
     this.pattern = new RegExp(patternStr)
   }
 
   tryMatch (path: string): Match | void {
-    if (path[0] === '/') { path = path.slice(1) }
-
     const matches = path.match(this.pattern)
     if (!matches) { return }
 
     return {
-      namespace: this.namespace,
-      path: matches[1],
+      channel: matches[1],
+      path: matches[2],
       params: matches.groups || {}
     }
   }

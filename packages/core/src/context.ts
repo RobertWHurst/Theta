@@ -31,18 +31,24 @@ export default class Context {
   }
 
   async sendStatus (status: string): Promise<void> {
-    return this.socket.sendStatus(status)
+    return this.socket
+      .channel(this.message.channel)
+      .sendStatus(status)
   }
 
   async send (data?: any): Promise<void> {
-    await this.socket.send(data)
+    await this.socket
+      .channel(this.message.channel)
+      .send(data)
   }
 
   handle (pattern: string, handler: Handler): void
   handle (handler: Handler): void
   async handle (pattern: string): Promise<Context>
   handle (pattern?: string | Handler, handler?: Handler): Promise<Context> | void {
-    return this.socket.handle(pattern as any, handler as any)
+    return this.socket
+      .channel(this.message.channel)
+      .handle(pattern as any, handler as any)
   }
 
   async next () {
