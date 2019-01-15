@@ -8,7 +8,7 @@ import Context from './context'
 
 export type Plugin = (theta: Theta, opts?: object) => void
 export type Classifier = (data: any) => Promise<string>
-export type Formatter = (status: string, path: string, data?: any) => Promise<any>
+export type Formatter = (status: string, channel: string, data?: any) => Promise<any>
 export type Encoder = (data: any) => Promise<any>
 export type Decoder = (encodedData: any) => Promise<any>
 export type Handler = (context: Context) => (Promise<void> | void)
@@ -25,9 +25,9 @@ export interface Config {
 }
 
 export const defaultClassifier: Classifier = async (data) => data && data.path || ''
-export const defaultFormatter: Formatter = async (status, path, data) =>
-  typeof data === 'object' ? { ...data, status, path } :
-  data ? { data, status, path } : { status, path }
+export const defaultFormatter: Formatter = async (status, channel, data) =>
+  typeof data === 'object' ? { ...data, status, channel } :
+  data ? { data, status, channel } : { status, channel }
 export const defaultEncoder: Encoder = async (data) => JSON.stringify(data)
 export const defaultDecoder: Decoder = async (encodedData) =>
   typeof encodedData === 'string' ? JSON.parse(encodedData) : {}

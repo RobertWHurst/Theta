@@ -200,16 +200,16 @@ describe('defaultResponder(status: string, data?: any, err?: Error) => Promise<a
 
   it('takes a status, path, and object, adds the status to the object and resolves it', async () => {
     const res = await defaultFormatter('ok', 'ns', { key: 'val' })
-    assert.deepEqual(res, { status: 'ok', path: 'ns', key: 'val' })
+    assert.deepEqual(res, { status: 'ok', channel: 'ns', key: 'val' })
   })
 
   it('will add data as a property if it is not an object', async () => {
     const res = await defaultFormatter('ok', 'ns', 'DATA')
-    assert.deepEqual(res, { status: 'ok', path: 'ns', data: 'DATA' })
+    assert.deepEqual(res, { status: 'ok', channel: 'ns', data: 'DATA' })
   })
 
   it('can resolve an object with only the status and path given', async () => {
     const res = await defaultFormatter('ok', 'ns')
-    assert.deepEqual(res, { status: 'ok', path: 'ns' })
+    assert.deepEqual(res, { status: 'ok', channel: 'ns' })
   })
 })

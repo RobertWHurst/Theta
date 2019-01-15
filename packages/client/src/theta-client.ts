@@ -9,9 +9,12 @@ export const defaultEncoder: Encoder = async (path, data) => JSON.stringify(
 )
 export const defaultDecoder: Decoder = async (encodedData) => JSON.parse(encodedData)
 
+export const channelChars = []
+
 export default class ThetaClient {
   encoder: Encoder
   decoder: Decoder
+  _channel: string
   _pendingSendData: any[]
   _webSocket?: WebSocket
   _asyncHandler?: Handler
@@ -20,6 +23,7 @@ export default class ThetaClient {
   constructor () {
     this.encoder = defaultEncoder
     this.decoder = defaultDecoder
+    this._channel = ''
     this._pendingSendData = []
   }
 
@@ -73,5 +77,15 @@ export default class ThetaClient {
       }
       this._pendingSendData.push(encodedData)
     })
+  }
+
+  channel (channel: string = this._generateChannel(), fn?: (thetaClient: this) => void): this {
+    this._channel = channel
+    if (fn) { fn(this) }
+    return this
+  }
+
+  _generateChannel (): string {
+    return ''
   }
 }

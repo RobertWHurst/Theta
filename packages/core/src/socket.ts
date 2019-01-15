@@ -7,6 +7,8 @@ import Message from './message'
 import SocketRouter from './socket-router'
 import Context from './context'
 
+type ChannelFn = (socket: Socket) => void
+
 declare interface Socket {
   on (event: 'error', handler: (err: Error) => void): this
   on (event: 'message', handler: (context: Context) => void): this
@@ -40,8 +42,15 @@ class Socket extends EventEmitter {
     this._rawSocket.on('message', d => this._handleRawMessage(d))
   }
 
-  channel (channel: string): this {
-    this._router._channel = channel
+  channel (fn?: ChannelFn): this
+  channel (channel: string, fn?: ChannelFn): this
+  channel (channel?: string | ChannelFn, fn?: ChannelFn): this {
+    if (typeof channel !== 'string') {
+      fn = channel
+      channel = ''
+    }
+    this._router._channel = channel || this._generateChannel()
+    if (fn) { fn(this) }
     return this
   }
 
@@ -57,7 +66,7 @@ class Socket extends EventEmitter {
   async send (data?: any): Promise<void> {
     const status = this._currentStatus
     this._currentStatus = 'ok'
-    const channel = this._router._channel || this._generateChannel()
+    const channel = this._router._channel || ''
     this._router._channel = ''
     data = await this.theta.formatter(status, channel, data)
     const encodedData = await this.theta.encoder(data)
@@ -97,7 +106,7 @@ class Socket extends EventEmitter {
     this.emit('message', context)
   }
 
-  _generateChannel () {
+  _generateChannel (): string {
     return ''
   }
 }

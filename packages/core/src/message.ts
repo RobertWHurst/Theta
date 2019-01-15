@@ -16,19 +16,19 @@ export default class Message {
   _theta: Theta
   _path: string
 
-  constructor (theta: Theta, path: string = '', data?: any) {
+  constructor (theta: Theta) {
     Object.setPrototypeOf(this, theta.message)
+    this._theta = theta
     this.channel = ''
     this.path = ''
-    this.data = data
+    this.data = {}
     this.params = {}
-    this._theta = theta
-    this._path = path
+    this._path = ''
   }
 
   async fromEncodedData (encodedData: WebSocket.Data) {
     this.data = await this._theta.decoder(encodedData)
-    this.path = await this._theta.classifier(this.data)
+    this._path = await this._theta.classifier(this.data)
   }
 
   toEncodedData () {

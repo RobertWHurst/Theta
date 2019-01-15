@@ -4,6 +4,7 @@ import Theta, { Handler } from './theta'
 import Pattern, { Params } from './pattern'
 
 type NextHandler = () => Promise<void>
+type ChannelFn = (context: Context) => void
 
 export default class Context {
   message: Message
@@ -24,6 +25,17 @@ export default class Context {
   get path (): string { return this.message.path }
   get params (): Params { return this.message.params }
   get data (): any { return this.message.data }
+
+  channel (channel: string): this
+  channel (fn?: ChannelFn): this
+  channel (channel?: string | ChannelFn, fn?: ChannelFn): this {
+    if (typeof channel !== 'string') {
+      fn = channel
+      channel = ''
+    }
+    this.socket.channel(channel, () => { fn && fn(this) })
+    return this
+  }
 
   status (status: string): this {
     this.socket.status(status)
