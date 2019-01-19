@@ -110,7 +110,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
 
     it('does nothing if no next handler is set', () => {
       const ctx = new Context(message(), socket())
-      assert.doesNotThrow(() => { ctx.next() })
+      assert.doesNotThrow(() => { void ctx.next() })
     })
   })
 
@@ -137,7 +137,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
       const _tryToApplyPattern = sinon.stub().returns(false)
       const ctx = new Context(message({ _tryToApplyPattern }), socket())
       assert.strictEqual(ctx._tryToApplyPattern('PATTERN' as any), false)
-      assert.notEqual(ctx._handled, true)
+      assert.notStrictEqual(ctx._handled, true)
     })
 
     it('returns true if _tryToApplyPattern on the message returns true and marks itself as handled', () => {

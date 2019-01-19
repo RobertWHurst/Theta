@@ -1,9 +1,8 @@
-import WebSocket from 'ws'
 import Theta from './theta'
 import Pattern, { Params } from './pattern'
 
 export default class Message {
-  static async fromEncodedData (theta: Theta, encodedData: WebSocket.Data): Promise<Message> {
+  static async fromEncodedData (theta: Theta, encodedData: any): Promise<Message> {
     const message = new this(theta)
     await message.fromEncodedData(encodedData)
     return message
@@ -26,16 +25,9 @@ export default class Message {
     this._path = ''
   }
 
-  async fromEncodedData (encodedData: WebSocket.Data) {
+  async fromEncodedData (encodedData: any) {
     this.data = await this._theta.decoder(encodedData)
     this._path = await this._theta.classifier(this.data)
-  }
-
-  toEncodedData () {
-    if (!this._theta.encoder) {
-      throw new Error('Cannot encode message. Theta is missing a encoder')
-    }
-    return this._theta.encoder(this.data)
   }
 
   _tryToApplyPattern (pattern: Pattern): boolean {
