@@ -5,12 +5,14 @@ import HandlerChain from './handler-chain'
 import Pattern from './pattern'
 
 export default class Router {
-  theta: Theta
+  theta?: Theta
   _handlerChain?: HandlerChain
   _errorHandlerChain?: HandlerChain
+  _pendingHandlers: any[]
 
-  constructor (theta: Theta) {
+  constructor (theta?: Theta) {
     this.theta = theta
+    this._pendingHandlers = []
   }
 
   handle (pattern: string, handler?: Handler | Router): void
@@ -21,37 +23,42 @@ export default class Router {
       pattern = undefined
     }
     if (!handler) {
-      throw new Error('handler can only be excluded for handler sub-routes')
+      throw new Error('handler can only be excluded for handler socket routes')
+    }
+
+    if (!this.theta) {
+      this._pendingHandlers.push({ pattern, handler })
+      return
     }
 
     if (handler instanceof Router) {
       const router = handler
+      router._applyPendingHandlersWithTheta(this.theta)
       handler = c => router.route(c)
     }
 
-    const nextLink = new HandlerChain(this.theta, new Pattern(pattern as string), handler)
+    const nextLink = new HandlerChain(this.theta, new Pattern(pattern || '+'), handler)
 
     this._handlerChain
       ? this._handlerChain.push(nextLink)
       : this._handlerChain = nextLink
   }
 
-  handleError (handler: Handler | Router): void
-  handleError (pattern: string, handler: Handler | Router): void
-  handleError (pattern?: string | Handler | Router, handler?: Handler | Router): void {
+  handleError (handler: Handler): void
+  handleError (pattern: string, handler: Handler): void
+  handleError (pattern?: string | Handler, handler?: Handler): void {
     if (typeof pattern !== 'string') {
-      handler = pattern as Handler | Router
+      handler = pattern as Handler
       pattern = undefined
     }
 
-    if (handler instanceof Router) {
-      const router = handler
-      handler = c => router.route(c)
+    if (!this.theta) {
+      throw new Error('Error handlers can only be bound on the root router')
     }
 
     const nextLink = new HandlerChain(
       this.theta,
-      new Pattern(pattern as string),
+      new Pattern(pattern || '+'),
       handler as Handler,
       true
     )
@@ -68,6 +75,13 @@ export default class Router {
     if (context.error) {
       if (!this._errorHandlerChain) { return }
       await this._errorHandlerChain.route(context)
+    }
+  }
+
+  _applyPendingHandlersWithTheta (theta: Theta) {
+    this.theta = theta
+    for (const args of this._pendingHandlers) {
+      this.handle(args.pattern, args.handler)
     }
   }
 }

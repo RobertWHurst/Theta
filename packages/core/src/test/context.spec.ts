@@ -7,7 +7,7 @@ import message from './fixture/message'
 describe('new Context(message: Message, socket: Socket)', () => {
 
   it('can be constructed from a message and socket', () => {
-    assert.doesNotThrow(() => { new Context(message(), socket()) })
+    new Context(message(), socket())
   })
 
   it('exposes the socket uuid', () => {
@@ -110,7 +110,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
 
     it('does nothing if no next handler is set', () => {
       const ctx = new Context(message(), socket())
-      assert.doesNotThrow(() => { void ctx.next() })
+      void ctx.next()
     })
   })
 

@@ -153,9 +153,10 @@ export default class Pattern {
     this.capture = cap
     this.segments = sa.map(s => new Segment(s))
 
-    const patternStr = '^' +
-      (n ? `(${n})@` : `(?:([^@]+)@)?`) +
-      `(/?${this.segments.map(s => s.subPatternStr).join('/')}${cap ? '/.+)' : '/?)$'}`
+    const segmentPatterns = this.segments.map(s => s.subPatternStr)
+    segmentPatterns.push(cap ? '.+)' : '?)$')
+
+    const patternStr = `^${n ? `(${n})@` : `(?:([^@]+)@)?`}(/?${segmentPatterns.join('/')}`
 
     this.pattern = new RegExp(patternStr)
   }

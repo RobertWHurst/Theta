@@ -9,7 +9,7 @@ describe('new Message(theta: Theta)', () => {
     assert.doesNotThrow(() => { new Message(theta()) })
   })
 
-  describe('.fromEncodedData(): ', () => {
+  describe('.fromEncodedData(): Message', () => {
 
     it('returns an instance of Message constructed from a theta instance and encoded data', async () => {
       const encodedData = 'ENCODED_DATA'

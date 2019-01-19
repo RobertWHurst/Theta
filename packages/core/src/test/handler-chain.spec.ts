@@ -9,7 +9,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
 
   it('can be constructed', () => {
     const handler = sinon.stub() as any
-    assert.doesNotThrow(() => { new HandlerChain(theta(), pattern(), handler, false) })
+    new HandlerChain(theta(), pattern(), handler, false)
   })
 
   describe('#route(context: Context): Promise<void>', () => {
