@@ -19,5 +19,6 @@
     "@theta/core": "^0.0.0",
     "karma": "^3.1.4",
     "sinon": "^7.2.2"
-  }
+  },
+  "gitHead": "430bbb4405ea5e37ad6c7de6170111d11c6bb040"
 }
