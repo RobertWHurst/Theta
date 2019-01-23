@@ -1,5 +1,5 @@
 {
-  "name": "@theta/core",
+  "name": "@thetaapp/core",
   "version": "0.0.0",
   "engines": {
     "node": ">=10.15.0"

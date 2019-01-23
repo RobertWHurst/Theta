@@ -1,5 +1,5 @@
 {
-  "name": "@theta/client",
+  "name": "@thetaapp/client",
   "version": "0.0.0",
   "description": "A client for Theta, an express like framework for web sockets",
   "main": "./lib/index.js",
