@@ -1,6 +1,6 @@
 {
   "name": "@thetaapp/core",
-  "version": "1.0.0-alpha.0",
+  "version": "0.0.0",
   "engines": {
     "node": ">=10.15.0"
   },
@@ -29,5 +29,6 @@
     "@types/ws": "^6.0.1",
     "lerna": "^3.7.1",
     "rimraf": "^2.6.2"
-  }
+  },
+  "gitHead": "ac3766c5805017aa7a0619c0f0833daa797c8132"
 }
