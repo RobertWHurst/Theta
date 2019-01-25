@@ -16,7 +16,6 @@
     "clean": "rimraf lib"
   },
   "devDependencies": {
-    "@theta/core": "^0.0.0",
     "karma": "^3.1.4",
     "sinon": "^7.2.2"
   },

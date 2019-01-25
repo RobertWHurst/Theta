@@ -12,13 +12,26 @@ jobs:
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
 
-      - run: yarn install
+      - run:
+          name: Install Dependencies
+          command: yarn install
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
         
-      - run: yarn test
+      - run:
+          name: Run Tests
+          command: yarn test
+
+      - run:
+          name: Collect Coverage
+          command: |
+            yarn coverage-report
+            mv packages/client/coverage artifacts/client-coverage
+            mv packages/core/coverage artifacts/core-coverage
+
+      - store_artifacts:
+          path: artifacts
