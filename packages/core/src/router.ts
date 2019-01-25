@@ -33,7 +33,7 @@ export default class Router {
 
     if (handler instanceof Router) {
       const router = handler
-      router._applyPendingHandlersWithTheta(this.theta)
+      router.applyPendingHandlersWithTheta(this.theta)
       handler = c => router.route(c)
     }
 
@@ -78,7 +78,7 @@ export default class Router {
     }
   }
 
-  _applyPendingHandlersWithTheta (theta: Theta) {
+  applyPendingHandlersWithTheta (theta: Theta) {
     this.theta = theta
     for (const args of this._pendingHandlers) {
       this.handle(args.pattern, args.handler)

@@ -20,7 +20,7 @@ declare interface Socket {
 class Socket extends EventEmitter {
   theta: Theta
   uuid: string
-  _router: SocketRouter
+  $$router: SocketRouter
   _server: Server
   _rawSocket: WebSocket
   _currentStatus: string
@@ -32,7 +32,7 @@ class Socket extends EventEmitter {
 
     this.theta = theta
     this.uuid = uuid()
-    this._router = new SocketRouter(this.theta)
+    this.$$router = new SocketRouter(this.theta)
     this._server = server
     this._rawSocket = rawSocket
     this._currentStatus = 'ok'
@@ -52,8 +52,8 @@ class Socket extends EventEmitter {
   async send (data?: any): Promise<void> {
     const status = this._currentStatus
     this._currentStatus = 'ok'
-    const channel = this._router._channel || ''
-    this._router._channel = ''
+    const channel = this.$$router.channel || ''
+    this.$$router.channel = ''
     data = await this.theta.formatter(status, channel, data)
     const encodedData = await this.theta.encoder(data)
 
@@ -66,7 +66,7 @@ class Socket extends EventEmitter {
   handle (handler: Handler): void
   async handle (pattern: string): Promise<Context>
   handle (pattern?: string | Handler, handler?: Handler): Promise<Context> | void {
-    return this._router.handle(pattern as any, handler as any)
+    return this.$$router.handle(pattern as any, handler as any)
   }
 
   to (uuid: string) {
@@ -74,7 +74,7 @@ class Socket extends EventEmitter {
   }
 
   clearRouterHandlers () {
-    this._router.clearRouterHandlers()
+    this.$$router.clearRouterHandlers()
   }
 
   async _handleRawMessage (data: WebSocket.Data) {
@@ -87,8 +87,8 @@ class Socket extends EventEmitter {
     }
 
     const context = new Context(message, this)
-    await this._router.route(context)
-    if (context._handled) { return }
+    await this.$$router.route(context)
+    if (context.$$handled) { return }
     this.emit('message', context)
   }
 

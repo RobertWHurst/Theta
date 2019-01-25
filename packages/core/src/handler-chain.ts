@@ -24,12 +24,12 @@ export default class HandlerChain {
 
   async route (context: Context): Promise<void> {
     context.theta = this.theta
-    context._nextHandler = async () => {
+    context.$$nextHandler = async () => {
       if (!this.nextLink) { return }
       await this.nextLink.route(context)
     }
 
-    if (!context._tryToApplyPattern(this.pattern)) {
+    if (!context.$$tryToApplyPattern(this.pattern)) {
       await context.next()
       return
     }
@@ -51,7 +51,7 @@ export default class HandlerChain {
 
   async _callHandler (context: Context) {
     const timeout =
-      typeof context._timeout === 'number' ? context._timeout :
+      typeof context.$$timeout === 'number' ? context.$$timeout :
       typeof this.theta.config.handlerTimeout === 'number' ? this.theta.config.handlerTimeout :
       0
 

@@ -10,9 +10,9 @@ export default class Context {
   socket: Socket
   theta?: Theta
   error?: Error
-  _handled?: Boolean
-  _timeout?: number
-  _nextHandler?: NextHandler
+  $$handled?: Boolean
+  $$timeout?: number
+  $$nextHandler?: NextHandler
 
   constructor (message: Message, socket: Socket) {
     Object.setPrototypeOf(this, socket.theta.context)
@@ -49,22 +49,22 @@ export default class Context {
   }
 
   async next () {
-    if (!this._nextHandler) { return }
-    await this._nextHandler()
+    if (!this.$$nextHandler) { return }
+    await this.$$nextHandler()
   }
 
   timeout (timeout: number) {
-    this._timeout = timeout
+    this.$$timeout = timeout
     return this
   }
 
-  _tryToApplyPattern (pattern: Pattern): boolean {
-    if (!this.message._tryToApplyPattern(pattern)) { return false }
-    this._handled = true
+  $$tryToApplyPattern (pattern: Pattern): boolean {
+    if (!this.message.$$tryToApplyPattern(pattern)) { return false }
+    this.$$handled = true
     return true
   }
 
   _setChannel () {
-    this.socket._router._channel = this.message.channel
+    this.socket.$$router.channel = this.message.channel
   }
 }

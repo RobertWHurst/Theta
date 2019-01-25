@@ -9,8 +9,8 @@ export default fixture({
   async sendStatus () {},
   status () {},
   async next () {
-    if (!(this as any)._nextHandler) { return }
-    await (this as any)._nextHandler()
+    if (!(this as any).$$nextHandler) { return }
+    await (this as any).$$nextHandler()
   },
-  _tryToApplyPattern () {}
+  $$tryToApplyPattern () {}
 })

@@ -32,12 +32,12 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
 
       await handlerChain.route(ctx)
 
-      assert.ok(ctx._nextHandler)
+      assert.ok(ctx.$$nextHandler)
     })
 
     it('calls the current link\'s handler if it\'s pattern matches', async () => {
       const handler = sinon.stub() as any
-      const ctx = context({ _tryToApplyPattern: () => ({}) })
+      const ctx = context({ $$tryToApplyPattern: () => ({}) })
       const handlerChain = new HandlerChain(theta(), pattern(), handler, false)
 
       await handlerChain.route(ctx)
@@ -49,7 +49,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
     it('attaches an error to the context if thrown from the handler', async () => {
       const err = new Error('Test error')
       const handler = sinon.stub().throws(err) as any
-      const ctx = context({ _tryToApplyPattern: () => ({}) })
+      const ctx = context({ $$tryToApplyPattern: () => ({}) })
       const handlerChain = new HandlerChain(theta(), pattern(), handler, false)
 
       await handlerChain.route(ctx)
@@ -60,7 +60,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
     it('calls the next link\'s handler after an error if continueOnError is set to true', async () => {
       const err = new Error('Test error')
       const handler = sinon.stub().throws(err) as any
-      const ctx = context({ _tryToApplyPattern: () => ({}) })
+      const ctx = context({ $$tryToApplyPattern: () => ({}) })
       const handlerChain = new HandlerChain(theta(), pattern(), handler, true)
       const route = sinon.stub()
       handlerChain.nextLink = { route } as any
@@ -74,7 +74,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
 
     it('attaches an error to the context if the handler times out', async () => {
       const handler = sinon.stub().returns(new Promise(() => {})) as any
-      const ctx = context({ _timeout: 1000 * 1000, _tryToApplyPattern: () => ({}) })
+      const ctx = context({ $$timeout: 1000 * 1000, $$tryToApplyPattern: () => ({}) })
       const handlerChain = new HandlerChain(theta(), pattern(), handler, false)
 
       const timers = sinon.useFakeTimers()
@@ -89,7 +89,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
     it('uses the timeout set on theta if not set on the context', async () => {
       const t = theta({ config: { handlerTimeout: 1000 * 1000 } })
       const handler = sinon.stub().returns(new Promise(() => {})) as any
-      const ctx = context({ _tryToApplyPattern: () => ({}) })
+      const ctx = context({ $$tryToApplyPattern: () => ({}) })
       const handlerChain = new HandlerChain(t, pattern(), handler, false)
 
       const timers = sinon.useFakeTimers()
@@ -103,7 +103,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
 
     it('never times out if timeout is set to zero', async () => {
       const handler = sinon.stub().returns(new Promise(() => {})) as any
-      const ctx = context({ _tryToApplyPattern: () => ({}) })
+      const ctx = context({ $$tryToApplyPattern: () => ({}) })
       const handlerChain = new HandlerChain(theta(), pattern(), handler, false)
 
       const timers = sinon.useFakeTimers()

@@ -34,7 +34,7 @@ describe('new Message(theta: Theta)', () => {
       const message = new Message(theta())
       message._path = 'RAW_PATH'
 
-      assert.ok(message._tryToApplyPattern(pattern({
+      assert.ok(message.$$tryToApplyPattern(pattern({
         tryMatch: (path: string) => {
           assert.strictEqual(path, 'RAW_PATH')
           return {
@@ -54,7 +54,7 @@ describe('new Message(theta: Theta)', () => {
       const message = new Message(theta())
       message._path = 'RAW_PATH'
 
-      assert.ok(!message._tryToApplyPattern(pattern({
+      assert.ok(!message.$$tryToApplyPattern(pattern({
         tryMatch: (path: string) => {
           assert.strictEqual(path, 'RAW_PATH')
           return

@@ -30,7 +30,7 @@ export default class Message {
     this._path = await this._theta.classifier(this.data)
   }
 
-  _tryToApplyPattern (pattern: Pattern): boolean {
+  $$tryToApplyPattern (pattern: Pattern): boolean {
     const match = pattern.tryMatch(this._path)
     if (!match) { return false }
     this.channel = match.channel

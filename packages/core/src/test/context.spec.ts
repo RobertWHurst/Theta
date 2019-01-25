@@ -103,7 +103,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
     it('calls next handler', () => {
       const ctx = new Context(message(), socket())
       const nextHandler = sinon.stub().returns(Promise.resolve())
-      ctx._nextHandler = nextHandler
+      ctx.$$nextHandler = nextHandler
       assert.ok(ctx.next() instanceof Promise)
       sinon.assert.calledOnce(nextHandler)
     })
@@ -119,32 +119,32 @@ describe('new Context(message: Message, socket: Socket)', () => {
     it('sets timeout and returns this', () => {
       const ctx = new Context(message(), socket())
       assert.strictEqual(ctx.timeout(100), ctx)
-      assert.strictEqual(ctx._timeout, 100)
+      assert.strictEqual(ctx.$$timeout, 100)
     })
   })
 
-  describe('#_tryToApplyPattern(pattern: Pattern): this', () => {
+  describe('#$$tryToApplyPattern(pattern: Pattern): this', () => {
 
-    it('calls _tryToApplyPattern on the message', () => {
-      const _tryToApplyPattern = sinon.stub()
-      const ctx = new Context(message({ _tryToApplyPattern }), socket())
-      ctx._tryToApplyPattern('PATTERN' as any)
-      sinon.assert.calledOnce(_tryToApplyPattern)
-      sinon.assert.calledWith(_tryToApplyPattern, 'PATTERN')
+    it('calls $$tryToApplyPattern on the message', () => {
+      const $$tryToApplyPattern = sinon.stub()
+      const ctx = new Context(message({ $$tryToApplyPattern }), socket())
+      ctx.$$tryToApplyPattern('PATTERN' as any)
+      sinon.assert.calledOnce($$tryToApplyPattern)
+      sinon.assert.calledWith($$tryToApplyPattern, 'PATTERN')
     })
 
-    it('returns false if _tryToApplyPattern on the message returns false', () => {
-      const _tryToApplyPattern = sinon.stub().returns(false)
-      const ctx = new Context(message({ _tryToApplyPattern }), socket())
-      assert.strictEqual(ctx._tryToApplyPattern('PATTERN' as any), false)
-      assert.notStrictEqual(ctx._handled, true)
+    it('returns false if $$tryToApplyPattern on the message returns false', () => {
+      const $$tryToApplyPattern = sinon.stub().returns(false)
+      const ctx = new Context(message({ $$tryToApplyPattern }), socket())
+      assert.strictEqual(ctx.$$tryToApplyPattern('PATTERN' as any), false)
+      assert.notStrictEqual(ctx.$$handled, true)
     })
 
-    it('returns true if _tryToApplyPattern on the message returns true and marks itself as handled', () => {
-      const _tryToApplyPattern = sinon.stub().returns(true)
-      const ctx = new Context(message({ _tryToApplyPattern }), socket())
-      assert.strictEqual(ctx._tryToApplyPattern('PATTERN' as any), true)
-      assert.strictEqual(ctx._handled, true)
+    it('returns true if $$tryToApplyPattern on the message returns true and marks itself as handled', () => {
+      const $$tryToApplyPattern = sinon.stub().returns(true)
+      const ctx = new Context(message({ $$tryToApplyPattern }), socket())
+      assert.strictEqual(ctx.$$tryToApplyPattern('PATTERN' as any), true)
+      assert.strictEqual(ctx.$$handled, true)
     })
   })
 })

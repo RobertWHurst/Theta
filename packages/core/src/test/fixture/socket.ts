@@ -8,5 +8,5 @@ export default fixture({
   async sendStatus () {},
   async send () {},
   handle () {},
-  _router: {}
+  $$router: {}
 })
