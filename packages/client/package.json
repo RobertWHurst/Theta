@@ -12,7 +12,7 @@
   "scripts": {
     "build": "tsc",
     "test": "nyc mocha -r ts-node/register src/test/*.spec.ts",
-    "coverage-report": "nyc report --reporter=html && open ./coverage/index.html",
+    "coverage-report": "nyc report --reporter=html",
     "clean": "rimraf lib"
   },
   "devDependencies": {

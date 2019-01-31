@@ -7,7 +7,7 @@
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "test": "lerna run test -- --color",
-    "coverage-report": "lerna run coverage-report -- --color",
+    "coverage-report": "lerna run coverage-report",
     "clean": "rimraf packages/**/lib"
   },
   "devDependencies": {

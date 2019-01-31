@@ -30,8 +30,11 @@ jobs:
           name: Collect Coverage
           command: |
             yarn coverage-report
-            mv packages/client/coverage artifacts/client-coverage
-            mv packages/core/coverage artifacts/core-coverage
 
       - store_artifacts:
-          path: artifacts
+          path: packages/core/coverage
+          destination: core-coverage
+
+      - store_artifacts:
+          path: packages/client/coverage
+          destination: client-coverage
