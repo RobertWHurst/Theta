@@ -1,11 +1,11 @@
-import Theta from './theta'
-import Server from './server'
-import Socket from './socket'
+import { Theta } from './theta'
+import { Server } from './server'
+import { Socket } from './socket'
 
-export default class ConnectionManager {
-  theta: Theta
-  server: Server
-  _localSockets: Socket[]
+export class ConnectionManager {
+  public theta: Theta
+  public server: Server
+  private _localSockets: Socket[]
 
   constructor (theta: Theta, server: Server) {
     this.theta = theta

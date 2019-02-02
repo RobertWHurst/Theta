@@ -1,6 +1,6 @@
 import assert from 'assert'
 import sinon from 'sinon'
-import HandlerChain from '../handler-chain'
+import { HandlerChain } from '../handler-chain'
 import theta from './fixture/theta'
 import pattern from './fixture/pattern'
 import context from './fixture/context'
@@ -108,7 +108,7 @@ describe('new HandlerChain(theta: Theta, pattern: Pattern, handler: Handler, con
 
       const timers = sinon.useFakeTimers()
       let hasResolved = false
-      handlerChain.route(ctx).then(() => { hasResolved = true })
+      handlerChain.route(ctx).then(() => { hasResolved = true }, (err) => { throw err })
       timers.tick(Infinity)
       timers.restore()
 

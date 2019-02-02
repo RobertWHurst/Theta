@@ -1,12 +1,13 @@
 import assert from 'assert'
 import sinon from 'sinon'
-import Theta, {
+import {
+  Theta,
   defaultClassifier,
   defaultDecoder,
   defaultEncoder,
   defaultFormatter
 } from '../theta'
-import Message from '../message'
+import { Message } from '../message'
 
 describe('new Theta(config: Config)', () => {
 

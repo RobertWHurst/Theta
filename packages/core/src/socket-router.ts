@@ -1,10 +1,10 @@
-import Router from './router'
+import { Router } from './router'
 import { Handler } from './theta'
-import Context from './context'
+import { Context } from './context'
 
-export default class SocketRouter extends Router {
-  _errorHandlerChain: undefined
-  channel?: string
+export class SocketRouter extends Router {
+  public channel?: string
+  protected _errorHandlerChain: undefined
 
   handle (pattern: string, handler: Handler): void
   handle (handler: Handler): void

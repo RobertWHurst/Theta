@@ -1,5 +1,5 @@
 import assert from 'assert'
-import Message from '../message'
+import { Message } from '../message'
 import theta from './fixture/theta'
 import pattern from './fixture/pattern'
 
@@ -23,7 +23,7 @@ describe('new Message(theta: Theta)', () => {
           return 'PATH'
         }
       }), encodedData)
-      assert.strictEqual(message._path, 'PATH')
+      assert.strictEqual((message as any)._path, 'PATH')
       assert.deepStrictEqual(message.data, 'DATA')
     })
   })
@@ -32,7 +32,7 @@ describe('new Message(theta: Theta)', () => {
 
     it('populates channel, path, and params if the message matches the given pattern and returns true', () => {
       const message = new Message(theta())
-      message._path = 'RAW_PATH'
+      ;(message as any)._path = 'RAW_PATH'
 
       assert.ok(message.$$tryToApplyPattern(pattern({
         tryMatch: (path: string) => {
@@ -52,7 +52,7 @@ describe('new Message(theta: Theta)', () => {
 
     it('returns false if the message does not apply to the given pattern', () => {
       const message = new Message(theta())
-      message._path = 'RAW_PATH'
+      ;(message as any)._path = 'RAW_PATH'
 
       assert.ok(!message.$$tryToApplyPattern(pattern({
         tryMatch: (path: string) => {

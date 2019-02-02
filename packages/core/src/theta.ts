@@ -1,10 +1,10 @@
 import http from 'http'
 import https from 'https'
-import Router from './router'
-import Server from './server'
-import Socket from './socket'
-import Message from './message'
-import Context from './context'
+import { Router } from './router'
+import { Server } from './server'
+import { Socket } from './socket'
+import { Message } from './message'
+import { Context } from './context'
 
 export type Plugin = (theta: Theta, opts?: object) => void
 export type Classifier = (data: any) => Promise<string>
@@ -32,7 +32,7 @@ export const defaultEncoder: Encoder = async (data) => JSON.stringify(data)
 export const defaultDecoder: Decoder = async (encodedData) =>
   typeof encodedData === 'string' ? JSON.parse(encodedData) : {}
 
-export default class Theta {
+export class Theta {
 
   config: Config
   classifier: Classifier

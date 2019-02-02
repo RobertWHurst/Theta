@@ -1,19 +1,19 @@
-import Theta from './theta'
-import Pattern, { Params } from './pattern'
+import { Theta } from './theta'
+import { Pattern, Params } from './pattern'
 
-export default class Message {
+export class Message {
   static async fromEncodedData (theta: Theta, encodedData: any): Promise<Message> {
     const message = new this(theta)
     await message.fromEncodedData(encodedData)
     return message
   }
 
-  channel: string
-  path: string
-  data?: any
-  params: Params
-  _theta: Theta
-  _path: string
+  public channel: string
+  public path: string
+  public data?: any
+  public params: Params
+  private _theta: Theta
+  private _path: string
 
   constructor (theta: Theta) {
     Object.setPrototypeOf(this, theta.message)

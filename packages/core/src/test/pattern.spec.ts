@@ -1,4 +1,4 @@
-import Pattern from '../pattern'
+import { Pattern } from '../pattern'
 import assert from 'assert'
 
 describe('new Pattern(raw: string)', () => {

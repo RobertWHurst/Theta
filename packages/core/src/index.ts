@@ -1,10 +1,14 @@
-import Theta, { Config } from './theta'
-export { default as ConnectionManager } from './connection-manager'
-export { default as Message } from './message'
-export { default as Router } from './router'
-export { default as Server } from './server'
-export { default as SocketRouter } from './socket-router'
-export { default as Socket } from './socket'
+import { Theta, Config } from './theta'
 
-export { Theta }
+export * from './connection-manager'
+export * from './context'
+export * from './handler-chain'
+export * from './message'
+export * from './pattern'
+export * from './router'
+export * from './server'
+export * from './socket-router'
+export * from './socket'
+export * from './theta'
+
 export default (config?: Config) => new Theta(config)

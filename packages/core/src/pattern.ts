@@ -11,10 +11,10 @@ export interface Params {
 const rxEscChars = ['(', ')', '[', ']', '{', '}', '^', '$', '+', '*']
 
 export class Segment {
-  raw: string
-  type: 'fixed' | 'key' | 'wildcard'
-  subPatternStr: string
-  keyName?: string
+  public raw: string
+  public type: 'fixed' | 'key' | 'wildcard'
+  public subPatternStr: string
+  public keyName?: string
 
   constructor (src: string) {
     const s = src
@@ -95,7 +95,7 @@ export class Segment {
   }
 }
 
-export default class Pattern {
+export class Pattern {
   raw: string
   capture: boolean
   pattern: RegExp

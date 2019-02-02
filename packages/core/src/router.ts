@@ -1,14 +1,14 @@
 
-import Theta, { Handler } from './theta'
-import Context from './context'
-import HandlerChain from './handler-chain'
-import Pattern from './pattern'
+import { Theta, Handler } from './theta'
+import { Context } from './context'
+import { HandlerChain } from './handler-chain'
+import { Pattern } from './pattern'
 
-export default class Router {
-  theta?: Theta
-  _handlerChain?: HandlerChain
-  _errorHandlerChain?: HandlerChain
-  _pendingHandlers: any[]
+export class Router {
+  public theta?: Theta
+  protected _handlerChain?: HandlerChain
+  protected _errorHandlerChain?: HandlerChain
+  protected _pendingHandlers: any[]
 
   constructor (theta?: Theta) {
     this.theta = theta

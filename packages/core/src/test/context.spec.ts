@@ -1,32 +1,33 @@
 import assert from 'assert'
 import sinon from 'sinon'
-import Context from '../context'
+import { Context } from '../context'
 import socket from './fixture/socket'
 import message from './fixture/message'
+import server from './fixture/server'
 
 describe('new Context(message: Message, socket: Socket)', () => {
 
   it('can be constructed from a message and socket', () => {
-    new Context(message(), socket())
+    new Context(server(), message(), socket())
   })
 
   it('exposes the socket uuid', () => {
-    const ctx = new Context(message(), socket())
+    const ctx = new Context(server(), message(), socket())
     assert.strictEqual(ctx.uuid, 'UUID')
   })
 
   it('exposes the message path', () => {
-    const ctx = new Context(message(), socket())
+    const ctx = new Context(server(), message(), socket())
     assert.strictEqual(ctx.path, 'PATH')
   })
 
   it('exposes the message params', () => {
-    const ctx = new Context(message({ params: { param: 'PARAM' } }), socket())
+    const ctx = new Context(server(), message({ params: { param: 'PARAM' } }), socket())
     assert.strictEqual(ctx.params.param, 'PARAM')
   })
 
   it('exposes the message data', () => {
-    const ctx = new Context(message({ data: 'DATA' }), socket())
+    const ctx = new Context(server(), message({ data: 'DATA' }), socket())
     assert.strictEqual(ctx.data, 'DATA')
   })
 
@@ -34,7 +35,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
 
     it('calls status on the socket and returns this', () => {
       const status = sinon.stub()
-      const ctx = new Context(message(), socket({ status }))
+      const ctx = new Context(server(), message(), socket({ status }))
       assert.strictEqual(ctx.status('ok'), ctx)
       sinon.assert.calledOnce(status)
       sinon.assert.calledWith(status, 'ok')
@@ -45,7 +46,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
 
     it('calls sendStatus on the socket and returns a promise', () => {
       const sendStatus = sinon.stub().returns(Promise.resolve())
-      const ctx = new Context(message(), socket({ sendStatus }))
+      const ctx = new Context(server(), message(), socket({ sendStatus }))
       assert.ok(ctx.sendStatus('STATUS') instanceof Promise)
       sinon.assert.calledOnce(sendStatus)
       sinon.assert.calledWith(sendStatus, 'STATUS')
@@ -56,7 +57,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
 
     it('calls send on the socket and returns a promise', () => {
       const send = sinon.stub().returns(Promise.resolve())
-      const ctx = new Context(message(), socket({ send }))
+      const ctx = new Context(server(), message(), socket({ send }))
       assert.ok(ctx.send('DATA') instanceof Promise)
       sinon.assert.calledOnce(send)
       sinon.assert.calledWith(send, 'DATA')
@@ -68,7 +69,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
     it('calls handle on the socket', () => {
       const handle = sinon.stub()
       const handler = () => {}
-      const ctx = new Context(message(), socket({ handle }))
+      const ctx = new Context(server(), message(), socket({ handle }))
       ctx.handle('PATTERN', handler)
       sinon.assert.calledOnce(handle)
       sinon.assert.calledWith(handle, 'PATTERN', handler)
@@ -80,7 +81,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
     it('calls handle on the socket', () => {
       const handle = sinon.stub()
       const handler = () => {}
-      const ctx = new Context(message(), socket({ handle }))
+      const ctx = new Context(server(), message(), socket({ handle }))
       ctx.handle(handler)
       sinon.assert.calledOnce(handle)
       sinon.assert.calledWith(handle, handler)
@@ -91,7 +92,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
 
     it('calls handle on the socket and resolves a context', () => {
       const handle = sinon.stub().returns(Promise.resolve())
-      const ctx = new Context(message(), socket({ handle }))
+      const ctx = new Context(server(), message(), socket({ handle }))
       assert.ok(ctx.handle('PATTERN') instanceof Promise)
       sinon.assert.calledOnce(handle)
       sinon.assert.calledWith(handle, 'PATTERN')
@@ -101,7 +102,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
   describe('#next(): Promise<void>', () => {
 
     it('calls next handler', () => {
-      const ctx = new Context(message(), socket())
+      const ctx = new Context(server(), message(), socket())
       const nextHandler = sinon.stub().returns(Promise.resolve())
       ctx.$$nextHandler = nextHandler
       assert.ok(ctx.next() instanceof Promise)
@@ -109,7 +110,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
     })
 
     it('does nothing if no next handler is set', () => {
-      const ctx = new Context(message(), socket())
+      const ctx = new Context(server(), message(), socket())
       void ctx.next()
     })
   })
@@ -117,7 +118,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
   describe('#timeout(timeout: number): this', () => {
 
     it('sets timeout and returns this', () => {
-      const ctx = new Context(message(), socket())
+      const ctx = new Context(server(), message(), socket())
       assert.strictEqual(ctx.timeout(100), ctx)
       assert.strictEqual(ctx.$$timeout, 100)
     })
@@ -127,7 +128,7 @@ describe('new Context(message: Message, socket: Socket)', () => {
 
     it('calls $$tryToApplyPattern on the message', () => {
       const $$tryToApplyPattern = sinon.stub()
-      const ctx = new Context(message({ $$tryToApplyPattern }), socket())
+      const ctx = new Context(server(), message({ $$tryToApplyPattern }), socket())
       ctx.$$tryToApplyPattern('PATTERN' as any)
       sinon.assert.calledOnce($$tryToApplyPattern)
       sinon.assert.calledWith($$tryToApplyPattern, 'PATTERN')
@@ -135,14 +136,14 @@ describe('new Context(message: Message, socket: Socket)', () => {
 
     it('returns false if $$tryToApplyPattern on the message returns false', () => {
       const $$tryToApplyPattern = sinon.stub().returns(false)
-      const ctx = new Context(message({ $$tryToApplyPattern }), socket())
+      const ctx = new Context(server(), message({ $$tryToApplyPattern }), socket())
       assert.strictEqual(ctx.$$tryToApplyPattern('PATTERN' as any), false)
       assert.notStrictEqual(ctx.$$handled, true)
     })
 
     it('returns true if $$tryToApplyPattern on the message returns true and marks itself as handled', () => {
       const $$tryToApplyPattern = sinon.stub().returns(true)
-      const ctx = new Context(message({ $$tryToApplyPattern }), socket())
+      const ctx = new Context(server(), message({ $$tryToApplyPattern }), socket())
       assert.strictEqual(ctx.$$tryToApplyPattern('PATTERN' as any), true)
       assert.strictEqual(ctx.$$handled, true)
     })

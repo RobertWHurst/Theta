@@ -1,7 +1,7 @@
-import Router from '../router'
+import { Router } from '../router'
 import theta from './fixture/theta'
 import assert from 'assert'
-import HandlerChain from '../handler-chain'
+import { HandlerChain } from '../handler-chain'
 
 describe('new Router(theta: Theta)', () => {
 
@@ -29,7 +29,7 @@ describe('new Router(theta: Theta)', () => {
       const subRouter = new Router()
       router.handle('PATTERN', subRouter)
 
-      assert.ok(router._handlerChain)
+      assert.ok((router as any)._handlerChain)
     })
 
     it('binds all pending handlers on the sub router', () => {
@@ -38,12 +38,12 @@ describe('new Router(theta: Theta)', () => {
       const handler = () => {}
       subRouter.handle('PATTERN', handler)
 
-      assert.strictEqual(subRouter._pendingHandlers[0].pattern, 'PATTERN')
-      assert.strictEqual(subRouter._pendingHandlers[0].handler, handler)
+      assert.strictEqual((subRouter as any)._pendingHandlers[0].pattern, 'PATTERN')
+      assert.strictEqual((subRouter as any)._pendingHandlers[0].handler, handler)
 
       router.handle('PATTERN', subRouter)
 
-      assert.strictEqual((subRouter._handlerChain as HandlerChain).handler, handler)
+      assert.strictEqual(((subRouter as any)._handlerChain as HandlerChain).handler, handler)
     })
   })
 
@@ -64,8 +64,8 @@ describe('new Router(theta: Theta)', () => {
       const handler = () => {}
       router.handle(handler)
 
-      assert.strictEqual((router._handlerChain as HandlerChain).handler, handler)
-      assert.strictEqual((router._handlerChain as HandlerChain).pattern.raw, '+')
+      assert.strictEqual(((router as any)._handlerChain as HandlerChain).handler, handler)
+      assert.strictEqual(((router as any)._handlerChain as HandlerChain).pattern.raw, '+')
     })
   })
 
@@ -76,8 +76,8 @@ describe('new Router(theta: Theta)', () => {
       const subRouter = new Router()
       router.handle(subRouter)
 
-      assert.ok((router._handlerChain as HandlerChain).handler)
-      assert.strictEqual((router._handlerChain as HandlerChain).pattern.raw, '+')
+      assert.ok(((router as any)._handlerChain as HandlerChain).handler)
+      assert.strictEqual(((router as any)._handlerChain as HandlerChain).pattern.raw, '+')
     })
   })
 
@@ -93,8 +93,8 @@ describe('new Router(theta: Theta)', () => {
       const handler = () => {}
       router.handleError(handler)
 
-      assert.strictEqual((router._errorHandlerChain as HandlerChain).handler, handler)
-      assert.strictEqual((router._errorHandlerChain as HandlerChain).pattern.raw, '+')
+      assert.strictEqual(((router as any)._errorHandlerChain as HandlerChain).handler, handler)
+      assert.strictEqual(((router as any)._errorHandlerChain as HandlerChain).pattern.raw, '+')
     })
   })
 })

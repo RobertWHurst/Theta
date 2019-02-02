@@ -1,6 +1,6 @@
-import Theta, { Handler } from './theta'
-import Context from './context'
-import Pattern from './pattern'
+import { Theta, Handler } from './theta'
+import { Context } from './context'
+import { Pattern } from './pattern'
 
 export class TimeoutError extends Error {
   constructor (context: Context) {
@@ -8,12 +8,12 @@ export class TimeoutError extends Error {
   }
 }
 
-export default class HandlerChain {
-  theta: Theta
-  pattern: Pattern
-  handler: Handler
-  continueOnError: boolean
-  nextLink?: HandlerChain
+export class HandlerChain {
+  public theta: Theta
+  public pattern: Pattern
+  public handler: Handler
+  public continueOnError: boolean
+  public nextLink?: HandlerChain
 
   constructor (theta: Theta, pattern: Pattern, handler: Handler, continueOnError: boolean = false) {
     this.theta = theta

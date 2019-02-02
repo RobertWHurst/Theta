@@ -1,33 +1,34 @@
 import http from 'http'
 import https from 'https'
 import { default as WebSocket, Server as WebSocketServer } from 'ws'
-import Theta from './theta'
-import ConnectionManager from './connection-manager'
-import Socket from './socket'
-import Router from './router'
+import { Theta } from './theta'
+import { ConnectionManager } from './connection-manager'
+import { Socket } from './socket'
+import { Router } from './router'
 
-export default class Server {
-  theta: Theta
-  router: Router
-  connectionManager: ConnectionManager
-  _httpServer: http.Server | https.Server
-  _socketServer: WebSocketServer
+export class Server {
+  public theta: Theta
+  public router: Router
+  public connectionManager: ConnectionManager
+  private _httpServer: http.Server | https.Server
+  private _socketServer?: WebSocketServer
 
   constructor (theta: Theta) {
     this.theta = theta
     this.router = theta.router
     this.connectionManager = new ConnectionManager(theta, this)
     this._httpServer = this._setupHttpServer()
-    this._socketServer = this._setupSocketServer()
   }
 
   listen (...args: any[]): void {
-    if (!this._httpServer) { return }
+    if (!this._httpServer || this._socketServer) { return }
+    this._socketServer = this._setupSocketServer()
     this._httpServer.listen(...args)
   }
 
   close (...args: any[]): void {
-    if (!this._httpServer) { return }
+    if (!this._httpServer || !this._socketServer) { return }
+    this._socketServer.close()
     this._httpServer.close(...args)
   }
 
@@ -61,7 +62,7 @@ export default class Server {
     socket.on('error', err => { throw err })
     socket.on('message', async (context) => {
       await this.router.route(context)
-      socket.clearRouterHandlers()
+      socket.$$router.clearRouterHandlers()
       if (context.$$handled) { return }
       await context.sendStatus('not-handled')
     })

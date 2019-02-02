@@ -1,11 +1,11 @@
 import uuid from 'uuid/v4'
 import WebSocket from 'ws'
 import { EventEmitter } from 'events'
-import Theta, { Handler } from './theta'
-import Server from './server'
-import Message from './message'
-import SocketRouter from './socket-router'
-import Context from './context'
+import { Theta, Handler } from './theta'
+import { Server } from './server'
+import { Message } from './message'
+import { SocketRouter } from './socket-router'
+import { Context } from './context'
 
 declare interface Socket {
   on (event: 'error', handler: (err: Error) => void): this
@@ -18,12 +18,12 @@ declare interface Socket {
 }
 
 class Socket extends EventEmitter {
-  theta: Theta
-  uuid: string
-  $$router: SocketRouter
-  _server: Server
-  _rawSocket: WebSocket
-  _currentStatus: string
+  public theta: Theta
+  public uuid: string
+  public $$router: SocketRouter
+  private _server: Server
+  private _rawSocket: WebSocket
+  private _currentStatus: string
 
   constructor (theta: Theta, server: Server, rawSocket: WebSocket) {
     super()
@@ -45,7 +45,7 @@ class Socket extends EventEmitter {
     return this
   }
 
-  sendStatus (status: string): Promise<void> {
+  async sendStatus (status: string): Promise<void> {
     return this.status(status).send()
   }
 
@@ -69,14 +69,6 @@ class Socket extends EventEmitter {
     return this.$$router.handle(pattern as any, handler as any)
   }
 
-  to (uuid: string) {
-    return this._server.connectionManager.findByUuid(uuid)
-  }
-
-  clearRouterHandlers () {
-    this.$$router.clearRouterHandlers()
-  }
-
   async _handleRawMessage (data: WebSocket.Data) {
     let message
     try {
@@ -86,7 +78,7 @@ class Socket extends EventEmitter {
       return
     }
 
-    const context = new Context(message, this)
+    const context = new Context(this._server, message, this)
     await this.$$router.route(context)
     if (context.$$handled) { return }
     this.emit('message', context)
@@ -97,4 +89,4 @@ class Socket extends EventEmitter {
   }
 }
 
-export default Socket
+export { Socket }
