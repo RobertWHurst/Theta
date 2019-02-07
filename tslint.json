@@ -2,5 +2,8 @@
   "extends": "tslint-config-standard",
   "linterOptions": {
     "exclude": ["packages/*/lib"]
+  },
+  "rules": {
+    "unified-signatures": false
   }
 }

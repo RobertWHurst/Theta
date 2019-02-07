@@ -42,5 +42,3 @@ export class SocketRouter extends Router {
     this._handlerChain = undefined
   }
 }
-
-module.exports = SocketRouter

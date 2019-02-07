@@ -26,7 +26,7 @@ export interface Config {
 
 export const defaultClassifier: Classifier = async (data) => data && data.path || ''
 export const defaultFormatter: Formatter = async (status, channel, data) =>
-  typeof data === 'object' ? { ...data, status, channel } :
+  data !== null && typeof data === 'object' ? { ...data, status, channel } :
   data ? { data, status, channel } : { status, channel }
 export const defaultEncoder: Encoder = async (data) => JSON.stringify(data)
 export const defaultDecoder: Decoder = async (encodedData) =>
@@ -34,16 +34,16 @@ export const defaultDecoder: Decoder = async (encodedData) =>
 
 export class Theta {
 
-  config: Config
-  classifier: Classifier
-  formatter: Formatter
-  encoder: Encoder
-  decoder: Decoder
-  context: Object
-  message: Object
-  socket: Object
-  router: Router
-  server: Server
+  public config: Config
+  public classifier: Classifier
+  public formatter: Formatter
+  public encoder: Encoder
+  public decoder: Decoder
+  public context: Object
+  public message: Object
+  public socket: Object
+  public router: Router
+  public server: Server
 
   constructor (config: Config = {}) {
     this.config = config

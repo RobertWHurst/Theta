@@ -5,14 +5,17 @@
     "node": ">=10.15.0"
   },
   "description": "An express like framework for web sockets",
-  "main": "./lib/index.js",
+  "main": "./index.js",
+  "module": "./lib/index.js",
   "types": "./lib/index.d.js",
   "author": "Robert Hurst <robertwhurst@gmail.com>",
   "license": "MIT",
   "files": [
-    "lib"
+    "lib",
+    "index.js"
   ],
   "scripts": {
+    "dev": "tsc -w",
     "build": "tsc",
     "test": "nyc mocha -r ts-node/register src/test/*.spec.ts",
     "cover": "nyc check-coverage",
