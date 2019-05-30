@@ -1,3 +1,4 @@
+import uuid from 'uuid'
 import { Theta } from './theta'
 import { Pattern, Params } from './pattern'
 
@@ -12,6 +13,7 @@ export class Message {
   public path: string
   public data?: any
   public params: Params
+  public requestId: string
   private _theta: Theta
   private _path: string
 
@@ -22,6 +24,7 @@ export class Message {
     this.path = ''
     this.data = {}
     this.params = {}
+    this.requestId = uuid()
     this._path = ''
   }
 

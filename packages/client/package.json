@@ -7,14 +7,17 @@
   "types": "./lib/index.d.js",
   "author": "Robert Hurst <robertwhurst@gmail.com>",
   "license": "MIT",
+  "readme": "Readme.md",
   "files": [
     "lib",
-    "index.js"
+    "index.js",
+    "Readme.md"
   ],
   "scripts": {
-    "dev": "tsc -w",
-    "build": "tsc",
-    "test": "nyc mocha -r ts-node/register src/test/*.spec.ts",
+    "dev": "tsc -w --pretty",
+    "build": "tsc --pretty",
+    "test": "nyc mocha -r ts-node/register src/test/*.spec.ts --color",
+    "cover": "nyc check-coverage",
     "coverage-report": "nyc report --reporter=html",
     "clean": "rimraf lib"
   },

@@ -21,9 +21,9 @@ class Socket extends EventEmitter {
   public theta: Theta
   public uuid: string
   public $$router: SocketRouter
+  public $$currentStatus: string
   private _server: Server
   private _rawSocket: WebSocket
-  private _currentStatus: string
 
   constructor (theta: Theta, server: Server, rawSocket: WebSocket) {
     super()
@@ -35,13 +35,13 @@ class Socket extends EventEmitter {
     this.$$router = new SocketRouter(this.theta)
     this._server = server
     this._rawSocket = rawSocket
-    this._currentStatus = 'ok'
+    this.$$currentStatus = 'ok'
 
     this._rawSocket.on('message', d => this._handleRawMessage(d))
   }
 
   status (status: string): this {
-    this._currentStatus = status
+    this.$$currentStatus = status
     return this
   }
 
@@ -50,10 +50,11 @@ class Socket extends EventEmitter {
   }
 
   async send (data?: any): Promise<void> {
-    const status = this._currentStatus
-    this._currentStatus = 'ok'
+    const status = this.$$currentStatus
+    this.$$currentStatus = 'ok'
     const channel = this.$$router.channel || ''
     this.$$router.channel = ''
+    data && typeof data.toJSON === 'function' && (data = data.toJSON())
     data = await this.theta.formatter(status, channel, data)
     const encodedData = await this.theta.encoder(data)
 

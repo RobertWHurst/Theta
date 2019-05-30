@@ -4,6 +4,7 @@
     "exclude": ["packages/*/lib"]
   },
   "rules": {
-    "unified-signatures": false
+    "unified-signatures": false,
+    "member-access": true
   }
 }

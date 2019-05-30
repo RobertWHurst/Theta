@@ -1,10 +1,10 @@
 {
-  "name": "@thetaapp/core",
+  "name": "@thetaapp/server",
   "version": "1.0.1",
   "engines": {
     "node": ">=10.15.0"
   },
-  "description": "An express like framework for web sockets",
+  "description": "The server for Theta. An express like framework for web sockets",
   "main": "./index.js",
   "module": "./lib/index.js",
   "types": "./lib/index.d.js",
@@ -18,8 +18,8 @@
   ],
   "scripts": {
     "dev": "tsc -w --pretty",
-    "build": "tsc --pretty",
-    "test": "nyc mocha -r ts-node/register src/test/*.spec.ts --color",
+    "build": "tsc",
+    "test": "nyc mocha -r ts-node/register src/test/*.spec.ts",
     "cover": "nyc check-coverage",
     "coverage-report": "nyc report --reporter=html",
     "clean": "rimraf lib"

@@ -34,7 +34,11 @@ export class Router {
     if (handler instanceof Router) {
       const router = handler
       router.applyPendingHandlersWithTheta(this.theta)
-      handler = c => router.route(c)
+      handler = async (ctx: Context) => {
+        await router.route(ctx)
+        if (ctx.$$handled) { return }
+        return ctx.next()
+      }
     }
 
     const nextLink = new HandlerChain(this.theta, new Pattern(pattern || '+'), handler)
@@ -68,14 +72,21 @@ export class Router {
       : this._errorHandlerChain = nextLink
   }
 
-  async route (context: Context): Promise<void> {
-    if (!this._handlerChain) { return }
-    await this._handlerChain.route(context)
+  async route (ctx: Context): Promise<void> {
+    ctx.$$handled = false
+    const existingNextHandler = ctx.$$nextHandler
 
-    if (context.error) {
-      if (!this._errorHandlerChain) { return }
-      await this._errorHandlerChain.route(context)
+    if (!ctx.$$error) {
+      if (!this._handlerChain) { return }
+      await this._handlerChain.route(ctx)
     }
+
+    if (ctx.$$error) {
+      if (!this._errorHandlerChain) { return }
+      await this._errorHandlerChain.route(ctx)
+    }
+
+    ctx.$$nextHandler = existingNextHandler
   }
 
   applyPendingHandlersWithTheta (theta: Theta) {

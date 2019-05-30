@@ -11,17 +11,21 @@ export class Context {
     this._thetaClient = thetaClient
   }
 
-  get status (): string {
-    return this.message.status
-  }
+  get status (): string { return this.message.status }
+  get data (): any { return this.message.data }
 
-  handle (cb: (ctx: Context) => Promise<void>): void
-  async handle (): Promise<void>
-  async handle (cb?: (ctx: Context) => Promise<void>): Promise<void> {
+  public handle (cb: (ctx: Context) => Promise<void>): void
+  public async handle (): Promise<Context>
+  public handle (cb?: (ctx: Context) => Promise<void>): Promise<Context> | void {
     return this._thetaClient.handle(this.message.channel, cb as any)
   }
 
-  async send (path: string, data: any): Promise<void> {
+  public async send (path: string, data?: any): Promise<void> {
     return this._thetaClient.send(`${this.message.channel}@${path}`, data)
+  }
+
+  public async request (path: string, data?: any): Promise<Context> {
+    await this.send(path, data)
+    return this.handle()
   }
 }

@@ -1,12 +1,11 @@
 {
-  "name": "@thetaapp/core",
+  "name": "@thetaapp/pattern",
   "version": "1.0.1",
   "engines": {
     "node": ">=10.15.0"
   },
-  "description": "An express like framework for web sockets",
-  "main": "./index.js",
-  "module": "./lib/index.js",
+  "description": "The pattern matcher for Theta. An express like framework for web sockets",
+  "main": "./lib/index.js",
   "types": "./lib/index.d.js",
   "author": "Robert Hurst <robertwhurst@gmail.com>",
   "license": "MIT",

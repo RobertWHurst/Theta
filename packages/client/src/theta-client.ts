@@ -6,6 +6,7 @@ export type Classifier = (data: any) => Promise<{ status: string, channel: strin
 export type Formatter = (channel: string, data?: any) => Promise<any>
 export type Encoder = (data: any) => Promise<any>
 export type Decoder = (encodedData: any) => Promise<any>
+export type ChannelHandler = (context: Context) => Promise<any>
 export type Handler = (context: Context) => (Promise<void> | void)
 
 export interface PendingSend {
@@ -17,7 +18,7 @@ export interface PendingSend {
 
 export const channelChars: string[] = []
 for (let i = 0; i <= 9; i += 1) { channelChars.push(String.fromCharCode(i + 48)) }
-for (let i = 0; i <= 26; i += 1) { channelChars.push(String.fromCharCode(i + 97)) }
+for (let i = 0; i <= 25; i += 1) { channelChars.push(String.fromCharCode(i + 97)) }
 export let channelIdLength = 10
 
 export const createChannelId = () => {
@@ -36,8 +37,8 @@ export const defaultDecoder: Decoder = async (encodedData) =>
   typeof encodedData === 'string' ? JSON.parse(encodedData) : {}
 
 export class ThetaClient {
-  context: Object
-  message: Object
+  public context: Object
+  public message: Object
   public classifier: Classifier
   public formatter: Formatter
   public encoder: Encoder
@@ -58,32 +59,32 @@ export class ThetaClient {
     this._pendingSends = []
   }
 
-  plugin (plugin: Plugin, opts?: any): this {
+  public plugin (plugin: Plugin, opts?: any): this {
     plugin(this, opts)
     return this
   }
 
-  classify (classifier: Classifier): this {
+  public classify (classifier: Classifier): this {
     this.classifier = classifier
     return this
   }
 
-  format (formatter: Formatter): this {
+  public format (formatter: Formatter): this {
     this.formatter = formatter
     return this
   }
 
-  encode (encoder: Encoder): this {
+  public encode (encoder: Encoder): this {
     this.encoder = encoder
     return this
   }
 
-  decode (decoder: Decoder): this {
+  public decode (decoder: Decoder): this {
     this.decoder = decoder
     return this
   }
 
-  async connect (url: string) {
+  public async connect (url: string) {
     return new Promise((resolve, reject) => {
       const webSocket = new WebSocket(url)
 
@@ -109,7 +110,7 @@ export class ThetaClient {
     })
   }
 
-  async disconnect (): Promise<void> {
+  public async disconnect (): Promise<void> {
     return new Promise((resolve) => {
       if (!this._webSocket) { return }
       this._webSocket.onclose = () => resolve()
@@ -117,18 +118,18 @@ export class ThetaClient {
     })
   }
 
-  async channel (channelHandler: Handler): Promise<void> {
+  public async channel (channelHandler: ChannelHandler): Promise<any> {
     const message = new Message(this)
     message.channel = createChannelId()
     const context = new Context(this, message)
-    await channelHandler(context)
+    return channelHandler(context)
   }
 
-  handle (cb: Handler): void
-  handle (channel: string, handler: Handler): void
-  async handle (): Promise<Context>
-  async handle (channel: string): Promise<Context>
-  handle (channel?: string | Handler, handler?: Handler): Promise<Context> | void {
+  public handle (cb: Handler): void
+  public handle (channel: string, handler: Handler): void
+  public async handle (): Promise<Context>
+  public async handle (channel: string): Promise<Context>
+  public handle (channel?: string | Handler, handler?: Handler): Promise<Context> | void {
     if (typeof channel !== 'string') {
       handler = channel as Handler
       channel = ''
@@ -141,7 +142,7 @@ export class ThetaClient {
     return new Promise((resolve) => { addHandler((ctx) => { resolve(ctx) }) })
   }
 
-  async send (path: string, data: any): Promise<void> {
+  public async send (path: string, data?: any): Promise<void> {
     if (!this._webSocket) {
       return new Promise((resolve, reject) => {
         this._pendingSends.push({ path, data, resolve, reject })
@@ -155,7 +156,11 @@ export class ThetaClient {
     })
   }
 
-  async _handleMessage (encodedData: any) {
+  public async request (path: string, data?: any): Promise<Context> {
+    return this.channel((ctx) => ctx.request(path, data))
+  }
+
+  public async _handleMessage (encodedData: any) {
     const message = await Message.fromEncodedData(this, encodedData)
     const handler = this._handlers[message.channel] && this._handlers[message.channel].shift()
     if (!handler) { return }

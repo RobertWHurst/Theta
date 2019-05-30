@@ -5,6 +5,7 @@ import { Theta } from './theta'
 import { ConnectionManager } from './connection-manager'
 import { Socket } from './socket'
 import { Router } from './router'
+import { ServerTimeoutError } from './server-error'
 
 export class Server {
   public theta: Theta
@@ -60,11 +61,24 @@ export class Server {
     this.connectionManager.add(socket)
 
     socket.on('error', err => { throw err })
-    socket.on('message', async (context) => {
-      await this.router.route(context)
+    socket.on('message', async (ctx) => {
+      await this.router.route(ctx)
+
       socket.$$router.clearRouterHandlers()
-      if (context.$$handled) { return }
-      await context.sendStatus('not-handled')
+
+      if (ctx.$$error instanceof ServerTimeoutError) {
+        return ctx.sendStatus('timed-out')
+      }
+
+      if (ctx.$$handled) { return }
+
+      if (ctx.$$error) {
+        const errMsg = ctx.$$error.stack || ctx.$$error.message || ctx.$$error.toString()
+        console.error(`Theta: message for '${ctx.path}' resulted in an unhandled error: ${errMsg}`)
+        return
+      }
+
+      console.warn(`Theta: message for '${ctx.path}' not handled`)
     })
   }
 }

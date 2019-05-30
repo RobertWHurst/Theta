@@ -6,7 +6,8 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
-    "test": "lerna run test -- --color",
+    "dev": "lerna run --sort --parallel dev",
+    "test": "lerna run test",
     "coverage-report": "lerna run coverage-report",
     "clean": "rimraf packages/**/lib"
   },

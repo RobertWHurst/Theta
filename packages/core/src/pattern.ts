@@ -156,7 +156,7 @@ export class Pattern {
     const segmentPatterns = this.segments.map(s => s.subPatternStr)
     segmentPatterns.push(cap ? '.+)' : '?)$')
 
-    const patternStr = `^${n ? `(${n})@` : `(?:([^@]+)@)?`}(/?${segmentPatterns.join('/')}`
+    const patternStr = `^${n ? `(${n})@` : `(?:([^@]+)@)?`}/?(${segmentPatterns.join('/')}`
 
     this.pattern = new RegExp(patternStr)
   }

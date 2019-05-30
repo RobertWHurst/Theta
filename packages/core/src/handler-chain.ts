@@ -1,12 +1,7 @@
 import { Theta, Handler } from './theta'
 import { Context } from './context'
 import { Pattern } from './pattern'
-
-export class TimeoutError extends Error {
-  constructor (context: Context) {
-    super(`Handler for path ${context.message.path} timed out before it resolved`)
-  }
-}
+import { ServerTimeoutError } from './server-error'
 
 export class HandlerChain {
   public theta: Theta
@@ -37,7 +32,8 @@ export class HandlerChain {
     try {
       await this._callHandler(context)
     } catch (err) {
-      context.error = err
+      context.$$handled = false
+      context.$$error = err
       if (!this.continueOnError) { return }
       await context.next()
     }
@@ -63,7 +59,9 @@ export class HandlerChain {
     if (timeout === 0) { return handlerPromise }
 
     const timeoutPromise = new Promise((_, reject) => {
-      timeoutId = setTimeout(() => { reject(new TimeoutError(context)) }, timeout)
+      timeoutId = setTimeout(() => {
+        reject(new ServerTimeoutError(context))
+      }, timeout)
     })
 
     await Promise.race([timeoutPromise, handlerPromise])

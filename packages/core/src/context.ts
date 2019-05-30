@@ -3,6 +3,7 @@ import { Socket } from './socket'
 import { Theta, Handler } from './theta'
 import { Pattern, Params } from './pattern'
 import { Server } from './server'
+import { ServerError } from './server-error'
 
 type NextHandler = () => Promise<void>
 
@@ -10,7 +11,7 @@ export class Context {
   public message: Message
   public socket: Socket
   public theta?: Theta
-  public error?: Error
+  public $$error?: Error
   public $$handled?: Boolean
   public $$timeout?: number
   public $$nextHandler?: NextHandler
@@ -27,10 +28,18 @@ export class Context {
   get path (): string { return this.message.path }
   get params (): Params { return this.message.params }
   get data (): any { return this.message.data }
+  get requestId (): string { return this.message.requestId }
+  get isHandled (): boolean { return !!this.$$handled }
 
   status (status: string): this {
     this.socket.status(status)
     return this
+  }
+
+  async sendError (message: string): Promise<void> {
+    this._setChannel()
+    this.$$error = new ServerError(this, message)
+    await this.socket.send(this.$$error)
   }
 
   async sendStatus (status: string): Promise<void> {
@@ -55,7 +64,19 @@ export class Context {
     return this.socket.handle(pattern as any, handler as any)
   }
 
+  async request (data: any, pattern: string): Promise<Context>
+  async request (pattern: string): Promise<Context>
+  async request (data: any | string, pattern?: string): Promise<Context> {
+    if (typeof pattern !== 'string') {
+      pattern = data as string
+      data = undefined
+    }
+    await this.send(data)
+    return this.handle(pattern)
+  }
+
   async next () {
+    this.$$handled = false
     if (!this.$$nextHandler) { return }
     await this.$$nextHandler()
   }
