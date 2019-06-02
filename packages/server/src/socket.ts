@@ -1,7 +1,6 @@
 import uuid from 'uuid'
 import { TransportConnection } from '@thetaapp/server-transport'
 import { Encoder } from '@thetaapp/encoder'
-import { Pattern } from '@thetaapp/pattern'
 import { Message, Socket as RouterSocket, Handler, Context, Router } from '@thetaapp/router'
 import { Config } from './config'
 

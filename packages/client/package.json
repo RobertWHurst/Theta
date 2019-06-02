@@ -20,9 +20,9 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
+    "@thetaapp/client-transport": "^1.0.1",
     "@thetaapp/encoder": "^1.0.1",
-    "@thetaapp/router": "^1.0.1",
-    "@thetaapp/client-transport": "^1.0.1"
+    "@thetaapp/router": "^1.0.1"
   },
   "devDependencies": {
     "sinon": "^7.2.2"

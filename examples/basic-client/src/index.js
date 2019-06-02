@@ -8,17 +8,27 @@ app.transport(webSocketTransport({ url: 'ws://localhost:8182' }));
 
 app.connect();
 
-app.request('/hello', {
-  message: 'Client: Hi there!'
-}, async (ctx) => {
+window.sayHello = () => {
+  app.request('/hello', {
+    message: 'Client: Hi there!'
+  }, async (ctx) => {
 
-  console.log(1, ctx.data.data);
-  
-  ctx = await ctx.request({
-    message: 'Client: How are you?'
-  })
+    console.log(1, ctx.data.data);
+    
+    ctx = await ctx.request({
+      message: 'Client: How are you?'
+    })
 
-  console.log(2, ctx.data.data);
+    console.log(2, ctx.data.data);
 
-  ctx.end()
-});
+    ctx.end()
+  });
+}
+
+const pingHandler = () => {
+  setTimeout(rec, 0)
+}
+const rec = () => {
+  app.request('/ping', pingHandler)
+}
+rec()

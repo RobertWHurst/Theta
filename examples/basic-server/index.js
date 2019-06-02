@@ -13,5 +13,9 @@ app.handle('/hello', async (ctx) => {
   ctx = await ctx.reply({ message: 'Server: Doing good thanks' })
 });
 
+app.handle('/ping', (ctx) => {
+  ctx.reply({ pong: true })
+})
+
 console.log('listening on port 8182')
 app.listen();

@@ -3,6 +3,8 @@ import { Segment } from './segment'
 import { rxEscChars } from './regex-escape-chars'
 import { Match } from './match'
 
+const regExpCache = new Map()
+
 export class Pattern {
   public raw: string
   public channels: string[]
@@ -68,7 +70,12 @@ export class Pattern {
     const segmentPatterns = this.segments.map(s => s.subPatternStr)
     const patternStr = `^${n ? `(${n})@` : '(?:([^@]+)@)?'}/?(${segmentPatterns.join('/')}/${this.capture ? '.+)' : '?)$'}`
 
-    this.pattern = new RegExp(patternStr)
+    let pattern = regExpCache.get(patternStr)
+    if (!pattern) {
+      pattern = new RegExp(patternStr)
+      regExpCache.set(patternStr, pattern)
+    }
+    this.pattern = pattern
   }
 
   public tryMatch (path: string): Match | void {
