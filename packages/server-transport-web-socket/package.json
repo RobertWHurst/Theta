@@ -23,7 +23,8 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@thetaapp/server-transport": "^1.0.1"
+    "@thetaapp/server-transport": "^1.0.1",
+    "ws": "^7.0.0"
   },
   "devDependencies": {
     "pre-commit": "^1.2.2",
