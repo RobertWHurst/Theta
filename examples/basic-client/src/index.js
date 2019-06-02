@@ -9,7 +9,16 @@ app.transport(webSocketTransport({ url: 'ws://localhost:8182' }));
 app.connect();
 
 app.request('/hello', {
-  message: 'Hi there!'
+  message: 'Client: Hi there!'
 }, async (ctx) => {
-  console.log(ctx.message);
+
+  console.log(1, ctx.data.data);
+  
+  ctx = await ctx.request({
+    message: 'Client: How are you?'
+  })
+
+  console.log(2, ctx.data.data);
+
+  ctx.end()
 });

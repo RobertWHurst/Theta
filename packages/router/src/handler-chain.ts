@@ -26,8 +26,9 @@ export class HandlerChain {
   }
 
   public is (patternStr: string, handler: Handler | Router, isErrorHandler: boolean): boolean {
+    // TODO: remove raw here
     return (
-      this._pattern.raw === Pattern.raw(this._config, patternStr) &&
+      this._pattern.raw === Pattern.raw(patternStr) &&
       this._handler === handler &&
       this._isErrorHandler === isErrorHandler
     )

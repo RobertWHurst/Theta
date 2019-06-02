@@ -60,6 +60,16 @@ export class Router {
     this._unhandle(patternStr as string, handler, true)
   }
 
+  public $$subHandle (patternStr: string, handler: Handler, _?: number): void {
+    const h = async (ctx: Context) => {
+      this.unhandle(patternStr, h)
+      return handler(ctx)
+    }
+    const handlerChain = this._handlerChain
+    this._handlerChain = new HandlerChain(this._config, patternStr as string, handler, false)
+    this._handlerChain.nextLink = handlerChain
+  }
+
   private _handle (patternStr: string, handler: Handler | Router, isErrorHandler: boolean): void {
     this._handlerChain
       ? this._handlerChain.push(patternStr as string, handler, false)

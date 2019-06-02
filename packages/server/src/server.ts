@@ -68,16 +68,13 @@ export class Server {
   }
 
   private _handleConnection (connection: TransportConnection) {
-    const socket = new Socket(this._config, connection, this._encoder)
+    const socket = new Socket(this._config, this._router, connection, this._encoder)
     socket.handleMessage = (c: Context) => this._handleMessage(c)
     socket.handleError = (c: Context) => this._handleMessage(c)
     this._socketManager.addSocket(socket)
   }
 
   private async _handleMessage (ctx: Context): Promise<void> {
-    console.log('got', ctx.message!.data)
-    // ctx.$$router = this._router
     await this._router.route(ctx)
-    // ctx.clearHandlers()
   }
 }

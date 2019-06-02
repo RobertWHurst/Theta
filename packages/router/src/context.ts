@@ -15,9 +15,12 @@ export class Context {
   public socket: Socket
   public message: Message | null
 
-  constructor (_: Config, message: Message | null, socket: Socket) {
+  private _config: Config
+
+  constructor (config: Config, message: Message | null, socket: Socket) {
     this.message = message
     this.socket = socket
+    this._config = config
   }
 
   public get rawPath (): string {
@@ -68,15 +71,10 @@ export class Context {
   }
 
   public async request (data?: any): Promise<Context> {
-    await this.send(this.rawPath, data)
-    // return new Promise((resolve) => {
-    //   const handler = (ctx: Context) => {
-    //     resolve(ctx)
-    //     this.$$router!.unhandle(`${this.channel}@`, handler)
-    //   }
-    //   this.$$router!.handle(`${this.channel}@`, handler)
-    // })
-    return this
+    return new Promise((resolve) => {
+      this.socket.$$subHandle(this.rawPath, resolve, this._config.timeout)
+      this.send(this.rawPath, data)
+    })
   }
 
   public async reply (data?: any): Promise<void> {

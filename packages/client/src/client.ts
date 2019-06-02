@@ -40,7 +40,7 @@ export class Client implements Socket {
     }
     const context = new Context(this._config, null, this)
     const rawPath = `${context.channel}@${path}`
-    this._router.handle(rawPath, handler)
+    this.$$subHandle(rawPath, handler, this._config.timeout)
     await this.$$send('', rawPath, data)
   }
 
@@ -60,6 +60,10 @@ export class Client implements Socket {
     }
 
     this._transport!.send(encodedData)
+  }
+
+  public $$subHandle (patternStr: string, handler: Handler, timeout?: number): void {
+    return this._router.$$subHandle(patternStr, handler, timeout)
   }
 
   private async _handleMessage (encodedData: any): Promise<void> {

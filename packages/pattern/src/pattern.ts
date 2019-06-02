@@ -5,6 +5,7 @@ import { Match } from './match'
 
 export class Pattern {
   public raw: string
+  public channels: string[]
   public capture: boolean
   public pattern: RegExp
   public segments: Segment[]
@@ -14,6 +15,7 @@ export class Pattern {
     let r = '' // raw pattern
     let c = '' // segment
     let n = '' // channel
+    let na = [] // channels
     let sa = [] // all segments
     let cap = false // is capturing path
     let esc = false // in escape sequence
@@ -39,6 +41,7 @@ export class Pattern {
       } else if (!esc && !pnEsc && sa.length === 0 && s[i] === '@') {
         c = c.split('').map(c => rxEscChars.includes(c) ? `\\${c}` : c).join('')
         n = n ? `${n}|${c}` : c
+        na.push(c)
         c = ''
         r += '@'
       } else if (!esc && !pnEsc && s[i] === '/') {
@@ -58,6 +61,7 @@ export class Pattern {
     c && sa.push(c)
 
     this.raw = r
+    this.channels = na
     this.capture = cap
     this.segments = sa.map(s => new Segment(s))
 
@@ -78,7 +82,7 @@ export class Pattern {
     }
   }
 
-  public static raw (config: Config, str: string): string {
-    return new Pattern(config, str).raw
+  public static raw (str: string): string {
+    return new Pattern({}, str).raw
   }
 }

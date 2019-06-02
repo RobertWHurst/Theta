@@ -3,6 +3,7 @@ import { Params, Pattern } from '@thetaapp/pattern'
 export class Message {
   public rawPath: string
   public channel?: string
+  public sourceChannel?: string
   public path?: string
   public status: string
   public params?: Params

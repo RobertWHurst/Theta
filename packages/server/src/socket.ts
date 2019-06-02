@@ -2,38 +2,39 @@ import uuid from 'uuid'
 import { TransportConnection } from '@thetaapp/server-transport'
 import { Encoder } from '@thetaapp/encoder'
 import { Pattern } from '@thetaapp/pattern'
-import { Message, Socket as RouterSocket, Handler, Context } from '@thetaapp/router'
+import { Message, Socket as RouterSocket, Handler, Context, Router } from '@thetaapp/router'
 import { Config } from './config'
 
-const noopHandler = (_: Context) => {
-  // noop
-}
+const noopHandler = (_: Context) => { /* noop */ }
 
 export class Socket implements RouterSocket {
   public uuid: string
   public handleMessage: Handler
   public handleError: Handler
   private _config: Config
+  private _router: Router
   private _connection: TransportConnection
   private _encoder: Encoder
 
-  constructor (config: Config, connection: TransportConnection, encoder: Encoder) {
+  constructor (config: Config, router: Router, connection: TransportConnection, encoder: Encoder) {
     this.uuid = uuid()
     this.handleMessage = noopHandler
     this.handleError = noopHandler
     this._config = config
+    this._router = router
     this._connection = connection
     this._encoder = encoder
-
     this._connection.handleMessage = d => this._handleMessage(d)
   }
 
-  public async send (status: string, rawPath: string, data?: any): Promise <void> {
-    const path = Pattern.raw(this._config, rawPath)
+  public send (status: string, rawPath: string, data?: any): Promise<void> {
+    return this.$$send(status, rawPath, data)
+  }
 
+  public async $$send (status: string, rawPath: string, data?: any): Promise <void> {
     let bundledData
     try {
-      bundledData = await this._encoder.bundle(status, path, data || undefined)
+      bundledData = await this._encoder.bundle(status, rawPath, data || undefined)
     } catch (err) {
       throw new Error(`Error during message bundling: ${err.message}`)
     }
@@ -48,8 +49,8 @@ export class Socket implements RouterSocket {
     this._connection.send(encodedData)
   }
 
-  public $$send (status: string, rawPath: string, data?: any): Promise<void> {
-    return this.send(status, rawPath, data)
+  public $$subHandle (patternStr: string, handler: Handler, timeout?: number): void {
+    return this._router.$$subHandle(patternStr, handler, timeout)
   }
 
   private async _handleMessage (encodedData: any): Promise <void> {
