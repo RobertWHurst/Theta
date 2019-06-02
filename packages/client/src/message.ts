@@ -1,28 +1,27 @@
-import { ThetaClient } from './theta-client'
+import { Params, Pattern, createChannelId } from '@thetaapp/pattern'
 
 export class Message {
-  public static async fromEncodedData (thetaClient: ThetaClient, encodedData: any): Promise<Message> {
-    const message = new this(thetaClient)
-    await message.fromEncodedData(encodedData)
-    return message
-  }
-
-  public data?: any
-  public status: string
+  public rawPath: string
   public channel: string
-  private _thetaClient: ThetaClient
+  public status: string
+  public data: any
+  public path?: string
+  public params?: Params
 
-  constructor (thetaClient: ThetaClient) {
-    Object.setPrototypeOf(this, thetaClient.message)
-    this.status = ''
-    this.channel = ''
-    this._thetaClient = thetaClient
+  constructor (rawPath: string, status: string, data: any) {
+    this.rawPath = rawPath
+    this.status = status
+    this.data = data
+    this.channel = createChannelId()
   }
 
-  public async fromEncodedData (encodedData: any) {
-    this.data = await this._thetaClient.decoder(encodedData)
-    const { channel, status } = await this._thetaClient.classifier(this.data)
-    this.channel = channel
-    this.status = status
+  public $$tryToApplyPattern (pattern: Pattern): boolean {
+    const match = pattern.tryMatch(this.rawPath)
+    if (!match) { return false }
+
+    this.params = match.params
+    this.path = match.path
+    match.channel && (this.channel = match.channel)
+    return true
   }
 }

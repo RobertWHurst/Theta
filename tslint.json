@@ -1,10 +1,10 @@
 {
   "extends": "tslint-config-standard",
-  "linterOptions": {
-    "exclude": ["packages/*/lib"]
-  },
   "rules": {
     "unified-signatures": false,
     "member-access": true
+  },
+  "linterOptions": {
+    "exclude": ["packages/*/lib/**", "node_modules/**", ".cache/**"]
   }
 }

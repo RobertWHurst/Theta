@@ -1,5 +1,4 @@
-export * from './context'
-export * from './message'
-export * from './theta-client'
-import { ThetaClient } from './theta-client'
-export default (): ThetaClient => new ThetaClient()
+import { Config } from './config'
+import { Client } from './client'
+export { Config, Client }
+export const theta = (config?: Config) => new Client(config)

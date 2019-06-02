@@ -1,6 +1,6 @@
 import sinon from 'sinon'
 import { Router } from '../router'
-import { TestContext } from './test-context'
+import { Context } from '../context'
 
 describe('new Router()', () => {
 
@@ -35,7 +35,7 @@ describe('new Router()', () => {
       const r = new Router({})
       const handler = sinon.stub()
       r.handle('/my/path', handler)
-      const ctx = new TestContext()
+      const ctx = new Context({}, null, null as any)
       ctx.$$tryToApplyPattern = sinon.stub().returns(true)
 
       await r.route(ctx)
@@ -56,7 +56,7 @@ describe('new Router()', () => {
       r.handle(badHandler2)
       r.handle(goodHandler1)
       r.handle(goodHandler2)
-      const ctx = new TestContext()
+      const ctx = new Context({}, null, null as any)
       ctx.$$tryToApplyPattern = sinon.stub()
         .returns(false)
         .onThirdCall()
@@ -81,7 +81,7 @@ describe('new Router()', () => {
       r.handle(badHandler2)
       r.handle(goodHandler1)
       r.handle(goodHandler2)
-      const ctx = new TestContext()
+      const ctx = new Context({}, null, null as any)
       ctx.$$tryToApplyPattern = sinon.stub()
         .returns(false)
         .onCall(2)

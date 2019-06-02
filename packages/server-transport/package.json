@@ -1,0 +1,30 @@
+{
+  "name": "@thetaapp/server-transport",
+  "version": "1.0.1",
+  "engines": {
+    "node": ">=10.15.0"
+  },
+  "description": "Transport base for Theta. An express like framework for web sockets",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.js",
+  "author": "Robert Hurst <robertwhurst@gmail.com>",
+  "license": "MIT",
+  "readme": "Readme.md",
+  "files": [
+    "lib",
+    "Readme.md"
+  ],
+  "scripts": {
+    "dev": "tsc -w --pretty",
+    "build": "tsc --pretty",
+    "test": "nyc mocha -r ts-node/register src/test/*.spec.ts --color",
+    "cover": "nyc check-coverage",
+    "coverage-report": "nyc report --reporter=html",
+    "clean": "rimraf lib"
+  },
+  "devDependencies": {
+    "pre-commit": "^1.2.2",
+    "rimraf": "^2.6.2"
+  },
+  "gitHead": "430bbb4405ea5e37ad6c7de6170111d11c6bb040"
+}

@@ -11,13 +11,13 @@ export class Pattern {
 
   constructor (_: Config, src: string) {
     const s = src
-    let r = ''
-    let c = ''
-    let n = ''
-    let sa = []
-    let cap = false
-    let esc = false
-    let pnEsc = false
+    let r = '' // raw pattern
+    let c = '' // segment
+    let n = '' // channel
+    let sa = [] // all segments
+    let cap = false // is capturing path
+    let esc = false // in escape sequence
+    let pnEsc = false // in sub pattern escape sequence
 
     for (let i = 0; i < s.length; i += 1) {
       if (!pnEsc && s[i] === '\\') {
@@ -62,9 +62,7 @@ export class Pattern {
     this.segments = sa.map(s => new Segment(s))
 
     const segmentPatterns = this.segments.map(s => s.subPatternStr)
-    segmentPatterns.push(cap ? '.+)' : '?)$')
-
-    const patternStr = `^${n ? `(${n})@` : `(?:([^@]+)@)?`}/?(${segmentPatterns.join('/')}`
+    const patternStr = `^${n ? `(${n})@` : '(?:([^@]+)@)?'}/?(${segmentPatterns.join('/')}/${this.capture ? '.+)' : '?)$'}`
 
     this.pattern = new RegExp(patternStr)
   }
@@ -78,5 +76,9 @@ export class Pattern {
       path: matches[2],
       params: matches.groups || {}
     }
+  }
+
+  public static raw (config: Config, str: string): string {
+    return new Pattern(config, str).raw
   }
 }
