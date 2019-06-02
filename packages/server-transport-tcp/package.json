@@ -26,7 +26,6 @@
     "@thetaapp/server-transport": "^1.0.1"
   },
   "devDependencies": {
-    "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2"
   },
   "gitHead": "430bbb4405ea5e37ad6c7de6170111d11c6bb040"
