@@ -1,6 +1,6 @@
 {
   "name": "@thetaapp/client",
-  "version": "1.0.1",
+  "version": "2.0.0-alpha.0",
   "description": "A client for Theta, an express like framework for web sockets",
   "main": "./lib/index.js",
   "types": "./lib/index.d.js",
@@ -20,9 +20,9 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@thetaapp/client-transport": "^1.0.1",
-    "@thetaapp/encoder": "^1.0.1",
-    "@thetaapp/router": "^1.0.1"
+    "@thetaapp/client-transport": "^2.0.0-alpha.0",
+    "@thetaapp/encoder": "^2.0.0-alpha.0",
+    "@thetaapp/router": "^2.0.0-alpha.0"
   },
   "devDependencies": {
     "sinon": "^7.2.2"
