@@ -66,7 +66,7 @@ export class Router {
       return handler(ctx)
     }
     const handlerChain = this._handlerChain
-    this._handlerChain = new HandlerChain(this._config, patternStr as string, handler, false)
+    this._handlerChain = new HandlerChain(this._config, patternStr as string, h, false)
     this._handlerChain.nextLink = handlerChain
   }
 

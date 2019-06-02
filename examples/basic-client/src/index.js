@@ -8,6 +8,8 @@ app.transport(webSocketTransport({ url: 'ws://localhost:8182' }));
 
 app.connect();
 
+window.app = app;
+
 window.sayHello = () => {
   app.request('/hello', {
     message: 'Client: Hi there!'
@@ -25,10 +27,19 @@ window.sayHello = () => {
   });
 }
 
-const pingHandler = () => {
-  setTimeout(rec, 0)
+let start = Date.now()
+let i = 0;
+
+window.rps = () => {
+  console.log(Math.round(i / ((Date.now() - start) / 1000)))
+  if (i > 10000) {
+    start = Date.now()
+    i = 0
+  }
 }
+
 const rec = () => {
-  app.request('/ping', pingHandler)
+  i += 1;
+  app.request('/ping', () => rec())
 }
 rec()

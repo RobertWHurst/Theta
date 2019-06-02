@@ -3,8 +3,6 @@ import { Segment } from './segment'
 import { rxEscChars } from './regex-escape-chars'
 import { Match } from './match'
 
-const regExpCache = new Map()
-
 export class Pattern {
   public raw: string
   public channels: string[]
@@ -41,7 +39,7 @@ export class Pattern {
         r += ')'
         pnEsc = false
       } else if (!esc && !pnEsc && sa.length === 0 && s[i] === '@') {
-        c = c.split('').map(c => rxEscChars.includes(c) ? `\\${c}` : c).join('')
+        c = c.split('').map(c => rxEscChars.has(c) ? `\\${c}` : c).join('')
         n = n ? `${n}|${c}` : c
         na.push(c)
         c = ''
@@ -70,12 +68,7 @@ export class Pattern {
     const segmentPatterns = this.segments.map(s => s.subPatternStr)
     const patternStr = `^${n ? `(${n})@` : '(?:([^@]+)@)?'}/?(${segmentPatterns.join('/')}/${this.capture ? '.+)' : '?)$'}`
 
-    let pattern = regExpCache.get(patternStr)
-    if (!pattern) {
-      pattern = new RegExp(patternStr)
-      regExpCache.set(patternStr, pattern)
-    }
-    this.pattern = pattern
+    this.pattern = new RegExp(patternStr)
   }
 
   public tryMatch (path: string): Match | void {

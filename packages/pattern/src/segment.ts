@@ -52,7 +52,7 @@ export class Segment {
           pnEr = 3
           break
         }
-        c += rxEscChars.includes(s[i]) ? `\\${s[i]}` : s[i]
+        c += rxEscChars.has(s[i]) ? `\\${s[i]}` : s[i]
         r += s[i]
       }
     }

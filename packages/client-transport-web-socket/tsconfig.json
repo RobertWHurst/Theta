@@ -4,6 +4,7 @@
     "outDir": "lib",
     "rootDir": "src",
     "lib": [
+      "esnext",
       "dom"
     ]
   },

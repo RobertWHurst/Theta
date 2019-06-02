@@ -5,6 +5,8 @@ import { TimeoutError } from './timeout-error'
 import { Router } from './router'
 import { Context } from './context'
 
+const noop = () => { /* noop */ }
+
 export class HandlerChain {
   public nextLink?: HandlerChain
   private _pattern: Pattern
@@ -49,6 +51,14 @@ export class HandlerChain {
       await this.nextLink.route(ctx)
     }
 
+    ctx.next = async function (err?: Error) {
+      if (err) {
+        this.$$error = err
+        return
+      }
+      await executeNext()
+    }
+
     if (ctx.$$error && !this._isErrorHandler) {
       return executeNext()
     }
@@ -57,29 +67,7 @@ export class HandlerChain {
       return executeNext()
     }
 
-    const timeoutPromise = new Promise((_, reject) => {
-      let timeoutId: NodeJS.Timeout
-
-      const exec = () => {
-        clearTimeout(timeoutId)
-        const timeout = ctx.$$timeout || this._config.timeout || -1
-        if (timeout === -1) { return }
-        timeoutId = setTimeout(() => { reject(new TimeoutError(ctx)) }, timeout)
-      }
-
-      ctx.$$resetTimeout = exec
-      exec()
-    })
-
-    const handlerPromise = (async () => {
-      ctx.next = async function (err?: Error) {
-        if (err) {
-          this.$$error = err
-          return
-        }
-        await executeNext()
-      }
-
+    const executeHandler = async () => {
       try {
         this._handler instanceof Router
           ? await this.route(ctx)
@@ -90,8 +78,27 @@ export class HandlerChain {
       if (ctx.$$error) {
         throw ctx.$$error
       }
-    })()
+    }
 
-    await Promise.race([timeoutPromise, handlerPromise])
+    const timeout = ctx.$$timeout || this._config.timeout || -1
+
+    if (timeout === -1) {
+      ctx.$$resetTimeout = noop
+      return executeHandler()
+    }
+
+    await Promise.race([
+      new Promise((_, reject) => {
+        let timeoutId: NodeJS.Timeout
+        const exec = () => {
+          timeoutId !== undefined && clearTimeout(timeoutId)
+          if (timeout === -1) { return }
+          timeoutId = setTimeout(() => { reject(new TimeoutError(ctx)) }, timeout)
+        }
+        ctx.$$resetTimeout = exec
+        exec()
+      }),
+      executeHandler()
+    ])
   }
 }

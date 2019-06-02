@@ -1,1 +1,1 @@
-export const rxEscChars = ['(', ')', '[', ']', '{', '}', '^', '$', '+', '*']
+export const rxEscChars = new Set(['(', ')', '[', ']', '{', '}', '^', '$', '+', '*'])
