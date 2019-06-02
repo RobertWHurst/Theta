@@ -30,7 +30,8 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@thetaapp/server-transport-web-socket": "^1.0.1",
+    "@thetaapp/server-transport-web-socket": "^2.0.0-alpha.0",
+    "@types/uuid": "^3.4.4",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2",
     "sinon": "^7.3.2"

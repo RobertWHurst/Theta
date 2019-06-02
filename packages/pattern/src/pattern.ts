@@ -3,20 +3,23 @@ import { Segment } from './segment'
 import { rxEscChars } from './regex-escape-chars'
 import { Match } from './match'
 
+type Channels = { [s: string]: boolean }
 const regExpCache = new Map<string, RegExp>()
 
 export class Pattern {
   public raw: string
-  public channels: Set<string>
   public capture: boolean
   public pattern: RegExp
   public segments: Segment[]
+  private _hasChannels: boolean
+  private _channels: Channels
 
   constructor (_: Config, src: string) {
     const s = src
     let r = '' // raw pattern
     let c = '' // segment
-    let na = new Set<string>() // channels
+    let n = false // has channel
+    let na: Channels = {} // channels
     let sa = [] // all segments
     let cap = false // is capturing path
     let esc = false // in escape sequence
@@ -41,8 +44,8 @@ export class Pattern {
         pnEsc = false
       } else if (!esc && !pnEsc && sa.length === 0 && s[i] === '@') {
         c = c.split('').map(c => rxEscChars.has(c) ? `\\${c}` : c).join('')
-        na || (na = new Set())
-        na.add(c)
+        n = true
+        na[c] = true
         c = ''
         r += '@'
       } else if (!esc && !pnEsc && s[i] === '/') {
@@ -62,9 +65,10 @@ export class Pattern {
     c && sa.push(c)
 
     this.raw = r
-    this.channels = na
     this.capture = cap
     this.segments = sa.map(s => new Segment(s))
+    this._hasChannels = n
+    this._channels = na
 
     const segmentPatterns = this.segments.map(s => s.subPatternStr)
     const patternStr = `^(?:([^@]+)@)?/?(${segmentPatterns.join('/')}/${this.capture ? '.+)' : '?)$'}`
@@ -80,7 +84,7 @@ export class Pattern {
     const matches = path.match(this.pattern)
     if (
       !matches ||
-      (this.channels.size && !this.channels.has(matches[1]))
+      (this._hasChannels && !this._channels[matches[1]])
     ) { return }
 
     return {
