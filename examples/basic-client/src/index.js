@@ -27,19 +27,14 @@ window.sayHello = () => {
   });
 }
 
-let start = Date.now()
-let i = 0;
-
-window.rps = () => {
-  console.log(Math.round(i / ((Date.now() - start) / 1000)))
-  if (i > 10000) {
-    start = Date.now()
-    i = 0
-  }
+const s = Date.now()
+const l = 100;
+let ii = l;
+const checkDone = () => {
+  ii -= 1
+  if (ii === 0) { console.log((l / ((Date.now() - s) / 1000))) }
 }
 
-const rec = () => {
-  i += 1;
-  app.request('/ping', () => rec())
+for (let i = 0; i < l; i += 1) {
+  app.request('/ping', checkDone)
 }
-rec()

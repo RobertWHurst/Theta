@@ -43,7 +43,7 @@ export class Pattern {
         r += ')'
         pnEsc = false
       } else if (!esc && !pnEsc && sa.length === 0 && s[i] === '@') {
-        c = c.split('').map(c => rxEscChars.has(c) ? `\\${c}` : c).join('')
+        c = c.split('').map(c => rxEscChars[c] ? `\\${c}` : c).join('')
         n = true
         na[c] = true
         c = ''
