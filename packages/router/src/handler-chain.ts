@@ -5,7 +5,7 @@ import { TimeoutError } from './timeout-error'
 import { Router } from './router'
 import { Context } from './context'
 
-const noop = () => { /* noop */ }
+const noop = (): void => {}
 
 export class HandlerChain {
   public nextLink?: HandlerChain
@@ -14,20 +14,38 @@ export class HandlerChain {
   private _config: Config
   private _isErrorHandler: boolean
 
-  public constructor (config: Config, patternStr: string, handler: Handler | Router, isErrorHandler: boolean) {
+  public constructor(
+    config: Config,
+    patternStr: string,
+    handler: Handler | Router,
+    isErrorHandler: boolean
+  ) {
     this._config = config
     this._pattern = new Pattern(this._config, patternStr)
     this._handler = handler
     this._isErrorHandler = isErrorHandler
   }
 
-  public push (patternStr: string, handler: Handler | Router, isErrorHandler: boolean) {
+  public push(
+    patternStr: string,
+    handler: Handler | Router,
+    isErrorHandler: boolean
+  ): void {
     this.nextLink
       ? this.nextLink.push(patternStr, handler, isErrorHandler)
-      : this.nextLink = new HandlerChain(this._config, patternStr, handler, isErrorHandler)
+      : (this.nextLink = new HandlerChain(
+          this._config,
+          patternStr,
+          handler,
+          isErrorHandler
+        ))
   }
 
-  public is (patternStr: string, handler: Handler | Router, isErrorHandler: boolean): boolean {
+  public is(
+    patternStr: string,
+    handler: Handler | Router,
+    isErrorHandler: boolean
+  ): boolean {
     // TODO: remove raw here
     return (
       this._pattern.raw === Pattern.raw(patternStr) &&
@@ -36,8 +54,14 @@ export class HandlerChain {
     )
   }
 
-  public remove (patternStr: string, handler: Handler | Router, isErrorHandler: boolean): boolean {
-    if (!this.nextLink) { return false }
+  public remove(
+    patternStr: string,
+    handler: Handler | Router,
+    isErrorHandler: boolean
+  ): boolean {
+    if (!this.nextLink) {
+      return false
+    }
     if (this.nextLink.is(patternStr, handler, isErrorHandler)) {
       this.nextLink = this.nextLink.nextLink
       return true
@@ -45,13 +69,15 @@ export class HandlerChain {
     return this.nextLink.remove(patternStr, handler, isErrorHandler)
   }
 
-  public async route (ctx: Context): Promise<void> {
-    const executeNext = async () => {
-      if (!this.nextLink) { return }
+  public async route(ctx: Context): Promise<void> {
+    const executeNext = async (): Promise<void> => {
+      if (!this.nextLink) {
+        return
+      }
       await this.nextLink.route(ctx)
     }
 
-    ctx.next = async function (err?: Error) {
+    ctx.next = async function(err?: Error): Promise<void> {
       if (err) {
         this.$$error = err
         return
@@ -63,11 +89,11 @@ export class HandlerChain {
       return executeNext()
     }
 
-    if (!ctx.$$tryToApplyPattern!(this._pattern)) {
+    if (!ctx.$$tryToApplyPattern(this._pattern)) {
       return executeNext()
     }
 
-    const executeHandler = async () => {
+    const executeHandler = async (): Promise<void> => {
       try {
         this._handler instanceof Router
           ? await this.route(ctx)
@@ -88,12 +114,16 @@ export class HandlerChain {
     }
 
     await Promise.race([
-      new Promise((_, reject) => {
+      new Promise((_resolve, reject) => {
         let timeoutId: NodeJS.Timeout
-        const exec = () => {
+        const exec = (): void => {
           timeoutId !== undefined && clearTimeout(timeoutId)
-          if (timeout === -1) { return }
-          timeoutId = setTimeout(() => { reject(new TimeoutError(ctx)) }, timeout)
+          if (timeout === -1) {
+            return
+          }
+          timeoutId = setTimeout((): void => {
+            reject(new TimeoutError(ctx))
+          }, timeout)
         }
         ctx.$$resetTimeout = exec
         exec()

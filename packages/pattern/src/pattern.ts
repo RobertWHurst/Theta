@@ -14,7 +14,7 @@ export class Pattern {
   private _hasChannels: boolean
   private _channels: Channels
 
-  constructor (_: Config, src: string) {
+  constructor(_: Config, src: string) {
     const s = src
     let r = '' // raw pattern
     let c = '' // segment
@@ -43,7 +43,10 @@ export class Pattern {
         r += ')'
         pnEsc = false
       } else if (!esc && !pnEsc && sa.length === 0 && s[i] === '@') {
-        c = c.split('').map(c => rxEscChars[c] ? `\\${c}` : c).join('')
+        c = c
+          .split('')
+          .map(c => (rxEscChars[c] ? `\\${c}` : c))
+          .join('')
         n = true
         na[c] = true
         c = ''
@@ -56,7 +59,9 @@ export class Pattern {
         cap = true
         r += '+'
       } else {
-        esc && (s[i] === '(' || s[i] === ')' || s[i] === '@' || s[i] === '/') && (r += '\\')
+        esc &&
+          (s[i] === '(' || s[i] === ')' || s[i] === '@' || s[i] === '/') &&
+          (r += '\\')
         r += s[i]
         esc && (esc = false)
         c += s[i]
@@ -71,7 +76,9 @@ export class Pattern {
     this._channels = na
 
     const segmentPatterns = this.segments.map(s => s.subPatternStr)
-    const patternStr = `^(?:([^@]+)@)?/?(${segmentPatterns.join('/')}/${this.capture ? '.+)' : '?)$'}`
+    const patternStr = `^(?:([^@]+)@)?/?(${segmentPatterns.join('/')}/${
+      this.capture ? '.+)' : '?)$'
+    }`
     let pattern = regExpCache.get(patternStr)
     if (!pattern) {
       pattern = new RegExp(patternStr)
@@ -80,12 +87,11 @@ export class Pattern {
     this.pattern = pattern
   }
 
-  public tryMatch (path: string): Match | void {
+  public tryMatch(path: string): Match | void {
     const matches = path.match(this.pattern)
-    if (
-      !matches ||
-      (this._hasChannels && !this._channels[matches[1]])
-    ) { return }
+    if (!matches || (this._hasChannels && !this._channels[matches[1]])) {
+      return
+    }
 
     return {
       channel: matches[1],
@@ -94,7 +100,7 @@ export class Pattern {
     }
   }
 
-  public static raw (str: string): string {
+  public static raw(str: string): string {
     return new Pattern({}, str).raw
   }
 }

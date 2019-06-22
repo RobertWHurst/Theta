@@ -7,23 +7,27 @@ export class WebSocketTransport implements Transport {
   private _server?: WebSocket.Server
   public handleConnection?: (connection: TransportConnection) => void
 
-  constructor (opts: WebSocket.ServerOptions) {
+  constructor(opts: WebSocket.ServerOptions) {
     this._opts = opts
   }
 
-  public async listen () {
+  public async listen() {
     this._server = new WebSocket.Server(this._opts)
-    this._server.on('connection', (s) => { this._handleConnection(s) })
-  }
-
-  public async close () {
-    if (!this._server) { return }
-    await new Promise((resolve, reject) => {
-      this._server!.close(err => err ? reject(err) : resolve())
+    this._server.on('connection', s => {
+      this._handleConnection(s)
     })
   }
 
-  private _handleConnection (socket: WebSocket) {
+  public async close() {
+    if (!this._server) {
+      return
+    }
+    await new Promise((resolve, reject) => {
+      this._server!.close(err => (err ? reject(err) : resolve()))
+    })
+  }
+
+  private _handleConnection(socket: WebSocket) {
     this.handleConnection!(new WebSocketConnection(socket))
   }
 }

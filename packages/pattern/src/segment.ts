@@ -6,7 +6,7 @@ export class Segment {
   public subPatternStr: string
   public keyName?: string
 
-  constructor (src: string) {
+  constructor(src: string) {
     const s = src
     let c = ''
     let r = ''
@@ -57,15 +57,18 @@ export class Segment {
       }
     }
     switch (pnEr) {
-      case 1: throw new Error(
-        'Invalid pattern segment: Characters found after segment regular expression'
-      )
-      case 2: throw new Error(
-        'Invalid pattern segment: Cannot use regular expression groups within segement patterns'
-      )
-      case 3: throw new Error(
-        'Invalid pattern segment: Cannot use regular expression control characters in key names'
-      )
+      case 1:
+        throw new Error(
+          'Invalid pattern segment: Characters found after segment regular expression'
+        )
+      case 2:
+        throw new Error(
+          'Invalid pattern segment: Cannot use regular expression groups within segement patterns'
+        )
+      case 3:
+        throw new Error(
+          'Invalid pattern segment: Cannot use regular expression control characters in key names'
+        )
     }
 
     this.raw = r

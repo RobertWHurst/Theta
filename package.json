@@ -7,6 +7,7 @@
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "dev": "lerna run --sort --parallel dev",
+    "lint": "prettier",
     "test": "lerna run test",
     "coverage-report": "lerna run coverage-report",
     "clean": "rimraf packages/**/lib"
@@ -14,19 +15,16 @@
   "devDependencies": {
     "@types/assert": "^1.4.0",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.12.0",
-    "@types/sinon": "^5.0.5",
-    "lerna": "^3.14.1",
-    "mocha": "^3.3.0",
-    "nyc": "^13.1.0",
+    "@types/node": "^12.0.10",
+    "@types/sinon": "^7.0.13",
+    "lerna": "^3.15.0",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
     "pre-commit": "^1.2.2",
+    "prettier": "^1.18.2",
     "rimraf": "^2.6.2",
-    "sinon": "^2.1.0",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.11.0",
-    "tslint-config-standard": "^8.0.1",
-    "typescript": "^3.1.3",
-    "typescript-tslint-plugin": "^0.2.1"
-  },
-  "dependencies": {}
+    "sinon": "^7.3.2",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.2"
+  }
 }

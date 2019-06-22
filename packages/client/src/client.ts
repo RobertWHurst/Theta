@@ -10,30 +10,34 @@ export class Client implements Socket {
   private _transport?: Transport
   private _router: Router
 
-  constructor (config?: Config) {
+  constructor(config?: Config) {
     this._config = config || {}
     this._encoder = this._config.encoder || defaultEncoder
     this._transport = this._config.transport
     this._router = new Router(this._config)
   }
 
-  public encoder (encoder: Encoder) {
+  public encoder(encoder: Encoder) {
     this._encoder = encoder
   }
 
-  public transport (transport: Transport) {
+  public transport(transport: Transport) {
     transport.handleMessage = d => this._handleMessage(d)
     this._transport = transport
   }
 
-  public async connect (): Promise<Context> {
+  public async connect(): Promise<Context> {
     await this._transport!.connect()
     return new Context(this._config, new Message('', '', undefined), this)
   }
 
-  public async request (path: string, handler: Handler): Promise<void>
-  public async request (path: string, data: any, handler: Handler): Promise<void>
-  public async request (path: string, data: any | Handler, handler?: Handler): Promise<void> {
+  public async request(path: string, handler: Handler): Promise<void>
+  public async request(path: string, data: any, handler: Handler): Promise<void>
+  public async request(
+    path: string,
+    data: any | Handler,
+    handler?: Handler
+  ): Promise<void> {
     if (!handler) {
       handler = data as Handler
       data = undefined
@@ -44,7 +48,7 @@ export class Client implements Socket {
     await this.$$send('', rawPath, data)
   }
 
-  public async $$send (status: string, path: string, data?: any): Promise<void> {
+  public async $$send(status: string, path: string, data?: any): Promise<void> {
     let bundledData
     try {
       bundledData = await this._encoder.bundle(status, path, data || undefined)
@@ -62,11 +66,15 @@ export class Client implements Socket {
     this._transport!.send(encodedData)
   }
 
-  public $$subHandle (patternStr: string, handler: Handler, timeout?: number): void {
+  public $$subHandle(
+    patternStr: string,
+    handler: Handler,
+    timeout?: number
+  ): void {
     return this._router.$$subHandle(patternStr, handler, timeout)
   }
 
-  private async _handleMessage (encodedData: any): Promise<void> {
+  private async _handleMessage(encodedData: any): Promise<void> {
     let data
     try {
       data = await this._encoder.decode(encodedData)
@@ -83,12 +91,16 @@ export class Client implements Socket {
       return
     }
 
-    const message = new Message(classification.path, classification.status, data)
+    const message = new Message(
+      classification.path,
+      classification.status,
+      data
+    )
     const ctx = new Context(this._config, message, this)
     await this._router!.route(ctx)
   }
 
-  private async _handleError (stageName: string, err: Error) {
+  private async _handleError(stageName: string, err: Error) {
     const ctx = new Context(this._config, new Message('', '', null), this)
     ctx.$$error = new Error(`Error during message ${stageName}: ${err.message}`)
     await this._router!.route(ctx)

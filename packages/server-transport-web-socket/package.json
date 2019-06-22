@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@thetaapp/server-transport": "^2.0.0-alpha.0",
-    "ws": "^7.0.0"
+    "ws": "^7.0.1"
   },
   "devDependencies": {
     "@types/ws": "^6.0.1",

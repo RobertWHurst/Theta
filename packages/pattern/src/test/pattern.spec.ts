@@ -2,41 +2,58 @@ import { Pattern } from '../pattern'
 import assert from 'assert'
 
 describe('new Pattern(raw: string)', () => {
-
   it('can parse basic/path', () => {
     const pattern = new Pattern({}, 'basic/path')
     assert.strictEqual(pattern.raw, 'basic/path')
-    assert.strictEqual(pattern.pattern.source, '^(?:([^@]+)@)?\\/?(basic\\/path\\/?)$')
+    assert.strictEqual(
+      pattern.pattern.source,
+      '^(?:([^@]+)@)?\\/?(basic\\/path\\/?)$'
+    )
   })
 
   it('can parse /basic/path', () => {
     const pattern = new Pattern({}, '/basic/path')
     assert.strictEqual(pattern.raw, 'basic/path')
-    assert.strictEqual(pattern.pattern.source, '^(?:([^@]+)@)?\\/?(basic\\/path\\/?)$')
+    assert.strictEqual(
+      pattern.pattern.source,
+      '^(?:([^@]+)@)?\\/?(basic\\/path\\/?)$'
+    )
   })
 
   it('can parse basic/path/', () => {
     const pattern = new Pattern({}, 'basic/path/')
     assert.strictEqual(pattern.raw, 'basic/path')
-    assert.strictEqual(pattern.pattern.source, '^(?:([^@]+)@)?\\/?(basic\\/path\\/?)$')
+    assert.strictEqual(
+      pattern.pattern.source,
+      '^(?:([^@]+)@)?\\/?(basic\\/path\\/?)$'
+    )
   })
 
   it('can parse :key/path', () => {
     const pattern = new Pattern({}, ':key/path')
     assert.strictEqual(pattern.raw, ':key/path')
-    assert.strictEqual(pattern.pattern.source, '^(?:([^@]+)@)?\\/?((?<key>[^\\/]+)\\/path\\/?)$')
+    assert.strictEqual(
+      pattern.pattern.source,
+      '^(?:([^@]+)@)?\\/?((?<key>[^\\/]+)\\/path\\/?)$'
+    )
   })
 
   it('can parse */path', () => {
     const pattern = new Pattern({}, '*/path')
     assert.strictEqual(pattern.raw, '*/path')
-    assert.strictEqual(pattern.pattern.source, '^(?:([^@]+)@)?\\/?([^\\/]+\\/path\\/?)$')
+    assert.strictEqual(
+      pattern.pattern.source,
+      '^(?:([^@]+)@)?\\/?([^\\/]+\\/path\\/?)$'
+    )
   })
 
   it('can parse *([a-z]+)/path', () => {
     const pattern = new Pattern({}, '*([a-z]+)/path')
     assert.strictEqual(pattern.raw, '*([a-z]+)/path')
-    assert.strictEqual(pattern.pattern.source, '^(?:([^@]+)@)?\\/?([a-z]+\\/path\\/?)$')
+    assert.strictEqual(
+      pattern.pattern.source,
+      '^(?:([^@]+)@)?\\/?([a-z]+\\/path\\/?)$'
+    )
   })
 
   it('can parse path/+', () => {
@@ -48,7 +65,10 @@ describe('new Pattern(raw: string)', () => {
   it('correctly handles escapes', () => {
     const pattern = new Pattern({}, 'escaped\\/path\\#chars\\\\in')
     assert.strictEqual(pattern.raw, 'escaped\\/path#chars\\\\in')
-    assert.strictEqual(pattern.pattern.source, '^(?:([^@]+)@)?\\/?(escaped\\/path#chars\\\\in\\/?)$')
+    assert.strictEqual(
+      pattern.pattern.source,
+      '^(?:([^@]+)@)?\\/?(escaped\\/path#chars\\\\in\\/?)$'
+    )
   })
 
   it('correctly handles channels', () => {
@@ -60,23 +80,29 @@ describe('new Pattern(raw: string)', () => {
   it('correctly handles multiple channels', () => {
     const pattern = new Pattern({}, 'ch1@ch2@and/path')
     assert.strictEqual(pattern.raw, 'ch1@ch2@and/path')
-    assert.strictEqual(pattern.pattern.source, '^(ch1|ch2)@\\/?(and\\/path\\/?)$')
+    assert.strictEqual(
+      pattern.pattern.source,
+      '^(ch1|ch2)@\\/?(and\\/path\\/?)$'
+    )
   })
 
-  it('escapes regex chars outside of the segment\'s pattern', () => {
+  it("escapes regex chars outside of the segment's pattern", () => {
     const pattern = new Pattern({}, '$basic/path')
     assert.strictEqual(pattern.raw, '$basic/path')
-    assert.strictEqual(pattern.pattern.source, '^(?:([^@]+)@)?\\/?(\\$basic\\/path\\/?)$')
+    assert.strictEqual(
+      pattern.pattern.source,
+      '^(?:([^@]+)@)?\\/?(\\$basic\\/path\\/?)$'
+    )
   })
 
-  it('throws if a segment\'s pattern contains a regular expression group', () => {
+  it("throws if a segment's pattern contains a regular expression group", () => {
     assert.throws(() => {
       /* tslint:disable-next-line no-unused-expression */
       new Pattern({}, '*(([a-z]+))/path')
     }, /groups/)
   })
 
-  it('throws if a segment\'s pattern is trailed by additional characters', () => {
+  it("throws if a segment's pattern is trailed by additional characters", () => {
     assert.throws(() => {
       /* tslint:disable-next-line no-unused-expression */
       new Pattern({}, '*([a-z]+)invalid/path')
@@ -91,7 +117,6 @@ describe('new Pattern(raw: string)', () => {
   })
 
   describe('#tryMatch(path: string): Params', () => {
-
     it('can match path /basic/path', () => {
       const pattern = new Pattern({}, 'basic/path')
       const path = '/basic/path'

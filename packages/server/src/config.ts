@@ -1,6 +1,6 @@
 import { Encoder } from '@thetaapp/encoder'
 
 export interface Config {
-  encoder?: Encoder,
+  encoder?: Encoder
   timeout?: number
 }

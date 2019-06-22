@@ -9,15 +9,17 @@ export class Message {
   public params?: Params
   public data: any
 
-  constructor (rawPath: string, status: string, data: any) {
+  constructor(rawPath: string, status: string, data: any) {
     this.rawPath = rawPath
     this.status = status
     this.data = data
   }
 
-  public $$tryToApplyPattern (pattern: Pattern): boolean {
+  public $$tryToApplyPattern(pattern: Pattern): boolean {
     const match = pattern.tryMatch(this.rawPath)
-    if (!match) { return false }
+    if (!match) {
+      return false
+    }
 
     this.channel = match.channel
     this.path = match.path

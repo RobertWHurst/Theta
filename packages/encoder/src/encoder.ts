@@ -1,12 +1,12 @@
 export interface Encoder {
-  encode (data: any): Promise<any>
-  decode (data: any): Promise<any>
-  classify (data: any): Promise<Classification>
-  bundle (status: string, path: string, data: any): Promise<any>
+  encode(data: any): Promise<any>
+  decode(data: any): Promise<any>
+  classify(data: any): Promise<Classification>
+  bundle(status: string, path: string, data: any): Promise<any>
 }
 
 export interface Classification {
-  status: string,
+  status: string
   path: string
 }
 
@@ -22,5 +22,9 @@ export const defaultEncoder: Encoder = {
     }
     return { path, status }
   },
-  bundle: async (status: string, path: string, data: any) => ({ status, path, data })
+  bundle: async (status: string, path: string, data: any) => ({
+    status,
+    path,
+    data
+  })
 }

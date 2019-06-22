@@ -17,76 +17,66 @@ export class Context {
 
   private _config: Config
 
-  constructor (config: Config, message: Message | null, socket: Socket) {
+  constructor(config: Config, message: Message | null, socket: Socket) {
     this.message = message
     this.socket = socket
     this._config = config
   }
 
-  public get rawPath (): string {
-    return this.message
-      ? this.message.rawPath
-      : ''
+  public get rawPath(): string {
+    return this.message ? this.message.rawPath : ''
   }
 
-  public get channel (): string {
-    return this.message
-      ? this.message.channel!
-      : createChannelId()
+  public get channel(): string {
+    return this.message ? this.message.channel! : createChannelId()
   }
 
-  public get path (): string {
-    return this.message
-      ? this.message.path!
-      : ''
+  public get path(): string {
+    return this.message ? this.message.path! : ''
   }
 
-  public get params (): Params {
-    return this.message
-      ? this.message.params!
-      : {}
+  public get params(): Params {
+    return this.message ? this.message.params! : {}
   }
 
-  public get data (): any {
-    return this.message
-      ? this.message.data
-      : null
+  public get data(): any {
+    return this.message ? this.message.data : null
   }
 
-  public get currentStatus (): string {
+  public get currentStatus(): string {
     return this.$$status || 'ok'
   }
 
-  public get error (): Error | void {
+  public get error(): Error | void {
     return this.$$error
   }
 
-  public status (status: string): this {
+  public status(status: string): this {
     this.$$status = status
     return this
   }
 
-  public async send (path: string, data?: any): Promise<void> {
+  public async send(path: string, data?: any): Promise<void> {
     await this.socket.$$send(this.currentStatus, path, data)
   }
 
-  public async request (data?: any): Promise<Context> {
-    return new Promise((resolve) => {
+  public async request(data?: any): Promise<Context> {
+    return new Promise(resolve => {
       this.socket.$$subHandle(this.rawPath, resolve, this._config.timeout)
       this.send(this.rawPath, data)
     })
   }
 
-  public async reply (data?: any): Promise<void> {
+  public async reply(data?: any): Promise<void> {
     await this.send(this.rawPath, data)
     this.end()
   }
 
-  public end (): void {
+  public end(): void {
     this.$$handled = true
   }
 
-  public timeout (ms?: number): this {
+  public timeout(ms?: number): this {
     if (typeof ms === 'number') {
       this.$$timeout = ms
     }
@@ -94,14 +84,12 @@ export class Context {
     return this
   }
 
-  public clearError (): this {
+  public clearError(): this {
     delete this.$$error
     return this
   }
 
-  public $$tryToApplyPattern (pattern: Pattern): boolean {
-    return this.message
-      ? this.message.$$tryToApplyPattern(pattern)
-      : false
+  public $$tryToApplyPattern(pattern: Pattern): boolean {
+    return this.message ? this.message.$$tryToApplyPattern(pattern) : false
   }
 }

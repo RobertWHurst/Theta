@@ -7,14 +7,12 @@ import { testTransport } from './fixture/test-transport'
 import { testTransportConnection } from './fixture/test-transport-connection'
 
 describe('new Server(encoder: Encoder)', () => {
-
   it('can be constructed', () => {
     // tslint:disable-next-line no-unused-expression
     new Server()
   })
 
   describe('#transport(transport: Transport)', () => {
-
     it('adds a transport to Server', async () => {
       const s = new Server()
 
@@ -52,21 +50,25 @@ describe('new Server(encoder: Encoder)', () => {
 
       const tc = testTransportConnection()
       t.handleConnection!(tc)
-      await tc.handleMessage!('{ "path": "/path/to/handler", "status": "ok", "key": "value" }')
+      await tc.handleMessage!(
+        '{ "path": "/path/to/handler", "status": "ok", "key": "value" }'
+      )
 
       sinon.assert.calledOnce((s as any)._handleMessage)
-      sinon.assert.calledWith((s as any)._handleMessage, sinon.match((ctx) => {
-        assert.ok(ctx instanceof Context)
-        assert.strictEqual(ctx.message.rawPath, '/path/to/handler')
-        assert.strictEqual(ctx.message.status, 'ok')
-        assert.strictEqual(ctx.message.data.key, 'value')
-        return true
-      }))
+      sinon.assert.calledWith(
+        (s as any)._handleMessage,
+        sinon.match(ctx => {
+          assert.ok(ctx instanceof Context)
+          assert.strictEqual(ctx.message.rawPath, '/path/to/handler')
+          assert.strictEqual(ctx.message.status, 'ok')
+          assert.strictEqual(ctx.message.data.key, 'value')
+          return true
+        })
+      )
     })
   })
 
   describe('#listen() -> Promise<void>', () => {
-
     it('calls listen on each transport', async () => {
       const s = new Server()
 
@@ -83,7 +85,6 @@ describe('new Server(encoder: Encoder)', () => {
   })
 
   describe('#close() -> Promise<void>', () => {
-
     it('calls close on each transport', async () => {
       const s = new Server()
 

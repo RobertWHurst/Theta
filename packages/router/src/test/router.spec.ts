@@ -3,14 +3,12 @@ import { Router } from '../router'
 import { Context } from '../context'
 
 describe('new Router()', () => {
-
   it('can be constructed without throwing', () => {
     /* tslint:disable-next-line:no-unused-expression */
     new Router({})
   })
 
   describe('#handle(handler: Handler)', () => {
-
     it('binds a handler to all requests', () => {
       const r = new Router({})
       const handler = sinon.stub()
@@ -20,7 +18,6 @@ describe('new Router()', () => {
   })
 
   describe('#handle(pattern: string, handler: Handler)', () => {
-
     it('binds a handler to requests matching a given pattern', () => {
       const r = new Router({})
       const handler = sinon.stub()
@@ -30,8 +27,7 @@ describe('new Router()', () => {
   })
 
   describe('#async route(ctx: Context) -> Promise<void>', () => {
-
-    it('tries to match the given context against a hander\'s pattern', async () => {
+    it("tries to match the given context against a hander's pattern", async () => {
       const r = new Router({})
       const handler = sinon.stub()
       r.handle('/my/path', handler)
@@ -41,7 +37,10 @@ describe('new Router()', () => {
       await r.route(ctx)
 
       sinon.assert.calledOnce(ctx.$$tryToApplyPattern as any)
-      sinon.assert.calledWith(ctx.$$tryToApplyPattern as any, sinon.match(p => p.raw === 'my/path'))
+      sinon.assert.calledWith(
+        ctx.$$tryToApplyPattern as any,
+        sinon.match(p => p.raw === 'my/path')
+      )
       sinon.assert.calledOnce(handler)
       sinon.assert.calledWith(handler, ctx)
     })
@@ -57,7 +56,8 @@ describe('new Router()', () => {
       r.handle(goodHandler1)
       r.handle(goodHandler2)
       const ctx = new Context({}, null, null as any)
-      ctx.$$tryToApplyPattern = sinon.stub()
+      ctx.$$tryToApplyPattern = sinon
+        .stub()
         .returns(false)
         .onThirdCall()
         .returns(true)
@@ -75,14 +75,15 @@ describe('new Router()', () => {
       const r = new Router({})
       const badHandler1 = sinon.stub()
       const badHandler2 = sinon.stub()
-      const goodHandler1 = sinon.stub().callsFake((c) => c.next())
+      const goodHandler1 = sinon.stub().callsFake(c => c.next())
       const goodHandler2 = sinon.stub()
       r.handle(badHandler1)
       r.handle(badHandler2)
       r.handle(goodHandler1)
       r.handle(goodHandler2)
       const ctx = new Context({}, null, null as any)
-      ctx.$$tryToApplyPattern = sinon.stub()
+      ctx.$$tryToApplyPattern = sinon
+        .stub()
         .returns(false)
         .onCall(2)
         .returns(true)
