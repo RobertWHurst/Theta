@@ -1,7 +1,8 @@
-export { Config } from './config'
-export { SocketManager } from './socket-manager'
-export { Socket } from './socket'
+export * from './config'
+export * from './server'
+export * from './socket-manager'
+export * from './socket'
 
 import { Server } from './server'
-export { Server }
+
 export const theta = <T>(config?: T) => new Server(config)

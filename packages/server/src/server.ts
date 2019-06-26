@@ -5,6 +5,15 @@ import { Config } from './config'
 import { Socket } from './socket'
 import { SocketManager } from './socket-manager'
 
+export {
+  Router,
+  Handler,
+  Context,
+  Transport,
+  TransportConnection,
+  Encoder
+}
+
 export class Server {
   private _config: Config
   private _encoder: Encoder

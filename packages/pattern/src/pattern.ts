@@ -76,8 +76,8 @@ export class Pattern {
     this._channels = na
 
     const segmentPatterns = this.segments.map(s => s.subPatternStr)
-    const patternStr = `^(?:([^@]+)@)?/?(${segmentPatterns.join('/')}/${
-      this.capture ? '.+)' : '?)$'
+    const patternStr = `^(?:([^@]+)@)?/?(${segmentPatterns.join('/')}${
+      this.capture ? '.*)' : '/?)$'
     }`
     let pattern = regExpCache.get(patternStr)
     if (!pattern) {

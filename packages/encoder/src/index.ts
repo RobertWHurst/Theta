@@ -1,1 +1,1 @@
-export { Encoder, defaultEncoder } from './encoder'
+export * from './encoder'

@@ -106,14 +106,7 @@ export class HandlerChain {
       }
     }
 
-    const timeout = ctx.$$timeout || this._config.timeout || -1
-
-    if (timeout === -1) {
-      ctx.$$resetTimeout = noop
-      return executeHandler()
-    }
-
-    await Promise.race([
+    const setupTimeout = () =>
       new Promise((_resolve, reject) => {
         let timeoutId: NodeJS.Timeout
         const exec = (): void => {
@@ -127,8 +120,15 @@ export class HandlerChain {
         }
         ctx.$$resetTimeout = exec
         exec()
-      }),
-      executeHandler()
-    ])
+      })
+
+    const timeout = ctx.$$timeout || this._config.timeout || -1
+
+    if (timeout === -1) {
+      ctx.$$resetTimeout = noop
+      return executeHandler()
+    }
+
+    await Promise.race([setupTimeout(), executeHandler()])
   }
 }
