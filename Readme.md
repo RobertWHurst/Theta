@@ -4,21 +4,38 @@
   <a href="https://circleci.com/gh/RobertWHurst/Theta"><img src="https://circleci.com/gh/RobertWHurst/Theta.svg?style=svg"></a>
 </p>
 
-ϴ (Theta) is a webSocket server framework inspired by Koa and Express.
+ϴ (Theta) is a realtime server framework inspired by Koa and Express.
 
-It allows users to build robust and well structured APIs over web socket rather
+It allows users to build robust and well structured APIs over sockets rather
 than HTTP, with the goal of enabling a new class of real time applications.
+Theta support a range of transports including both TCP and WebSocket.
 
 ## Installation
 
 Install via NPM or Yarn
 
+For the server: 
+
 ```sh
-yarn add @thetaapp/core
+yarn add @thetaapp/server
+yarn add @thetaapp/server-transport-web-socket
 ```
 or 
 ```sh
-npm install @thetaapp/core --save
+npm install @thetaapp/server --save
+npm install @thetaapp/server-transport-web-socket --save
+```
+
+For the client: 
+
+```sh
+yarn add @thetaapp/client
+yarn add @thetaapp/client-transport-web-socket
+```
+or 
+```sh
+npm install @thetaapp/client --save
+npm install @thetaapp/client-transport-web-socket --save
 ```
 
 ## Getting Started
@@ -28,24 +45,28 @@ Creating a server is easy and similar to express or koa.
 ```js
 // SERVER SIDE
 const { theta } = require('@thetaapp/server')
+const { webSocketTransport } = require('@thetaapp/server-transport-web-socket')
 
 const server = theta()
+server.transport(webSocketTransport({ port: 3000 }))
 
 server.handle('/greet/:name', (ctx) => {
   ctx.send({ greeting: `Hello ${ctx.params.name}` })
 })
 
-server.listen(3000)
+server.listen()
 ```
 
 To interact with our new server lets create a theta client
 ```js
 // CLIENT SIDE
 import { theta } from 'https://cdn.jsdelivr.net/npm/@thetaapp/client'
+import { webSocketTransport } from 'https://cdn.jsdelivr.net/npm/@thetaapp/client-transport-web-socket'
 
 const client = theta()
+client.transport(webSocketTransport({ url: 'ws://localhost:3000' }))
 
-client.connect('ws://localhost:3000')
+client.connect()
 
 client.send('/greet/Robert')
 
@@ -71,8 +92,10 @@ after the first message.
 ```js
 // SERVER SIDE
 const { theta } = require('@thetaapp/server')
+const { webSocketTransport } = require('@thetaapp/server-transport-web-socket')
 
 const server = theta()
+server.transport(webSocketTransport({ port: 3000 }))
 
 server.handle('/greet', async (ctx) => {
 
@@ -81,7 +104,7 @@ server.handle('/greet', async (ctx) => {
   ctx.send({ message: `Hello ${ctx.data.name}` })
 })
 
-app.listen(3000)
+app.listen()
 ```
 
 In this example we handle a client asking for a greeting. We then as the client
