@@ -1,6 +1,6 @@
 {
   "name": "@thetaapp/client-transport-web-socket",
-  "version": "2.0.0-alpha.0",
+  "version": "2.0.0-alpha.1",
   "engines": {
     "node": ">=10.15.0"
   },
@@ -23,7 +23,7 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@thetaapp/client-transport": "^2.0.0-alpha.0"
+    "@thetaapp/client-transport": "^2.0.0-alpha.1"
   },
   "devDependencies": {
     "rimraf": "^2.6.2"

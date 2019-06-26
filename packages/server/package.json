@@ -1,6 +1,6 @@
 {
   "name": "@thetaapp/server",
-  "version": "2.0.0-alpha.0",
+  "version": "2.0.0-alpha.1",
   "engines": {
     "node": ">=10.15.0"
   },
@@ -23,14 +23,14 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "@thetaapp/encoder": "^2.0.0-alpha.0",
-    "@thetaapp/pattern": "^2.0.0-alpha.0",
-    "@thetaapp/router": "^2.0.0-alpha.0",
-    "@thetaapp/server-transport": "^2.0.0-alpha.0",
+    "@thetaapp/encoder": "^2.0.0-alpha.1",
+    "@thetaapp/pattern": "^2.0.0-alpha.1",
+    "@thetaapp/router": "^2.0.0-alpha.1",
+    "@thetaapp/server-transport": "^2.0.0-alpha.1",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@thetaapp/server-transport-web-socket": "^2.0.0-alpha.0",
+    "@thetaapp/server-transport-web-socket": "^2.0.0-alpha.1",
     "@types/uuid": "^3.4.4",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.2",
