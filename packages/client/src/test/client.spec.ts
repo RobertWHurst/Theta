@@ -152,7 +152,7 @@ describe('new ThetaClient(opts?: Opts)', () => {
 
     it('sends all pending', async () => {
       const client = new Client()
-      const transport = transportFixture()
+      const transport = transportFixture({ connect: async () => {} })
       client.transport(transport)
 
       client.send('/path/to/handler', { key: 'value' })

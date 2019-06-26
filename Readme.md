@@ -23,27 +23,27 @@ npm install @thetaapp/core --save
 
 ## Getting Started
 
-Creating a server is easy and similar to express
+Creating a server is easy and similar to express or koa.
 
 ```js
 // SERVER SIDE
-const theta = require('@thetaapp/core')
+const { theta } = require('@thetaapp/server')
 
-const app = theta()
+const server = theta()
 
-app.handle('/greet/:name', (ctx) => {
+server.handle('/greet/:name', (ctx) => {
   ctx.send({ greeting: `Hello ${ctx.params.name}` })
 })
 
-app.listen(3000)
+server.listen(3000)
 ```
 
-To interact with our new server create a websocket in the browser
+To interact with our new server lets create a theta client
 ```js
 // CLIENT SIDE
-import thetaClient from 'https://cdn.jsdelivr.net/npm/@thetaapp/client'
+import { theta } from 'https://cdn.jsdelivr.net/npm/@thetaapp/client'
 
-const client = thetaClient()
+const client = theta()
 
 client.connect('ws://localhost:3000')
 
@@ -70,14 +70,13 @@ after the first message.
 
 ```js
 // SERVER SIDE
-const theta = require('@thetaapp/core')
+const { theta } = require('@thetaapp/server')
 
-const app = theta()
+const server = theta()
 
-app.handle('/greet', async (ctx) => {
+server.handle('/greet', async (ctx) => {
 
-  ctx.send({ message: 'What is your name?' })
-  ctx = await ctx.handle()
+  ctx = await ctx.request({ message: 'What is your name?' })
 
   ctx.send({ message: `Hello ${ctx.data.name}` })
 })

@@ -40,8 +40,8 @@ export class Client implements Socket {
     await this._transport.connect()
     this._isConnected = true
     await Promise.all(
-      this._pending.map(([status, path, data]) => {
-        this.$$send(status, path, data)
+      this._pending.map(async ([status, path, data]) => {
+        await this.$$send(status, path, data)
       })
     )
   }
