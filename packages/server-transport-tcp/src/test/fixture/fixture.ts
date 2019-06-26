@@ -1,7 +1,7 @@
-export const fixture = <T>(data: T | ((opts?: object) => T)) => (
-  extendedData?: T,
+export const fixture = <T>(dataFn: T | ((opts?: object) => T)) => (
+  extendedData?: Partial<T>,
   opts?: object
 ): T => ({
-  ...(data instanceof Function ? data(opts) : data),
+  ...(dataFn instanceof Function ? dataFn(opts) : dataFn),
   ...(extendedData || {})
 })

@@ -59,7 +59,7 @@ describe('new Pattern(raw: string)', () => {
   it('can parse path/+', () => {
     const pattern = new Pattern({}, 'path/+')
     assert.strictEqual(pattern.raw, 'path/+')
-    assert.strictEqual(pattern.pattern.source, '^(?:([^@]+)@)?\\/?(path\\/.+)')
+    assert.strictEqual(pattern.pattern.source, '^(?:([^@]+)@)?\\/?(path.*)')
   })
 
   it('correctly handles escapes', () => {
@@ -74,7 +74,10 @@ describe('new Pattern(raw: string)', () => {
   it('correctly handles channels', () => {
     const pattern = new Pattern({}, 'ch@and/path')
     assert.strictEqual(pattern.raw, 'ch@and/path')
-    assert.strictEqual(pattern.pattern.source, '^(ch)@\\/?(and\\/path\\/?)$')
+    assert.strictEqual(
+      pattern.pattern.source,
+      '^(?:([^@]+)@)?\\/?(and\\/path\\/?)$'
+    )
   })
 
   it('correctly handles multiple channels', () => {
@@ -82,7 +85,7 @@ describe('new Pattern(raw: string)', () => {
     assert.strictEqual(pattern.raw, 'ch1@ch2@and/path')
     assert.strictEqual(
       pattern.pattern.source,
-      '^(ch1|ch2)@\\/?(and\\/path\\/?)$'
+      '^(?:([^@]+)@)?\\/?(and\\/path\\/?)$'
     )
   })
 
