@@ -14,10 +14,11 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
 
       - run:
-          name: Install Dependencies
+          name: Install and Build Dependencies
           command: |
             yarn install
             yarn bootstrap
+            yarn build
 
       - save_cache:
           paths:
