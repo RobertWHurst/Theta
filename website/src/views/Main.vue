@@ -32,7 +32,7 @@
       position relative
       font-size 3rem
       font-weight 100
-      top -4rem
+      top -4.2rem
       color #fff
       text-transform uppercase
       transition-property opacity

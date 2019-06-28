@@ -1,6 +1,15 @@
 <template lang="pug">
 .guide-getting-started
 
+  h1#introduction Introduction
+
+  p.
+    Theta is a real-time framework for Node and the browser. It's inspired by
+    frameworks such as #[a(href='https://expressjs.com/' target='_blank') express]
+    and #[a(href='https://koajs.com/' target='_blank') koa]. It brings the
+    concept of middleware and routing to realtime transports such as TCP and
+    WebSocket.
+
   h1#getting-started Getting Started
 
   p.

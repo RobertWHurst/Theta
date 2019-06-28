@@ -1,3 +1,5 @@
+import scrollIntoView from 'scroll-into-view-if-needed'
+
 import MainLayout from './layouts/Main.vue'
 import MainView from './views/Main.vue'
 import GuideView from './views/Guide.vue'
@@ -44,8 +46,9 @@ export default {
       return
     }
 
-    node.scrollIntoView({
-      behavior: 'smooth'
+    scrollIntoView(node, {
+      behavior: 'smooth',
+      scrollMode: 'if-needed'
     })
 
     for (let i = 0; i < 3; i += 1) {

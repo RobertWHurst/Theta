@@ -6,6 +6,8 @@
         router-link(:to="{ name: 'guide' }") Guide
         ul
           li
+            router-link(:to="{ name: 'guide', hash: '#introduction' }") Introduction
+          li
             router-link(:to="{ name: 'guide', hash: '#getting-started' }") Getting Started
           li
             router-link(:to="{ name: 'guide', hash: '#project-structure' }") Project Structure
@@ -65,17 +67,19 @@
 import Vue from 'vue'
 export default Vue.extend({
   data: () => ({
-    accordion: [],
+    accordion: []
   })
 })
 </script>
 
 <style lang="stylus" scoped>
-.sidebar-component
-  display flex
-  padding 1rem 2rem
+.sidebar-component {
+  display: flex;
+  padding: 1rem 2rem;
 
-  ul
-    padding-left 1rem
-    padding-bottom 2rem
+  ul {
+    padding-left: 1rem;
+    padding-bottom: 2rem;
+  }
+}
 </style>
