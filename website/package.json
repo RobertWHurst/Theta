@@ -1,0 +1,25 @@
+{
+  "name": "@thetaapp/website",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "types": "./src/types/index.d.ts",
+  "scripts": {
+    "dev": "parcel ./src/index.pug",
+    "build": "parcel build ./src/index.pug",
+    "push": "yarn build && surge -p ./dist -d theta.surge.sh"
+  },
+  "dependencies": {
+    "vue-hot-reload-api": "^2.3.3",
+    "vue": "^2.6.10",
+    "vue-router": "^3.0.6",
+    "pug": "^2.0.4",
+    "stylus": "^0.54.5"
+  },
+  "devDependencies": {
+    "@vue/component-compiler-utils": "^3.0.0",
+    "parcel-bundler": "^1.12.3",
+    "surge": "^0.21.3",
+    "vue-template-compiler": "^2.6.10"
+  }
+}
