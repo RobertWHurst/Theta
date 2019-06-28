@@ -73,13 +73,14 @@ export default Vue.extend({
 </script>
 
 <style lang="stylus" scoped>
-.sidebar-component {
-  display: flex;
-  padding: 1rem 2rem;
+.sidebar-component
+  display flex
+  padding 1rem 2rem
 
-  ul {
-    padding-left: 1rem;
-    padding-bottom: 2rem;
-  }
-}
+  ul
+    padding-left 1rem
+    padding-bottom 2rem
+
+  a
+    text-decoration none
 </style>
