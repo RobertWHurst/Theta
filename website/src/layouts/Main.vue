@@ -55,7 +55,7 @@ export default Vue.extend({
     .sidebar-component
       position relative
       transition-property right opacity
-      transition-delay 0.8s
+      transition-delay 1.4s
       transition-duration 1s
       transition-timing-function cubic-bezier(0.190, 1.000, 0.220, 1.000)
       opacity 1

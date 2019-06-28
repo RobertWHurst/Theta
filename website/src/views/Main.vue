@@ -1,17 +1,48 @@
 <template lang="pug">
 .landing-view
-  img(src="../images/theta-logo.png")
-  transition(appear=true)
-    em The real-time framework
+  .wrap
+    .logo Θ
+    transition(appear=true)
+      em The real-time framework
+  .wrap
+    transition(appear=true)
+      .text Theta
 </template>
 
 <style lang="stylus" scoped>
 .landing-view
-  display flex
   flex 1
-  flex-direction column
-  justify-content center
-  align-items center
+
+  .wrap
+    position absolute
+    top 0
+    bottom 0
+    right 0
+    left 0
+    display flex
+    flex-direction column
+    justify-content center
+    align-items center
+    line-height 1
+
+    .logo
+      font-size 50rem
+
+    .text
+      position relative
+      font-size 3rem
+      font-weight 100
+      top -4rem
+      color #fff
+      text-transform uppercase
+      transition-property opacity
+      transition-duration 2s
+      transition-delay .8s
+      transition-timing-function cubic-bezier(0.190, 1.000, 0.220, 1.000)
+      opacity 1
+
+      &.v-enter
+        opacity 0
 
   em
     position relative
