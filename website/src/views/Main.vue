@@ -24,6 +24,10 @@
     justify-content center
     align-items center
     line-height 1
+    pointer-events none
+
+    em
+      pointer-events auto
 
     .logo
       font-size 50rem
@@ -34,6 +38,7 @@
       font-weight 100
       top -4.2rem
       color #fff
+      pointer-events auto
       text-transform uppercase
       transition-property opacity
       transition-duration 2s

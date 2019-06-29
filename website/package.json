@@ -7,17 +7,20 @@
   "scripts": {
     "dev": "parcel ./src/index.pug",
     "build": "parcel build ./src/index.pug",
-    "push": "yarn build && surge -p ./dist -d theta.surge.sh"
+    "deploy": "yarn build && mv ./dist/index.html ./dist/200.html && surge -p ./dist -d theta.surge.sh && rm -rf ./dist"
   },
   "dependencies": {
+    "prismjs": "^1.16.0",
     "pug": "^2.0.4",
     "scroll-into-view-if-needed": "^2.2.20",
     "stylus": "^0.54.5",
     "vue": "^2.6.10",
+    "vue-code-highlight": "^0.7.2",
     "vue-hot-reload-api": "^2.3.3",
     "vue-router": "^3.0.6"
   },
   "devDependencies": {
+    "@types/prismjs": "^1.16.0",
     "@vue/component-compiler-utils": "^3.0.0",
     "parcel-bundler": "^1.12.3",
     "surge": "^0.21.3",

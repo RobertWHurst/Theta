@@ -3,6 +3,7 @@
     "target": "es5",
     "lib": ["esnext", "dom"],
     "strict": true,
+    "esModuleInterop": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

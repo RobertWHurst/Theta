@@ -24,7 +24,7 @@ export default Vue.extend({
   flex 1
 
   .view
-    padding 4rem 20rem 4rem 8rem
+    padding 4rem 28rem 4rem 12rem
 
     &.v-enter-active
       transition-property top opacity
@@ -48,8 +48,7 @@ export default Vue.extend({
     flex-direction column
     overflow hidden
     right 0
-    top 0
-    bottom 0
+    height 100vh
     justify-content center
 
     .sidebar-component

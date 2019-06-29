@@ -4,6 +4,7 @@ import MainLayout from './layouts/Main.vue'
 import MainView from './views/Main.vue'
 import GuideView from './views/Guide.vue'
 import ApiView from './views/Api.vue'
+import { RouterOptions } from 'vue-router'
 
 export default {
   mode: 'history',
@@ -58,7 +59,7 @@ export default {
       await waitForTransition(node)
     }
   }
-}
+} as RouterOptions
 
 async function waitForTransition(node: Element) {
   return new Promise(resolve => {
