@@ -74,6 +74,52 @@ article.guide
         server.handle((ctx) => { ctx.send('hello world') })
 
         server.listen()
+
+    p.
+      The server above can now accept web socket connections and messages.
+      When a message is recieved the server will respond with a message
+      containing a string data property containing 'hello world'.
+    
+    p.
+      This is a good start, but what about the client side? Let's put together
+      a basic client.
+    
+    example
+      template(v-slot:ts="").
+        import { theta } from '@thetaapp/client'
+        import { webSocketTransport } from '@thetaapp/client-transport-web-socket'
+
+        const client = theta()
+        client.transport(webSocketTransport({ url: 'ws://localhost:8000' }))
+        client.connect()
+
+        client.request('', (ctx) => { console.log(ctx.data) })
+      template(v-slot:js="").
+        const { theta } = require('@thetaapp/client')
+        const { webSocketTransport } = require('@thetaapp/client-transport-web-socket')
+
+        const client = theta()
+        client.transport(webSocketTransport({ url: 'ws://localhost:8000' }))
+        client.connect()
+
+        client.request('', (ctx) => { console.log(ctx.data) })
+
+    p.
+      As you can see above, Theta's client is very similar to the theta server.
+      Here we are creating a client, connecting, then sending a request. Our
+      server will then respond with the message 'hello world', so in our
+      console we should see, hello world.
+
+  section
+    h1#routing Introduction to Routing
+
+    p.
+      So far we've gone over how to create a server and client, but we haven't
+      investigated routing.
+
+    p.
+      WIP
+    
   section
     h1#project-structure Project Structure
 
