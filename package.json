@@ -6,6 +6,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
+    "deploy": "lerna run deploy",
     "dev": "lerna run --sort --parallel dev",
     "lint": "prettier",
     "test": "lerna run test",
