@@ -13,6 +13,11 @@
     "coverage-report": "lerna run coverage-report",
     "clean": "rimraf packages/**/lib"
   },
+  "pre-commit": [
+    "lint",
+    "test",
+    "build"
+  ],
   "devDependencies": {
     "@types/assert": "^1.4.0",
     "@types/mocha": "^7.0.2",
