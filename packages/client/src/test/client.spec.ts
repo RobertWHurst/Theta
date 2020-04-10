@@ -13,7 +13,7 @@ describe('new ThetaClient(opts?: Opts)', () => {
   })
 
   describe('#encoder(encoder: Encoder): void', () => {
-    it('can be used to set an encoder', async () => {
+    it('can be used to set an encoder', () => {
       const client = new Client()
       const encoder = encoderFixture()
 
@@ -155,7 +155,7 @@ describe('new ThetaClient(opts?: Opts)', () => {
       const transport = transportFixture({ connect: async () => {} })
       client.transport(transport)
 
-      client.send('/path/to/handler', { key: 'value' })
+      void client.send('/path/to/handler', { key: 'value' })
       await client.connect()
 
       sinon.assert.calledOnce(transport.send as any)

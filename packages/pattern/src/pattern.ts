@@ -3,7 +3,7 @@ import { Segment } from './segment'
 import { rxEscChars } from './regex-escape-chars'
 import { Match } from './match'
 
-type Channels = { [s: string]: boolean }
+interface Channels { [s: string]: boolean }
 const regExpCache = new Map<string, RegExp>()
 
 export class Pattern {
@@ -11,16 +11,16 @@ export class Pattern {
   public capture: boolean
   public pattern: RegExp
   public segments: Segment[]
-  private _hasChannels: boolean
-  private _channels: Channels
+  private readonly _hasChannels: boolean
+  private readonly _channels: Channels
 
-  constructor(_: Config, src: string) {
+  constructor (_: Config, src: string) {
     const s = src
     let r = '' // raw pattern
     let c = '' // segment
     let n = false // has channel
-    let na: Channels = {} // channels
-    let sa = [] // all segments
+    const na: Channels = {} // channels
+    const sa = [] // all segments
     let cap = false // is capturing path
     let esc = false // in escape sequence
     let pnEsc = false // in sub pattern escape sequence
@@ -52,18 +52,19 @@ export class Pattern {
         c = ''
         r += '@'
       } else if (!esc && !pnEsc && s[i] === '/') {
-        c && sa.push(c)
-        c && i !== s.length - 1 && (r += '/')
+        if (c) { sa.push(c) }
+        if (c && i !== s.length - 1) { r += '/' }
         c = ''
       } else if (!esc && !pnEsc && i === s.length - 1 && s[i] === '+') {
         cap = true
         r += '+'
       } else {
-        esc &&
-          (s[i] === '(' || s[i] === ')' || s[i] === '@' || s[i] === '/') &&
-          (r += '\\')
+        if (
+          esc &&
+          (s[i] === '(' || s[i] === ')' || s[i] === '@' || s[i] === '/')
+        ) { r += '\\' }
         r += s[i]
-        esc && (esc = false)
+        if (esc) { esc = false }
         c += s[i]
       }
     }
@@ -87,7 +88,7 @@ export class Pattern {
     this.pattern = pattern
   }
 
-  public tryMatch(path: string): Match | void {
+  public tryMatch (path: string): Match | void {
     const matches = path.match(this.pattern)
     if (!matches || (this._hasChannels && !this._channels[matches[1]])) {
       return
@@ -96,11 +97,11 @@ export class Pattern {
     return {
       channel: matches[1],
       path: matches[2],
-      params: matches.groups || {}
+      params: matches.groups ?? {}
     }
   }
 
-  public static raw(str: string): string {
+  public static raw (str: string): string {
     return new Pattern({}, str).raw
   }
 }

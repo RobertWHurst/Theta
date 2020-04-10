@@ -6,6 +6,7 @@ import GuideView from './views/Guide.vue'
 import ApiView from './views/Api.vue'
 import { RouterOptions } from 'vue-router'
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 export default {
   mode: 'history',
   routes: [
@@ -35,10 +36,11 @@ export default {
       ]
     }
   ],
-  async scrollBehavior({ hash }: { hash: string }) {
+  async scrollBehavior ({ hash }: { hash: string }) {
     if (!hash) {
       return
     }
+    // eslint-disable-next-line promise/param-names
     await new Promise(r => {
       setTimeout(r, 200)
     })
@@ -61,9 +63,9 @@ export default {
   }
 } as RouterOptions
 
-async function waitForTransition(node: Element) {
-  return new Promise(resolve => {
-    const handleTransitionEnd = () => {
+async function waitForTransition (node: Element): Promise<void> {
+  return await new Promise(resolve => {
+    const handleTransitionEnd = (): void => {
       node.removeEventListener('transitionend', handleTransitionEnd)
       resolve()
     }

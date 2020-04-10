@@ -6,7 +6,7 @@ export class Segment {
   public subPatternStr: string
   public keyName?: string
 
-  constructor(src: string) {
+  constructor (src: string) {
     const s = src
     let c = ''
     let r = ''
@@ -83,7 +83,7 @@ export class Segment {
       this.keyName = c
     }
 
-    p || (p = '[^/]+')
+    if (!p) { p = '[^/]+' }
     this.subPatternStr = this.keyName ? `(?<${this.keyName}>${p})` : p
   }
 }

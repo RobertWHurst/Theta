@@ -1,5 +1,7 @@
 # Theta Client
 
+Theta is a frame
+
 ## Installation
 
 Install via NPM or Yarn
@@ -7,7 +9,7 @@ Install via NPM or Yarn
 ```sh
 yarn add @theta/client
 ```
-or 
+or
 ```sh
 npm install @theta/client --save
 ```

@@ -6,34 +6,34 @@ import { Config } from './config'
 export { Transport, Router, Socket, Context, Handler, Encoder, Classification }
 
 export class Client implements Socket {
-  private _config: Config
+  private readonly _config: Config
   private _encoder: Encoder
   private _transport?: Transport
-  private _router: Router
+  private readonly _router: Router
   private _isConnected: boolean
-  private _pending: [string, string, any?][]
+  private readonly _pending: Array<[string, string, any?]>
 
-  constructor(config?: Config) {
-    this._config = config || {}
-    this._encoder = this._config.encoder || defaultEncoder
+  constructor (config?: Config) {
+    this._config = config ?? {}
+    this._encoder = this._config.encoder ?? defaultEncoder
     this._transport = this._config.transport
     this._router = new Router(this._config)
     this._isConnected = false
     this._pending = []
   }
 
-  public encoder(encoder: Encoder) {
+  public encoder (encoder: Encoder): void {
     this._encoder = encoder
   }
 
-  public transport(transport: Transport) {
-    transport.handleMessage = d => this._handleMessage(d)
-    transport.handleClose = () => this._handleClose()
-    transport.handleError = e => this._handleError(e)
+  public transport (transport: Transport): void {
+    transport.handleMessage = async d => await this._handleMessage(d)
+    transport.handleClose = async () => await this._handleClose()
+    transport.handleError = async e => await this._handleError(e)
     this._transport = transport
   }
 
-  public async connect(): Promise<void> {
+  public async connect (): Promise<void> {
     if (!this._transport) {
       throw new Error('Cannot connect. No transport set')
     }
@@ -46,7 +46,7 @@ export class Client implements Socket {
     )
   }
 
-  public async disconnect(): Promise<void> {
+  public async disconnect (): Promise<void> {
     if (!this._transport) {
       throw new Error('Cannot disconnect. No transport set')
     }
@@ -57,13 +57,13 @@ export class Client implements Socket {
     this._isConnected = true
   }
 
-  public async send(path: string, data: any): Promise<void> {
+  public async send (path: string, data: any): Promise<void> {
     await this.$$send('', path, data)
   }
 
   public async request(path: string, handler: Handler): Promise<void>
   public async request(path: string, data: any, handler: Handler): Promise<void>
-  public async request(
+  public async request (
     path: string,
     data: any | Handler,
     handler?: Handler
@@ -82,7 +82,7 @@ export class Client implements Socket {
   public handle(router: Router): void
   public handle(patternStr: string, handler: Handler): void
   public handle(patternStr: string, router: Router): void
-  public handle(
+  public handle (
     patternStr: string | Handler | Router,
     handler?: Handler | Router
   ): void {
@@ -91,11 +91,11 @@ export class Client implements Socket {
 
   public handleError(handler: Handler): void
   public handleError(patternStr: string, handler: Handler): void
-  public handleError(patternStr: string | Handler, handler?: Handler): void {
+  public handleError (patternStr: string | Handler, handler?: Handler): void {
     return this._router.handleError(patternStr as any, handler as any)
   }
 
-  public async $$send(status: string, path: string, data?: any): Promise<void> {
+  public async $$send (status: string, path: string, data?: any): Promise<void> {
     if (!this._isConnected || !this._transport) {
       this._pending.push([status, path, data])
       return
@@ -105,19 +105,19 @@ export class Client implements Socket {
     try {
       bundledData = await this._encoder.bundle(status, path, data)
     } catch (err) {
-      throw new Error(`Error during message bundling: ${err.message}`)
+      throw new Error(`Error during message bundling: ${err.message as string}`)
     }
 
     let encodedData
     try {
       encodedData = await this._encoder.encode(bundledData)
     } catch (err) {
-      throw new Error(`Error during message encoding: ${err.message}`)
+      throw new Error(`Error during message encoding: ${err.message as string}`)
     }
-    this._transport.send(encodedData)
+    void this._transport.send(encodedData)
   }
 
-  public $$subHandle(
+  public $$subHandle (
     patternStr: string,
     handler: Handler,
     timeout?: number
@@ -125,12 +125,12 @@ export class Client implements Socket {
     return this._router.$$subHandle(patternStr, handler, timeout)
   }
 
-  private async _handleMessage(encodedData: any): Promise<void> {
+  private async _handleMessage (encodedData: any): Promise<void> {
     let data
     try {
       data = await this._encoder.decode(encodedData)
     } catch (err) {
-      this._handleMessageError('decoding', err)
+      void this._handleMessageError('decoding', err)
       return
     }
 
@@ -138,7 +138,7 @@ export class Client implements Socket {
     try {
       classification = await this._encoder.classify(data)
     } catch (err) {
-      this._handleMessageError('classification', err)
+      void this._handleMessageError('classification', err)
       return
     }
 
@@ -151,17 +151,17 @@ export class Client implements Socket {
     await this._router.route(ctx)
   }
 
-  private async _handleMessageError(stageName: string, err: Error) {
+  private async _handleMessageError (stageName: string, err: Error): Promise<void> {
     const ctx = new Context(this._config, new Message('', '', null), this)
     ctx.$$error = new Error(`Error during message ${stageName}: ${err.message}`)
     await this._router.route(ctx)
   }
 
-  private async _handleClose() {
+  private async _handleClose (): Promise<void> {
     this._isConnected = false
   }
 
-  private async _handleError(err: Error) {
+  private async _handleError (err: Error): Promise<void> {
     console.error(err)
   }
 }

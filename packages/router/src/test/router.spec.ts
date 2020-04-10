@@ -4,7 +4,6 @@ import { Context } from '../context'
 
 describe('new Router()', () => {
   it('can be constructed without throwing', () => {
-    /* tslint:disable-next-line:no-unused-expression */
     new Router({})
   })
 

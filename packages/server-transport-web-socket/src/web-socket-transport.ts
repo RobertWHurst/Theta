@@ -3,31 +3,33 @@ import { Transport, TransportConnection } from '@thetaapp/server-transport'
 import { WebSocketConnection } from './web-socket-connection'
 
 export class WebSocketTransport implements Transport {
-  private _opts: WebSocket.ServerOptions
+  private readonly _opts: WebSocket.ServerOptions
   private _server?: WebSocket.Server
   public handleConnection?: (connection: TransportConnection) => void
 
-  constructor(opts: WebSocket.ServerOptions) {
+  constructor (opts: WebSocket.ServerOptions) {
     this._opts = opts
   }
 
-  public async listen() {
+  public async listen (): Promise<void> {
     this._server = new WebSocket.Server(this._opts)
     this._server.on('connection', s => {
       this._handleConnection(s)
     })
   }
 
-  public async close() {
+  public async close (): Promise<void> {
     if (!this._server) {
       return
     }
     await new Promise((resolve, reject) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this._server!.close(err => (err ? reject(err) : resolve()))
     })
   }
 
-  private _handleConnection(socket: WebSocket) {
+  private _handleConnection (socket: WebSocket): void {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.handleConnection!(new WebSocketConnection(socket))
   }
 }

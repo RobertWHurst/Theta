@@ -3,5 +3,5 @@ export const fixture = <T>(dataFn: T | ((opts?: object) => T)) => (
   opts?: object
 ): T => ({
   ...(dataFn instanceof Function ? dataFn(opts) : dataFn),
-  ...(extendedData || {})
+  ...(extendedData ?? {})
 })

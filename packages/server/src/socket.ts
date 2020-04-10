@@ -10,7 +10,7 @@ import {
 } from '@thetaapp/router'
 import { Config } from './config'
 
-const noopHandler = (_: Context) => {
+const noopHandler = (_: Context): void => {
   /* noop */
 }
 
@@ -18,12 +18,12 @@ export class Socket implements RouterSocket {
   public uuid: string
   public handleMessage: Handler
   public handleError: Handler
-  private _config: Config
-  private _router: Router
-  private _connection: TransportConnection
-  private _encoder: Encoder
+  private readonly _config: Config
+  private readonly _router: Router
+  private readonly _connection: TransportConnection
+  private readonly _encoder: Encoder
 
-  constructor(
+  constructor (
     config: Config,
     router: Router,
     connection: TransportConnection,
@@ -36,14 +36,14 @@ export class Socket implements RouterSocket {
     this._router = router
     this._connection = connection
     this._encoder = encoder
-    this._connection.handleMessage = d => this._handleMessage(d)
+    this._connection.handleMessage = async d => await this._handleMessage(d)
   }
 
-  public send(status: string, rawPath: string, data?: any): Promise<void> {
-    return this.$$send(status, rawPath, data)
+  public async send (status: string, rawPath: string, data?: any): Promise<void> {
+    return await this.$$send(status, rawPath, data)
   }
 
-  public async $$send(
+  public async $$send (
     status: string,
     rawPath: string,
     data?: any
@@ -53,23 +53,24 @@ export class Socket implements RouterSocket {
       bundledData = await this._encoder.bundle(
         status,
         rawPath,
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         data || undefined
       )
     } catch (err) {
-      throw new Error(`Error during message bundling: ${err.message}`)
+      throw new Error(`Error during message bundling: ${err.message as string}`)
     }
 
     let encodedData
     try {
       encodedData = await this._encoder.encode(bundledData)
     } catch (err) {
-      throw new Error(`Error during message encoding: ${err.message}`)
+      throw new Error(`Error during message encoding: ${err.message as string}`)
     }
 
-    this._connection.send(encodedData)
+    void this._connection.send(encodedData)
   }
 
-  public $$subHandle(
+  public $$subHandle (
     patternStr: string,
     handler: Handler,
     timeout?: number
@@ -77,7 +78,7 @@ export class Socket implements RouterSocket {
     return this._router.$$subHandle(patternStr, handler, timeout)
   }
 
-  private async _handleMessage(encodedData: any): Promise<void> {
+  private async _handleMessage (encodedData: any): Promise<void> {
     let data
     try {
       data = await this._encoder.decode(encodedData)
@@ -101,12 +102,12 @@ export class Socket implements RouterSocket {
     )
     const ctx = new Context(this._config, message, this)
 
-    this.handleMessage!(ctx)
+    void this.handleMessage(ctx)
   }
 
-  private _handleError(stageName: string, err: Error) {
+  private _handleError (stageName: string, err: Error): void {
     const ctx = new Context(this._config, new Message('', '', null), this)
     ctx.$$error = new Error(`Error during message ${stageName}: ${err.message}`)
-    this.handleError!(ctx)
+    void this.handleError(ctx)
   }
 }

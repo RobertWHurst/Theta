@@ -9,12 +9,12 @@ const noop = (): void => {}
 
 export class HandlerChain {
   public nextLink?: HandlerChain
-  private _pattern: Pattern
-  private _handler: Handler | Router
-  private _config: Config
-  private _isErrorHandler: boolean
+  private readonly _pattern: Pattern
+  private readonly _handler: Handler | Router
+  private readonly _config: Config
+  private readonly _isErrorHandler: boolean
 
-  public constructor(
+  public constructor (
     config: Config,
     patternStr: string,
     handler: Handler | Router,
@@ -26,7 +26,7 @@ export class HandlerChain {
     this._isErrorHandler = isErrorHandler
   }
 
-  public push(
+  public push (
     patternStr: string,
     handler: Handler | Router,
     isErrorHandler: boolean
@@ -34,14 +34,14 @@ export class HandlerChain {
     this.nextLink
       ? this.nextLink.push(patternStr, handler, isErrorHandler)
       : (this.nextLink = new HandlerChain(
-          this._config,
-          patternStr,
-          handler,
-          isErrorHandler
-        ))
+        this._config,
+        patternStr,
+        handler,
+        isErrorHandler
+      ))
   }
 
-  public is(
+  public is (
     patternStr: string,
     handler: Handler | Router,
     isErrorHandler: boolean
@@ -54,7 +54,7 @@ export class HandlerChain {
     )
   }
 
-  public remove(
+  public remove (
     patternStr: string,
     handler: Handler | Router,
     isErrorHandler: boolean
@@ -69,7 +69,7 @@ export class HandlerChain {
     return this.nextLink.remove(patternStr, handler, isErrorHandler)
   }
 
-  public async route(ctx: Context): Promise<void> {
+  public async route (ctx: Context): Promise<void> {
     const executeNext = async (): Promise<void> => {
       if (!this.nextLink) {
         return
@@ -77,7 +77,7 @@ export class HandlerChain {
       await this.nextLink.route(ctx)
     }
 
-    ctx.next = async function(err?: Error): Promise<void> {
+    ctx.next = async function (err?: Error): Promise<void> {
       if (err) {
         this.$$error = err
         return
@@ -86,11 +86,11 @@ export class HandlerChain {
     }
 
     if (ctx.$$error && !this._isErrorHandler) {
-      return executeNext()
+      return await executeNext()
     }
 
     if (!ctx.$$tryToApplyPattern(this._pattern)) {
-      return executeNext()
+      return await executeNext()
     }
 
     const executeHandler = async (): Promise<void> => {
@@ -106,11 +106,14 @@ export class HandlerChain {
       }
     }
 
-    const setupTimeout = () =>
-      new Promise((_resolve, reject) => {
+    const setupTimeout = async (): Promise<never> =>
+      // eslint-disable-next-line promise/param-names
+      await new Promise((_resolve, reject) => {
         let timeoutId: NodeJS.Timeout
         const exec = (): void => {
-          timeoutId !== undefined && clearTimeout(timeoutId)
+          if (timeoutId !== undefined) {
+            clearTimeout(timeoutId)
+          }
           if (timeout === -1) {
             return
           }
@@ -122,11 +125,11 @@ export class HandlerChain {
         exec()
       })
 
-    const timeout = ctx.$$timeout || this._config.timeout || -1
+    const timeout = (ctx.$$timeout ?? this._config.timeout) ?? -1
 
     if (timeout === -1) {
       ctx.$$resetTimeout = noop
-      return executeHandler()
+      return await executeHandler()
     }
 
     await Promise.race([setupTimeout(), executeHandler()])

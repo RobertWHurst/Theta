@@ -1,0 +1,47 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "env": {
+    "node": true
+  },
+  "extends": [
+    "standard-with-typescript"
+  ],
+  "rules": {
+    "no-void": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off",
+    "@typescript-eslint/require-await": "off",
+    "@typescript-eslint/no-floating-promises": [
+      "error",
+      {
+        "ignoreVoid": true
+      }
+    ],
+    "@typescript-eslint/no-unnecessary-condition": "error"
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/test/**"
+      ],
+      "env": {
+        "mocha": true
+      },
+      "rules": {
+        "no-new": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/consistent-type-assertions": "off"
+      }
+    }
+  ],
+  "root": true,
+  "ignorePatterns": [
+    ".*/",
+    "**/node_modules/",
+    "**/coverage/",
+    "**/lib/",
+    "**/dist/"
+  ]
+}
