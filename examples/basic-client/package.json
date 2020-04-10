@@ -8,10 +8,10 @@
     "dev": "parcel ./src/index.pug"
   },
   "devDependencies": {
-    "@babel/core": "^7.6.2",
-    "@babel/polyfill": "^7.6.0",
-    "@babel/preset-env": "^7.6.2",
-    "parcel": "^1.12.3",
+    "@babel/core": "^7.9.0",
+    "@babel/polyfill": "^7.8.7",
+    "@babel/preset-env": "^7.9.5",
+    "parcel": "^1.12.4",
     "pug": "^2.0.4"
   },
   "browserlist": "current Chrome"

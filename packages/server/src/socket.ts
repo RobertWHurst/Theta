@@ -1,4 +1,4 @@
-import uuid from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { TransportConnection } from '@thetaapp/server-transport'
 import { Encoder } from '@thetaapp/encoder'
 import {
@@ -29,7 +29,7 @@ export class Socket implements RouterSocket {
     connection: TransportConnection,
     encoder: Encoder
   ) {
-    this.uuid = uuid()
+    this.uuid = uuidv4()
     this.handleMessage = noopHandler
     this.handleError = noopHandler
     this._config = config

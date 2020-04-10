@@ -25,7 +25,7 @@
     "@thetaapp/router": "^2.0.0-alpha.1"
   },
   "devDependencies": {
-    "sinon": "^7.2.2"
+    "sinon": "^9.0.2"
   },
   "gitHead": "430bbb4405ea5e37ad6c7de6170111d11c6bb040"
 }

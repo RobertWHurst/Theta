@@ -12,7 +12,7 @@ import Prism from 'prismjs'
 import 'prismjs/components/prism-bash'
 import 'prismjs/components/prism-typescript'
 
-type Lang = { name: string, prism?: { language: string, grammar: Prism.Grammar } }
+type Lang = { name: string, prism?: { language: string, grammar: any } }
 type Langs = { [s: string]: Lang }
 type Tabs = ({ id: string } & Lang)[]
 
