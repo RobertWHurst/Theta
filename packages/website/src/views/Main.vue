@@ -11,7 +11,8 @@
 
 <style lang="stylus" scoped>
 .landing-view
-  flex 1
+  flex 1 1 0
+  min-height 0
 
   .wrap
     position absolute

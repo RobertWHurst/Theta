@@ -13,7 +13,7 @@ import 'prismjs/components/prism-bash'
 import 'prismjs/components/prism-typescript'
 
 type Lang = { name: string, prism?: { language: string, grammar: any } }
-type Langs = { [s: string]: Lang }
+type Langs = { [s: string]: Lang | undefined }
 type Tabs = ({ id: string } & Lang)[]
 
 const langs: Langs = {
@@ -22,29 +22,28 @@ const langs: Langs = {
   sh: { name: 'Shell', prism: { language: 'bash', grammar: Prism.languages.bash } }
 }
 
-
 export default Vue.extend({
   data: () => ({
     slotId: '',
     langs
   }),
   computed: {
-    tabs(): Tabs {
+    tabs (): Tabs {
       const tabs: Tabs = []
       for (const langId in this.langs) {
-        this.$slots[langId] && tabs.push({ id: langId, ...this.langs[langId] })
+        this.$slots[langId] && tabs.push({ id: langId, name: '', ...this.langs[langId] })
       }
       return tabs
     },
-    lang(): Lang {
-      return this.langs[this.slotId] || {}
+    lang (): Lang {
+      return this.langs[this.slotId]!
     },
-    languageClass(): string {
+    languageClass (): string {
       return this.lang.prism
         ? `language-${this.lang.prism.language}`
         : ''
     },
-    code(): string {
+    code (): string {
       const slotContent =
         this.$slots[this.slotId] &&
         this.$slots[this.slotId]![0] &&
@@ -58,7 +57,7 @@ export default Vue.extend({
       return Prism.highlight(slotContent, this.lang.prism.grammar, this.lang.prism.language)
     }
   },
-  mounted() {
+  mounted () {
     this.slotId = this.tabs[0].id
   }
 })

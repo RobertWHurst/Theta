@@ -52,7 +52,7 @@ article.guide
     p.
       Now that we have a server with web socket support, let's add our first
       handler.
-    
+
     example
       template(v-slot:ts="").
         import { theta } from '@thetaapp/server'
@@ -79,11 +79,11 @@ article.guide
       The server above can now accept web socket connections and messages.
       When a message is recieved the server will respond with a message
       containing a string data property containing 'hello world'.
-    
+
     p.
       This is a good start, but what about the client side? Let's put together
       a basic client.
-    
+
     example
       template(v-slot:ts="").
         import { theta } from '@thetaapp/client'
@@ -119,71 +119,71 @@ article.guide
 
     p.
       WIP
-    
+
   section
     h1#project-structure Project Structure
 
     p.
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-      Aliquam laoreet magna vel sem fringilla, sit amet eleifend 
-      elit fringilla. Nam sagittis ante tellus, vel ornare metus 
-      cursus id. Pellentesque convallis interdum cursus. Aenean 
-      id sem commodo, tempor nisi at, congue ante. Morbi id 
-      arcu non sem lobortis finibus. Vestibulum in orci non 
-      eros imperdiet pulvinar non non diam. Suspendisse quis 
-      eros eget orci malesuada bibendum id sed felis. 
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      Aliquam laoreet magna vel sem fringilla, sit amet eleifend
+      elit fringilla. Nam sagittis ante tellus, vel ornare metus
+      cursus id. Pellentesque convallis interdum cursus. Aenean
+      id sem commodo, tempor nisi at, congue ante. Morbi id
+      arcu non sem lobortis finibus. Vestibulum in orci non
+      eros imperdiet pulvinar non non diam. Suspendisse quis
+      eros eget orci malesuada bibendum id sed felis.
 
   section
     h1#routing Routing
 
     p.
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-      Aliquam laoreet magna vel sem fringilla, sit amet eleifend 
-      elit fringilla. Nam sagittis ante tellus, vel ornare metus 
-      cursus id. Pellentesque convallis interdum cursus. Aenean 
-      id sem commodo, tempor nisi at, congue ante. Morbi id 
-      arcu non sem lobortis finibus. Vestibulum in orci non 
-      eros imperdiet pulvinar non non diam. Suspendisse quis 
-      eros eget orci malesuada bibendum id sed felis. 
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      Aliquam laoreet magna vel sem fringilla, sit amet eleifend
+      elit fringilla. Nam sagittis ante tellus, vel ornare metus
+      cursus id. Pellentesque convallis interdum cursus. Aenean
+      id sem commodo, tempor nisi at, congue ante. Morbi id
+      arcu non sem lobortis finibus. Vestibulum in orci non
+      eros imperdiet pulvinar non non diam. Suspendisse quis
+      eros eget orci malesuada bibendum id sed felis.
 
   section
     h1#middleware Middleware
 
     p.
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-      Aliquam laoreet magna vel sem fringilla, sit amet eleifend 
-      elit fringilla. Nam sagittis ante tellus, vel ornare metus 
-      cursus id. Pellentesque convallis interdum cursus. Aenean 
-      id sem commodo, tempor nisi at, congue ante. Morbi id 
-      arcu non sem lobortis finibus. Vestibulum in orci non 
-      eros imperdiet pulvinar non non diam. Suspendisse quis 
-      eros eget orci malesuada bibendum id sed felis. 
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      Aliquam laoreet magna vel sem fringilla, sit amet eleifend
+      elit fringilla. Nam sagittis ante tellus, vel ornare metus
+      cursus id. Pellentesque convallis interdum cursus. Aenean
+      id sem commodo, tempor nisi at, congue ante. Morbi id
+      arcu non sem lobortis finibus. Vestibulum in orci non
+      eros imperdiet pulvinar non non diam. Suspendisse quis
+      eros eget orci malesuada bibendum id sed felis.
 
   section
     h1#transports Transports
 
     p.
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-      Aliquam laoreet magna vel sem fringilla, sit amet eleifend 
-      elit fringilla. Nam sagittis ante tellus, vel ornare metus 
-      cursus id. Pellentesque convallis interdum cursus. Aenean 
-      id sem commodo, tempor nisi at, congue ante. Morbi id 
-      arcu non sem lobortis finibus. Vestibulum in orci non 
-      eros imperdiet pulvinar non non diam. Suspendisse quis 
-      eros eget orci malesuada bibendum id sed felis. 
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      Aliquam laoreet magna vel sem fringilla, sit amet eleifend
+      elit fringilla. Nam sagittis ante tellus, vel ornare metus
+      cursus id. Pellentesque convallis interdum cursus. Aenean
+      id sem commodo, tempor nisi at, congue ante. Morbi id
+      arcu non sem lobortis finibus. Vestibulum in orci non
+      eros imperdiet pulvinar non non diam. Suspendisse quis
+      eros eget orci malesuada bibendum id sed felis.
 
   section
     h1#encoding Encoding
 
     p.
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-      Aliquam laoreet magna vel sem fringilla, sit amet eleifend 
-      elit fringilla. Nam sagittis ante tellus, vel ornare metus 
-      cursus id. Pellentesque convallis interdum cursus. Aenean 
-      id sem commodo, tempor nisi at, congue ante. Morbi id 
-      arcu non sem lobortis finibus. Vestibulum in orci non 
-      eros imperdiet pulvinar non non diam. Suspendisse quis 
-      eros eget orci malesuada bibendum id sed felis. 
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      Aliquam laoreet magna vel sem fringilla, sit amet eleifend
+      elit fringilla. Nam sagittis ante tellus, vel ornare metus
+      cursus id. Pellentesque convallis interdum cursus. Aenean
+      id sem commodo, tempor nisi at, congue ante. Morbi id
+      arcu non sem lobortis finibus. Vestibulum in orci non
+      eros imperdiet pulvinar non non diam. Suspendisse quis
+      eros eget orci malesuada bibendum id sed felis.
 
 </template>
 
@@ -197,7 +197,6 @@ export default Vue.extend({
   }
 })
 </script>
-
 
 <style lang="stylus" scoped>
 .guide

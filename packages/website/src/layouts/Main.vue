@@ -21,7 +21,8 @@ export default Vue.extend({
 <style lang="stylus" scoped>
 .main-layout
   display flex
-  flex 1
+  flex 1 1 0
+  min-width 0
 
   .view
     padding 4rem 28rem 4rem 12rem

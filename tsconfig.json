@@ -3,10 +3,14 @@
     "target": "ES2018",
     "module": "commonjs",
     "declaration": true,
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@theta/*": ["./packages/*/src"]
+      "@theta/*": [
+        "./packages/*/src"
+      ]
     },
     "strict": true,
     "esModuleInterop": true,

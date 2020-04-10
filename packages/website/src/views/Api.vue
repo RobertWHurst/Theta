@@ -45,18 +45,16 @@
   example server.handleError(handler: Handler)
 
   p.
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-    Aliquam laoreet magna vel sem fringilla, sit amet eleifend 
-    elit fringilla. Nam sagittis ante tellus, vel ornare metus 
-    cursus id. Pellentesque convallis interdum cursus. Aenean 
-    id sem commodo, tempor nisi at, congue ante. Morbi id 
-    arcu non sem lobortis finibus. Vestibulum in orci non 
-    eros imperdiet pulvinar non non diam. Suspendisse quis 
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    Aliquam laoreet magna vel sem fringilla, sit amet eleifend
+    elit fringilla. Nam sagittis ante tellus, vel ornare metus
+    cursus id. Pellentesque convallis interdum cursus. Aenean
+    id sem commodo, tempor nisi at, congue ante. Morbi id
+    arcu non sem lobortis finibus. Vestibulum in orci non
+    eros imperdiet pulvinar non non diam. Suspendisse quis
     eros eget orci malesuada bibendum id sed felis.
 
   h1#client Client{}
-
-  
 
   h1#context Context{}
 

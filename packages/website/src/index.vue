@@ -7,5 +7,6 @@
 #app
   display flex
   flex-direction column
-  flex 1
+  flex 1 1 0
+  min-height 0
 </style>

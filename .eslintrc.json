@@ -1,13 +1,17 @@
 {
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "parser": "@typescript-eslint/parser",
+    "project": "./tsconfig.json",
+    "extraFileExtensions": [
+      ".vue"
+    ]
   },
   "env": {
     "node": true
   },
   "extends": [
-    "standard-with-typescript"
+    "standard-with-typescript",
+    "plugin:vue/recommended"
   ],
   "rules": {
     "no-void": "off",
