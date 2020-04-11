@@ -72,10 +72,9 @@ export class Socket implements RouterSocket {
 
   public $$subHandle (
     patternStr: string,
-    handler: Handler,
-    timeout?: number
+    handler: Handler
   ): void {
-    return this._router.$$subHandle(patternStr, handler, timeout)
+    return this._router.$$subHandle(patternStr, handler)
   }
 
   private async _handleMessage (encodedData: any): Promise<void> {
@@ -87,18 +86,18 @@ export class Socket implements RouterSocket {
       return
     }
 
-    let classification
+    let expand
     try {
-      classification = await this._encoder.classify(data)
+      expand = await this._encoder.expand(data)
     } catch (err) {
-      this._handleError('classification', err)
+      this._handleError('expanding', err)
       return
     }
 
     const message = new Message(
-      classification.path,
-      classification.status,
-      data
+      expand.path,
+      expand.status,
+      expand.data
     )
     const ctx = new Context(this._config, message, this)
 

@@ -5,6 +5,6 @@ import { fixture } from './fixture'
 export const encoderFixture = fixture<Encoder>(() => ({
   encode: sinon.stub().resolves(''),
   decode: sinon.stub().resolves({}),
-  classify: sinon.stub().resolves({ path: '', status: '' }),
-  bundle: sinon.stub().resolves({ path: '', status: '' })
+  expand: sinon.stub().resolves({ path: '', status: '', data: '' }),
+  bundle: sinon.stub().resolves({ path: '', status: '', data: '' })
 }))

@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "test": "lerna run test",
     "coverage-report": "lerna run coverage-report",
-    "clean": "rimraf packages/**/lib"
+    "clean": "rimraf packages/**/lib && rimraf packages/**/.cache && rimraf packages/**/dist"
   },
   "pre-commit": [
     "lint",

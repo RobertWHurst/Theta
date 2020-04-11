@@ -1,25 +1,25 @@
 import { Transport } from '@thetaapp/client-transport'
 import { Router, Socket, Context, Handler, Message } from '@thetaapp/router'
-import { Encoder, Classification, defaultEncoder } from '@thetaapp/encoder'
+import { Encoder, Expanded, defaultEncoder } from '@thetaapp/encoder'
 import { Config } from './config'
 
-export { Transport, Router, Socket, Context, Handler, Encoder, Classification }
+export { Transport, Router, Socket, Context, Handler, Encoder, Expanded }
 
 export class Client implements Socket {
   private readonly _config: Config
+  private readonly _router: Router
+  private readonly _pending: Array<[string, string, any?]>
   private _encoder: Encoder
   private _transport?: Transport
-  private readonly _router: Router
   private _isConnected: boolean
-  private readonly _pending: Array<[string, string, any?]>
 
   constructor (config?: Config) {
     this._config = config ?? {}
+    this._router = new Router(this._config)
+    this._pending = []
     this._encoder = this._config.encoder ?? defaultEncoder
     this._transport = this._config.transport
-    this._router = new Router(this._config)
     this._isConnected = false
-    this._pending = []
   }
 
   public encoder (encoder: Encoder): void {
@@ -73,9 +73,11 @@ export class Client implements Socket {
       data = undefined
     }
     const context = new Context(this._config, null, this)
-    const rawPath = `${context.channel}@${path}`
-    this.$$subHandle(rawPath, handler, this._config.timeout)
-    await this.$$send('', rawPath, data)
+    const channelAndPath = `${context.channel}@${path}`
+    this.$$subHandle(channelAndPath, handler)
+    // TODO: handle timeout by generating a timed out context and routing it to
+    //       the channelAndPath
+    await this.$$send('', channelAndPath, data)
   }
 
   public handle(handler: Handler): void
@@ -119,33 +121,32 @@ export class Client implements Socket {
 
   public $$subHandle (
     patternStr: string,
-    handler: Handler,
-    timeout?: number
+    handler: Handler
   ): void {
-    return this._router.$$subHandle(patternStr, handler, timeout)
+    return this._router.$$subHandle(patternStr, handler)
   }
 
   private async _handleMessage (encodedData: any): Promise<void> {
-    let data
+    let decodedData
     try {
-      data = await this._encoder.decode(encodedData)
+      decodedData = await this._encoder.decode(encodedData)
     } catch (err) {
       void this._handleMessageError('decoding', err)
       return
     }
 
-    let classification
+    let expandedData
     try {
-      classification = await this._encoder.classify(data)
+      expandedData = await this._encoder.expand(decodedData)
     } catch (err) {
-      void this._handleMessageError('classification', err)
+      void this._handleMessageError('expanding', err)
       return
     }
 
     const message = new Message(
-      classification.path,
-      classification.status,
-      data
+      expandedData.path,
+      expandedData.status,
+      expandedData.data
     )
     const ctx = new Context(this._config, message, this)
     await this._router.route(ctx)

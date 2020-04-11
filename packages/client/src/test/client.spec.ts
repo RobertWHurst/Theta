@@ -4,11 +4,11 @@ import { Client } from '../'
 import { encoderFixture } from './fixture/encoder.fixture'
 import { transportFixture } from './fixture/transport.fixture'
 
-describe('new ThetaClient(opts?: Opts)', () => {
-  it('can be constructed without opts', () => {
+describe('new ThetaClient(config?: Config)', () => {
+  it('can be constructed without config', () => {
     new Client()
   })
-  it('can be constructed with opts', () => {
+  it('can be constructed with config', () => {
     new Client({})
   })
 
@@ -57,7 +57,7 @@ describe('new ThetaClient(opts?: Opts)', () => {
         sinon.assert.calledWith(encoder.decode as any, dataStr)
       })
 
-      it('passes the decoded message on to the encoders classify method', async () => {
+      it('passes the decoded message on to the encoders expand method', async () => {
         const client = new Client()
         const encoder = encoderFixture({ decode: d => JSON.parse(d) })
         const transport = transportFixture()
@@ -69,26 +69,23 @@ describe('new ThetaClient(opts?: Opts)', () => {
 
         await transport.handleMessage!(dataStr)
 
-        sinon.assert.calledOnce(encoder.classify as any)
-        sinon.assert.calledWith(encoder.classify as any, sinon.match(data))
+        sinon.assert.calledOnce(encoder.expand as any)
+        sinon.assert.calledWith(encoder.expand as any, sinon.match(data))
       })
 
-      it('created a context from the classifyed and decoded message and routes it', async () => {
+      it('creates a context from the expanded and decoded message and routes it', async () => {
         const client = new Client()
         const encoder = encoderFixture({
-          decode: async d => JSON.parse(d),
-          classify: async () => ({ path: '', status: '' })
+          expand: async () => ({ path: '', status: '', data: { key: 'value' } })
         })
         const transport = transportFixture()
-        const data = { key: 'value' }
-        const dataStr = JSON.stringify(data)
         const handler = sinon.stub()
 
         client.handle(handler)
         client.encoder(encoder)
         client.transport(transport)
 
-        await transport.handleMessage!(dataStr)
+        await (client as any)._handleMessage()
 
         sinon.assert.calledOnce(handler as any)
         sinon.assert.calledWith(
@@ -132,12 +129,10 @@ describe('new ThetaClient(opts?: Opts)', () => {
   })
 
   describe('#connect(): Promise<void>', () => {
-    it('throws if there is not transport', async () => {
+    it('rejects if there is not transport', async () => {
       const client = new Client()
 
-      await assert.rejects(async () => {
-        await client.connect()
-      })
+      await assert.rejects(client.connect())
     })
 
     it('calls connect on the transport', async () => {
@@ -167,25 +162,192 @@ describe('new ThetaClient(opts?: Opts)', () => {
   })
 
   describe('#disconnect(): Promise<void>', () => {
-    it('throws if there is no transport')
-    it('throws if not connected')
-    it('calls disconnect on the transport')
+    it('rejects if there is no transport', async () => {
+      const client = new Client()
+      await assert.rejects(client.disconnect())
+    })
+
+    it('throws if not connected', async () => {
+      const client = new Client()
+      const transport = transportFixture()
+      client.transport(transport)
+      await assert.rejects(client.disconnect())
+    })
+
+    it('calls disconnect on the transport', async () => {
+      const client = new Client()
+      const disconnect = sinon.stub()
+      const transport = transportFixture({ disconnect })
+      client.transport(transport)
+      await client.connect()
+      await client.disconnect()
+      sinon.assert.calledOnce(disconnect)
+    })
   })
 
   describe('#send(path: string, data: any): Promise<void>', () => {
-    it('waits if not connected, and sends upon connection')
-    it('bundles the data')
-    it('encodes the bundled data')
-    it('sends the bundled and encoded data using the transport')
+    it('waits if not connected, and sends upon connection', async () => {
+      const client = new Client()
+      await client.send('path', 'message1')
+      await client.send('path', 'message2')
+      await client.send('path', 'message3')
+      const send = sinon.stub()
+      const transport = transportFixture({ send })
+      client.transport(transport)
+      await client.connect()
+      sinon.assert.calledThrice(send)
+      sinon.assert.calledWith(send, '{"status":"","path":"path","data":"message1"}')
+      sinon.assert.calledWith(send, '{"status":"","path":"path","data":"message2"}')
+      sinon.assert.calledWith(send, '{"status":"","path":"path","data":"message3"}')
+    })
+
+    it('bundles the data', async () => {
+      const client = new Client()
+      const bundle = sinon.stub()
+      const encoder = encoderFixture({ bundle })
+      const transport = transportFixture()
+      client.encoder(encoder)
+      client.transport(transport)
+      await client.connect()
+      await client.send('path', 'message')
+      sinon.assert.calledOnce(bundle)
+      sinon.assert.calledWith(bundle, '', 'path', 'message')
+    })
+
+    it('encodes the bundled data', async () => {
+      const client = new Client()
+      const encode = sinon.stub()
+      const encoder = encoderFixture({
+        bundle: async () => 'bundled',
+        encode
+      })
+      const transport = transportFixture()
+      client.encoder(encoder)
+      client.transport(transport)
+      await client.connect()
+      await client.send('path', 'message')
+      sinon.assert.calledOnce(encode)
+      sinon.assert.calledWith(encode, 'bundled')
+    })
+
+    it('sends the bundled and encoded data using the transport', async () => {
+      const client = new Client()
+      const encoder = encoderFixture({
+        encode: async () => 'encoded'
+      })
+      const send = sinon.stub()
+      const transport = transportFixture({ send })
+      client.encoder(encoder)
+      client.transport(transport)
+      await client.connect()
+      await client.send('path', 'message')
+      sinon.assert.calledOnce(send)
+      sinon.assert.calledWith(send, 'encoded')
+    })
   })
 
   describe('#request(path: string, data?: any, handler: Handler): Promise<void>', () => {
-    it('waits if not connected, and sends upon connection')
-    it('bundles the data')
-    it('encodes the bundled data')
-    it('sends the bundled and encoded data using the transport')
-    it('calls the handler once the client responds')
-    it('times out if the client does not respond in time')
+    it('waits if not connected, and sends upon connection', async () => {
+      const client = new Client()
+      const handler1 = sinon.stub()
+      const handler2 = sinon.stub()
+      const handler3 = sinon.stub()
+      await client.request('path', 'message1', handler1)
+      await client.request('path', 'message2', handler2)
+      await client.request('path', 'message3', handler3)
+      const send = sinon.stub()
+      const transport = transportFixture({ send })
+      client.transport(transport)
+      await client.connect()
+      sinon.assert.calledThrice(send)
+      sinon.assert.calledWith(send, sinon.match(/{"status":"","path":"[a-z0-9]+@path","data":"message1"}/))
+      sinon.assert.calledWith(send, sinon.match(/{"status":"","path":"[a-z0-9]+@path","data":"message2"}/))
+      sinon.assert.calledWith(send, sinon.match(/{"status":"","path":"[a-z0-9]+@path","data":"message3"}/))
+    })
+
+    it('bundles the data', async () => {
+      const client = new Client()
+      const bundle = sinon.stub()
+      const encoder = encoderFixture({ bundle })
+      const transport = transportFixture()
+      client.encoder(encoder)
+      client.transport(transport)
+      await client.connect()
+      const handler = (): void => {}
+      await client.request('path', 'message', handler)
+      sinon.assert.calledOnce(bundle)
+      sinon.assert.calledWith(bundle, '', sinon.match(/[a-z0-9]+@path/), 'message')
+    })
+
+    it('encodes the bundled data', async () => {
+      const client = new Client()
+      const encode = sinon.stub()
+      const encoder = encoderFixture({
+        bundle: async () => 'bundled',
+        encode
+      })
+      const transport = transportFixture()
+      client.encoder(encoder)
+      client.transport(transport)
+      await client.connect()
+      const handler = (): void => {}
+      await client.request('path', 'message', handler)
+      sinon.assert.calledOnce(encode)
+      sinon.assert.calledWith(encode, 'bundled')
+    })
+
+    it('sends the bundled and encoded data using the transport', async () => {
+      const client = new Client()
+      const encoder = encoderFixture({
+        encode: async () => 'encoded'
+      })
+      const send = sinon.stub()
+      const transport = transportFixture({ send })
+      client.encoder(encoder)
+      client.transport(transport)
+      await client.connect()
+      const handler = (): void => {}
+      await client.request('path', 'message', handler)
+      sinon.assert.calledOnce(send)
+      sinon.assert.calledWith(send, 'encoded')
+    })
+
+    it('calls the handler once the client responds', async () => {
+      const client = new Client()
+      const send = sinon.stub()
+      const transport = transportFixture({ send })
+      client.transport(transport)
+      await client.connect()
+      const handler = sinon.stub()
+      await client.request('path', 'request', handler)
+      const encoded = (send.getCall(0) as any).firstArg
+      const channelId: string = JSON.parse(encoded).path.match(/([a-z0-9]+)@path/)[1]
+      await (client as any)._handleMessage(`{"status":"","path":"${channelId}@path","data":"response"}`)
+      sinon.assert.calledOnce(handler)
+      sinon.assert.calledWith(handler, sinon.match(ctx => {
+        return ctx.message.data === 'response'
+      }))
+    })
+
+    it.only('times out if the client does not respond in time', async () => {
+      const client = new Client()
+      const send = sinon.stub()
+      const transport = transportFixture({ send })
+      client.transport(transport)
+      await client.connect()
+      const handler = sinon.stub()
+      await client.request('path', 'request', handler)
+      const encoded = (send.getCall(0) as any).firstArg
+      const channelId: string = JSON.parse(encoded).path.match(/([a-z0-9]+)@path/)[1]
+      // const clock = sinon.useFakeTimers()
+      const p = (client as any)._handleMessage(`{"status":"","path":"${channelId}@path","data":"response"}`)
+      // console.log(clock.timeouts)
+      await p
+      sinon.assert.calledOnce(handler)
+      sinon.assert.calledWith(handler, sinon.match(ctx => {
+        return ctx.message.data === 'response'
+      }))
+    })
   })
 
   describe('#handle(patternStr?: string, handlerOrRouter: Handler | Router): void', () => {

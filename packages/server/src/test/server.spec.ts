@@ -51,7 +51,7 @@ describe('new Server(encoder: Encoder)', () => {
       const tc = testTransportConnection()
       t.handleConnection!(tc)
       await tc.handleMessage!(
-        '{ "path": "/path/to/handler", "status": "ok", "key": "value" }'
+        '{ "path": "/path/to/handler", "status": "ok", "data": { "key": "value" } }'
       )
 
       sinon.assert.calledOnce((s as any)._handleMessage)

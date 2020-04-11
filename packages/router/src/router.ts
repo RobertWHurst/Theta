@@ -68,7 +68,7 @@ export class Router {
     this._unhandle(patternStr as string, handler, true)
   }
 
-  public $$subHandle (patternStr: string, handler: Handler, _?: number): void {
+  public $$subHandle (patternStr: string, handler: Handler): void {
     // TODO: Instead of injecting into the front of the handler chain add
     //       to special array.
     const h: Handler = async (ctx: Context) => {

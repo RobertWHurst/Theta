@@ -15,35 +15,29 @@ export class Context {
   public socket: Socket
   public message: Message | null
 
-  private readonly _config: Config
-
-  constructor (config: Config, message: Message | null, socket: Socket) {
+  constructor (_config: Config, message: Message | null, socket: Socket) {
     this.message = message
     this.socket = socket
-    this._config = config
   }
 
   public get rawPath (): string {
-    return this.message ? this.message.rawPath : ''
+    return this.message?.rawPath ?? ''
   }
 
   public get channel (): string {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.message ? this.message.channel! : createChannelId()
+    return this.message?.channel ?? createChannelId()
   }
 
   public get path (): string {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.message ? this.message.path! : ''
+    return this.message?.path ?? ''
   }
 
   public get params (): Params {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.message ? this.message.params! : {}
+    return this.message?.params ?? {}
   }
 
   public get data (): any {
-    return this.message ? this.message.data : null
+    return this.message?.data
   }
 
   public get currentStatus (): string {
@@ -65,7 +59,9 @@ export class Context {
 
   public async request (data?: any): Promise<Context> {
     return await new Promise((resolve, reject) => {
-      this.socket.$$subHandle(this.rawPath, resolve, this._config.timeout)
+      this.socket.$$subHandle(this.rawPath, resolve)
+      // TODO: handle timeout by generating a timed out context and routing it to
+      //       the channelAndPath
       this.send(this.rawPath, data).catch(reject)
     })
   }

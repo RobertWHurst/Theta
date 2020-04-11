@@ -1,26 +1,29 @@
 export interface Encoder {
-  encode(data: any): Promise<any>
-  decode(data: any): Promise<any>
-  classify(data: any): Promise<Classification>
+  encode(bundledData: any): Promise<any>
+  decode(encodedData: any): Promise<any>
+  expand(decodedData: any): Promise<Expanded>
   bundle(status: string, path: string, data: any): Promise<any>
 }
 
-export interface Classification {
+export interface Expanded {
   status: string
   path: string
+  data: any
 }
 
 export const defaultEncoder: Encoder = {
-  encode: async (data: any) => JSON.stringify(data),
+  encode: async (bundledData: any) => JSON.stringify(bundledData),
   decode: async (encodedData: any) => JSON.parse(encodedData),
-  classify: async (data: any) => {
+  expand: async (decodedData: any) => {
     let path = ''
     let status = ''
-    if (data && typeof data === 'object') {
-      path = data.path
-      status = data.status
+    let data = ''
+    if (decodedData && typeof decodedData === 'object') {
+      path = decodedData.path
+      status = decodedData.status
+      data = decodedData.data
     }
-    return { path, status }
+    return { path, status, data }
   },
   bundle: async (status: string, path: string, data: any) => ({
     status,
