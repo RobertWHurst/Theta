@@ -8,7 +8,6 @@ import { testTransportConnection } from './fixture/test-transport-connection'
 
 describe('new Server(encoder: Encoder)', () => {
   it('can be constructed', () => {
-    // tslint:disable-next-line no-unused-expression
     new Server()
   })
 

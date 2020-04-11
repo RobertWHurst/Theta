@@ -100,21 +100,18 @@ describe('new Pattern(raw: string)', () => {
 
   it("throws if a segment's pattern contains a regular expression group", () => {
     assert.throws(() => {
-      /* tslint:disable-next-line no-unused-expression */
       new Pattern({}, '*(([a-z]+))/path')
     }, /groups/)
   })
 
   it("throws if a segment's pattern is trailed by additional characters", () => {
     assert.throws(() => {
-      /* tslint:disable-next-line no-unused-expression */
       new Pattern({}, '*([a-z]+)invalid/path')
     }, /found after/)
   })
 
   it('throws if key name contains invalid characters', () => {
     assert.throws(() => {
-      /* tslint:disable-next-line no-unused-expression */
       new Pattern({}, ':$[]key([a-z]+)/path')
     }, /key names/)
   })
