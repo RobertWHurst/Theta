@@ -329,7 +329,8 @@ describe('new ThetaClient(config?: Config)', () => {
       }))
     })
 
-    it.only('times out if the client does not respond in time', async () => {
+    // FIXME: This test is incomplete. Should make sure request timeouts work
+    it.skip('times out if the client does not respond in time', async () => {
       const client = new Client()
       const send = sinon.stub()
       const transport = transportFixture({ send })
@@ -351,16 +352,43 @@ describe('new ThetaClient(config?: Config)', () => {
   })
 
   describe('#handle(patternStr?: string, handlerOrRouter: Handler | Router): void', () => {
-    it(
-      'binds a handler to a given path, and only calls it if a matching ' +
-        'message is recieved'
-    )
+    it('binds a handler to a given path, and only calls it if a matching ' +
+      'message is recieved', async () => {
+      const client = new Client()
+      const transport = transportFixture()
+      client.transport(transport)
+      const handler = sinon.stub()
+      client.handle('/test/path/with/:variable', handler)
+      await transport.handleMessage!('{"status":"","path":"test/path/with/data","data":{"key":"value"}}')
+      sinon.assert.calledOnce(handler)
+      sinon.assert.calledWith(
+        handler,
+        sinon.match.hasNested('params.variable', 'data')
+          .and(sinon.match.hasNested('data.key', 'value'))
+      )
+    })
   })
 
   describe('#handleError(patternStr?: string, handlerOrRouter: Handler | Router): void', () => {
-    it(
-      'binds a handler to a given path, and only calls it if a matching ' +
-        'message is recieved which caused a handler to error'
-    )
+    it('binds a handler to a given path, and only calls it if a matching ' +
+      'message is recieved which caused a handler to error', async () => {
+      const client = new Client()
+      const transport = transportFixture()
+      client.transport(transport)
+      const handlerError = new Error('Bad handler')
+      const handler = sinon.stub().throws(handlerError)
+      const errHandler = sinon.stub()
+      client.handle('/test/path/with/:variable', handler)
+      client.handleError('/test/path/with/:variable', errHandler)
+      await transport.handleMessage!('{"status":"","path":"test/path/with/data","data":{"key":"value"}}')
+      sinon.assert.calledOnce(handler)
+      sinon.assert.calledOnce(errHandler)
+      sinon.assert.calledWith(
+        errHandler,
+        sinon.match.hasNested('params.variable', 'data')
+          .and(sinon.match.hasNested('data.key', 'value'))
+          .and(sinon.match.hasNested('error', handlerError))
+      )
+    })
   })
 })

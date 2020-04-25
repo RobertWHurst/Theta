@@ -2,7 +2,7 @@ import { Transport } from '@thetaapp/client-transport'
 import { Config } from './config'
 
 export class WebSocketTransport implements Transport {
-  public handleMessage?: (encodedData: any) => void
+  public handleMessage?: (encodedData: any) => Promise<void>
   private _pendingMessages: any[]
   private _isOpen: boolean
   private readonly _config: Config
@@ -18,7 +18,7 @@ export class WebSocketTransport implements Transport {
     this._socket = new WebSocket(this._config.url)
     this._socket.onmessage = e => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.handleMessage!(e.data)
+      void this.handleMessage!(e.data)
     }
     this._socket.onopen = () => {
       this._handleOpen()

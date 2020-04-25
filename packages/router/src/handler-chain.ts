@@ -69,20 +69,19 @@ export class HandlerChain {
   }
 
   public async route (ctx: Context): Promise<void> {
-    const executeNext = async (): Promise<void> => {
+    const executeNext = async (err?: Error): Promise<void> => {
+      if (err) {
+        ctx.$$error = err
+      }
       if (!this.nextLink) {
+        if (ctx.$$error) {
+          throw ctx.$$error
+        }
         return
       }
       await this.nextLink.route(ctx)
     }
-
-    ctx.next = async function (err?: Error): Promise<void> {
-      if (err) {
-        this.$$error = err
-        return
-      }
-      await executeNext()
-    }
+    ctx.next = executeNext
 
     if (ctx.$$error && !this._isErrorHandler) {
       return await executeNext()
@@ -92,18 +91,10 @@ export class HandlerChain {
       return await executeNext()
     }
 
-    const executeHandler = async (): Promise<void> => {
-      try {
-        this._handler instanceof Router
-          ? await this.route(ctx)
-          : await this._handler(ctx)
-      } catch (err) {
-        ctx.$$error = err
-      }
-      if (ctx.$$error) {
-        throw ctx.$$error
-      }
-    }
+    const executeHandler = async (): Promise<void> =>
+      this._handler instanceof Router
+        ? await this.route(ctx)
+        : await this._handler(ctx)
 
     const setupTimeout = async (): Promise<never> =>
       // eslint-disable-next-line promise/param-names
@@ -126,11 +117,14 @@ export class HandlerChain {
 
     const timeout = (ctx.$$timeout ?? this._config.timeout) ?? -1
 
-    if (timeout === -1) {
-      ctx.$$resetTimeout = noop
-      return await executeHandler()
+    try {
+      if (timeout === -1) {
+        ctx.$$resetTimeout = noop
+        return await executeHandler()
+      }
+      await Promise.race([setupTimeout(), executeHandler()])
+    } catch (err) {
+      await executeNext(err)
     }
-
-    await Promise.race([setupTimeout(), executeHandler()])
   }
 }

@@ -4,7 +4,7 @@ import { Config } from './config'
 import { Socket } from './socket'
 
 export class Context {
-  public next?: (err: Error) => Promise<void>
+  public next?: (err?: Error) => Promise<void>
   public $$path?: string
   public $$status?: string
   public $$error?: Error

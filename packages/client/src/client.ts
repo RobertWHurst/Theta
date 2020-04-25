@@ -149,7 +149,11 @@ export class Client implements Socket {
       expandedData.data
     )
     const ctx = new Context(this._config, message, this)
-    await this._router.route(ctx)
+    try {
+      await this._router.route(ctx)
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   private async _handleMessageError (stageName: string, err: Error): Promise<void> {
