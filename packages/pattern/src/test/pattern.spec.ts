@@ -34,7 +34,7 @@ describe('new Pattern(raw: string)', () => {
     assert.strictEqual(pattern.raw, ':key/path')
     assert.strictEqual(
       pattern.pattern.source,
-      '^(?:([^@]+)@)?\\/?((?<key>[^\/]+)\\/path\\/?)$'
+      '^(?:([^@]+)@)?\\/?((?<key>[^\\/]+)\\/path\\/?)$'
     )
   })
 
@@ -43,7 +43,7 @@ describe('new Pattern(raw: string)', () => {
     assert.strictEqual(pattern.raw, '*/path')
     assert.strictEqual(
       pattern.pattern.source,
-      '^(?:([^@]+)@)?\\/?([^\/]+\\/path\\/?)$'
+      '^(?:([^@]+)@)?\\/?([^\\/]+\\/path\\/?)$'
     )
   })
 
