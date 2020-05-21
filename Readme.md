@@ -1,7 +1,7 @@
 
 <p align="center"><img alt="ϴ" src="http://i.imgur.com/GYry72P.png"></p>
 <p align="center">
-  <a href="https://circleci.com/gh/RobertWHurst/Theta"><img src="https://github.com/RobertWHurst/Theta/workflows/Tests%20CI/badge.svg"></a>
+  <img src="https://github.com/RobertWHurst/Theta/workflows/Tests%20CI/badge.svg">
 </p>
 
 ϴ (Theta) is a realtime server framework inspired by Koa and Express.
