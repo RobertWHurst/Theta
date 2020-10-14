@@ -331,18 +331,19 @@ describe('new ThetaClient(config?: Config)', () => {
 
     // FIXME: This test is incomplete. Should make sure request timeouts work
     it.skip('times out if the client does not respond in time', async () => {
+      const clock = sinon.useFakeTimers()
+
       const client = new Client()
       const send = sinon.stub()
       const transport = transportFixture({ send })
       client.transport(transport)
       await client.connect()
-      const handler = sinon.stub()
+      const handler = sinon.stub().returns(new Promise(() => { /* Never resolves */ }))
       await client.request('path', 'request', handler)
       const encoded = (send.getCall(0) as any).firstArg
       const channelId: string = JSON.parse(encoded).path.match(/([a-z0-9]+)@path/)[1]
-      // const clock = sinon.useFakeTimers()
-      const p = (client as any)._handleMessage(`{"status":"","path":"${channelId}@path","data":"response"}`)
-      // console.log(clock.timeouts)
+      const p = transport.handleMessage!(`{"status":"","path":"${channelId}@path","data":"response"}`)
+      console.log(clock.timeouts)
       await p
       sinon.assert.calledOnce(handler)
       sinon.assert.calledWith(handler, sinon.match(ctx => {

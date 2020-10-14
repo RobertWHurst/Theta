@@ -5,8 +5,6 @@ import { TimeoutError } from './timeout-error'
 import { Router } from './router'
 import { Context } from './context'
 
-const noop = (): void => {}
-
 export class HandlerChain {
   public nextLink?: HandlerChain
   private readonly _pattern: Pattern
@@ -100,28 +98,27 @@ export class HandlerChain {
       // eslint-disable-next-line promise/param-names
       await new Promise((_resolve, reject) => {
         let timeoutId: NodeJS.Timeout
-        const exec = (): void => {
-          if (timeoutId !== undefined) {
-            clearTimeout(timeoutId)
+
+        const resetCtxTimeout = (ms?: number): void => {
+          clearTimeout(timeoutId)
+          if (ms) {
+            ctx.$$timeout = ms
           }
+          const timeout = ctx.$$timeout ?? this._config.timeout ?? -1
           if (timeout === -1) {
             return
           }
           timeoutId = setTimeout((): void => {
+            ctx.socket.$$clearSubHandlers()
             reject(new TimeoutError(ctx))
           }, timeout)
         }
-        ctx.$$resetTimeout = exec
-        exec()
+
+        ctx.$$resetTimeout = resetCtxTimeout
+        ctx.$$resetTimeout()
       })
 
-    const timeout = (ctx.$$timeout ?? this._config.timeout) ?? -1
-
     try {
-      if (timeout === -1) {
-        ctx.$$resetTimeout = noop
-        return await executeHandler()
-      }
       await Promise.race([setupTimeout(), executeHandler()])
     } catch (err) {
       await executeNext(err)

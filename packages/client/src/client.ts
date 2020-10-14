@@ -126,22 +126,13 @@ export class Client implements Socket {
     return this._router.$$subHandle(patternStr, handler)
   }
 
-  private async _handleMessage (encodedData: any): Promise<void> {
-    let decodedData
-    try {
-      decodedData = await this._encoder.decode(encodedData)
-    } catch (err) {
-      void this._handleMessageError('decoding', err)
-      return
-    }
+  public $$clearSubHandlers(): void {
+    return this._router.$$clearSubHandlers()
+  }
 
-    let expandedData
-    try {
-      expandedData = await this._encoder.expand(decodedData)
-    } catch (err) {
-      void this._handleMessageError('expanding', err)
-      return
-    }
+  private async _handleMessage (encodedData: any): Promise<void> {
+    const decodedData = await this._encoder.decode(encodedData)
+    const expandedData = await this._encoder.expand(decodedData)
 
     const message = new Message(
       expandedData.path,
@@ -152,14 +143,17 @@ export class Client implements Socket {
     try {
       await this._router.route(ctx)
     } catch (err) {
-      console.log(err)
+      const errStr = (err.stack || err.message || err) as string
+      console.warn(
+        'Unhandled handler error:\n' +
+        '========================\n' +
+        `${errStr}\n` +
+        '========================\n' +
+        'This message was generated  because the router has no error handlers\n' +
+        'after the exception  occured. It is recommended to add at least one\n' +
+        'error handler at the end of your router.'
+      )
     }
-  }
-
-  private async _handleMessageError (stageName: string, err: Error): Promise<void> {
-    const ctx = new Context(this._config, new Message('', '', null), this)
-    ctx.$$error = new Error(`Error during message ${stageName}: ${err.message}`)
-    await this._router.route(ctx)
   }
 
   private async _handleClose (): Promise<void> {

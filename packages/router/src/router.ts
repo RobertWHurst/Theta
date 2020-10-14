@@ -15,20 +15,7 @@ export class Router {
     if (!this._handlerChain) {
       return
     }
-    try {
-      await this._handlerChain.route(ctx)
-    } catch (err) {
-      const errStr = (err.stack || err.message || err) as string
-      console.warn(
-        'Unhandled handler error:\n' +
-        '========================\n' +
-        `${errStr}\n` +
-        '========================\n' +
-        'This message was generated  because the router has no error handlers\n' +
-        'after the exception  occured. It is recommended to add at least one\n' +
-        'error handler at the end of your router.'
-      )
-    }
+    await this._handlerChain.route(ctx)
   }
 
   public handle(handler: Handler): void
@@ -96,6 +83,10 @@ export class Router {
       false
     )
     this._handlerChain.nextLink = handlerChain
+  }
+
+  public $$clearSubHandlers (): void {
+
   }
 
   private _handle (

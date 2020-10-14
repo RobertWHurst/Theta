@@ -8,9 +8,8 @@ export class Context {
   public $$path?: string
   public $$status?: string
   public $$error?: Error
-  public $$handled?: boolean
   public $$timeout?: number
-  public $$resetTimeout?: () => void
+  public $$resetTimeout?: (ms?: number) => void
 
   public socket: Socket
   public message: Message | null
@@ -60,27 +59,17 @@ export class Context {
   public async request (data?: any): Promise<Context> {
     return await new Promise((resolve, reject) => {
       this.socket.$$subHandle(this.rawPath, resolve)
-      // TODO: handle timeout by generating a timed out context and routing it to
-      //       the channelAndPath
       this.send(this.rawPath, data).catch(reject)
     })
   }
 
   public async reply (data?: any): Promise<void> {
     await this.send(this.rawPath, data)
-    this.end()
-  }
-
-  public end (): void {
-    this.$$handled = true
   }
 
   public timeout (ms?: number): this {
-    if (typeof ms === 'number') {
-      this.$$timeout = ms
-    }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    this.$$resetTimeout!()
+    this.$$resetTimeout!(ms)
     return this
   }
 
