@@ -10,6 +10,8 @@ It allows users to build robust and well structured APIs over sockets rather
 than HTTP, with the goal of enabling a new class of real time applications.
 Theta support a range of transports including both TCP and WebSocket.
 
+**Note: Better documentation is in the works. The project is very much in development.**
+
 ## Installation
 
 Install via NPM or Yarn
