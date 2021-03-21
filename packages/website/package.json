@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "prismjs": "^1.16.0",
-    "pug": "^2.0.4",
+    "pug": "^3.0.1",
     "scroll-into-view-if-needed": "^2.2.20",
     "stylus": "^0.54.5",
     "vue": "^2.6.10",
