@@ -10,7 +10,7 @@
     "deploy": "yarn build && mv ./dist/index.html ./dist/200.html && surge -p ./dist -d theta.surge.sh && rm -rf ./dist"
   },
   "dependencies": {
-    "prismjs": "^1.16.0",
+    "prismjs": "^1.27.0",
     "pug": "^2.0.4",
     "scroll-into-view-if-needed": "^2.2.20",
     "stylus": "^0.54.5",
