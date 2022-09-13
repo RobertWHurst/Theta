@@ -2,26 +2,26 @@ name: Tests CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   test:
-    name: Test on ${{ matrix.os }} with Node.js version ${{ matrix.node_version }}
-    runs-on: ${{ matrix.os }}
+    name: Test on ${{matrix.os}} with Node.js version ${{matrix.node_version}}
+    runs-on: ${{matrix.os}}
     
     strategy:
       matrix:
-        node-version: ['8', '9', '10', '11', '12', '13']
+        node-version: ['12', '13', '14', '15', '16', '17']
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node_version }}
-      - run: yarn
-      - run: yarn bootstrap
-      - run: yarn build
-      - run: yarn test
+          node-version: ${{matrix.node_version}}
+      - run: pnpm install
+      - run: pnpm run --workspaces bootstrap
+      - run: pnpm run --workspaces build
+      - run: pnpm run --workspaces test

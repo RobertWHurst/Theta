@@ -1,0 +1,27 @@
+{
+  "name": "@thetaapp/client-transport-web-socket",
+  "version": "2.0.0-alpha.1",
+  "engines": {
+    "node": ">=10.15.0"
+  },
+  "description": "The TCP transport for Theta. An express like framework for web sockets",
+  "main": "./dist/index.js",
+  "author": "Robert Hurst <robertwhurst@gmail.com>",
+  "license": "MIT",
+  "readme": "Readme.md",
+  "files": [
+    "dist",
+    "Readme.md"
+  ],
+  "scripts": {
+    "dev": "tsc -w --pretty",
+    "build": "tsc",
+    "test": "nyc mocha -r ts-node/register src/test/*.spec.ts",
+    "cover": "nyc check-coverage",
+    "coverage-report": "nyc report --reporter=html",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@thetaapp/client-transport": "workspace:*"
+  }
+}

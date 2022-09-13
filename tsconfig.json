@@ -3,15 +3,6 @@
     "target": "ES2019",
     "module": "commonjs",
     "declaration": true,
-    "lib": [
-      "esnext"
-    ],
-    "baseUrl": ".",
-    "paths": {
-      "@theta/*": [
-        "./packages/*/src"
-      ]
-    },
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

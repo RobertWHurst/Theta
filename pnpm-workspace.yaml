@@ -1,0 +1,12 @@
+packages:
+  - client
+  - client-transport
+  - client-transport-web-socket
+  - encoder
+  - examples
+  - pattern
+  - router
+  - server
+  - server-transport
+  - server-transport-tcp
+  - server-transport-web-socket
