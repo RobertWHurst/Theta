@@ -16,7 +16,7 @@ importers:
       nyc: ^15.1.0
       pre-commit: ^1.2.2
       prettier: ^2.7.1
-      rimraf: ^3.0.0
+      rimraf: ^3.0.2
       sinon: ^14.0.0
       ts-node: ^10.9.1
       typescript: ^4.8.3
@@ -76,7 +76,7 @@ importers:
       '@thetaapp/router': workspace:*
       '@thetaapp/server-transport': workspace:*
       '@thetaapp/server-transport-web-socket': workspace:*
-      '@types/uuid': ^7.0.2
+      '@types/uuid': ^8.3.4
       uuid: ^9.0.0
     dependencies:
       '@thetaapp/encoder': link:../encoder
@@ -86,7 +86,7 @@ importers:
       uuid: 9.0.0
     devDependencies:
       '@thetaapp/server-transport-web-socket': link:../server-transport-web-socket
-      '@types/uuid': 7.0.5
+      '@types/uuid': 8.3.4
 
   server-transport:
     specifiers: {}
@@ -100,13 +100,13 @@ importers:
   server-transport-web-socket:
     specifiers:
       '@thetaapp/server-transport': workspace:*
-      '@types/ws': ^7.2.3
+      '@types/ws': ^8.5.3
       ws: ^8.8.1
     dependencies:
       '@thetaapp/server-transport': link:../server-transport
       ws: 8.8.1
     devDependencies:
-      '@types/ws': 7.4.7
+      '@types/ws': 8.5.3
 
 packages:
 
@@ -503,12 +503,12 @@ packages:
     resolution: {integrity: sha512-9GcLXF0/v3t80caGs5p2rRfkB+a8VBGLJZVih6CNFkx8IZ994wiKKLSRs9nuFwk1HevWs/1mnUmkApGrSGsShA==}
     dev: true
 
-  /@types/uuid/7.0.5:
-    resolution: {integrity: sha512-hKB88y3YHL8oPOs/CNlaXtjWn93+Bs48sDQR37ZUqG2tLeCS7EA1cmnkKsuQsub9OKEB/y/Rw9zqJqqNSbqVlQ==}
+  /@types/uuid/8.3.4:
+    resolution: {integrity: sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==}
     dev: true
 
-  /@types/ws/7.4.7:
-    resolution: {integrity: sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww==}
+  /@types/ws/8.5.3:
+    resolution: {integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==}
     dependencies:
       '@types/node': 18.7.18
     dev: true
@@ -780,8 +780,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001399
-      electron-to-chromium: 1.4.250
+      caniuse-lite: 1.0.30001400
+      electron-to-chromium: 1.4.251
       node-releases: 2.0.6
       update-browserslist-db: 1.0.9_browserslist@4.21.3
     dev: true
@@ -815,8 +815,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /caniuse-lite/1.0.30001399:
-    resolution: {integrity: sha512-4vQ90tMKS+FkvuVWS5/QY1+d805ODxZiKFzsU8o/RsVJz49ZSRR8EjykLJbqhzdPgadbX6wB538wOzle3JniRA==}
+  /caniuse-lite/1.0.30001400:
+    resolution: {integrity: sha512-Mv659Hn65Z4LgZdJ7ge5JTVbE3rqbJaaXgW5LEI9/tOaXclfIZ8DW7D7FCWWWmWiiPS7AC48S8kf3DApSxQdgA==}
     dev: true
 
   /chalk/2.4.2:
@@ -1017,8 +1017,8 @@ packages:
       esutils: 2.0.3
     dev: true
 
-  /electron-to-chromium/1.4.250:
-    resolution: {integrity: sha512-KDLKcPEKPK+Q3/LdKX6knDzqyh8B82EaHccTYuGJR2qp1ymyGAo5HMH2x2OwDgzOPHlINSLIIeVhlFdq6aJgNA==}
+  /electron-to-chromium/1.4.251:
+    resolution: {integrity: sha512-k4o4cFrWPv4SoJGGAydd07GmlRVzmeDIJ6MaEChTUjk4Dmomn189tCicSzil2oyvbPoGgg2suwPDNWq4gWRhoQ==}
     dev: true
 
   /emoji-regex/8.0.0:
@@ -2486,11 +2486,6 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /yargs-parser/20.2.9:
-    resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
-    engines: {node: '>=10'}
-    dev: true
-
   /yargs-unparser/2.0.0:
     resolution: {integrity: sha512-7pRTIA9Qc1caZ0bZ6RYRGbHJthJWuakf+WmHK0rVeLkNrrGhfoabBNdue6kdINI6r4if7ocq9aD/n7xwKOdzOA==}
     engines: {node: '>=10'}
@@ -2528,7 +2523,7 @@ packages:
       require-directory: 2.1.1
       string-width: 4.2.3
       y18n: 5.0.8
-      yargs-parser: 20.2.9
+      yargs-parser: 20.2.4
     dev: true
 
   /yn/3.1.1:
