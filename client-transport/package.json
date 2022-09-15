@@ -2,7 +2,7 @@
   "name": "@thetaapp/client-transport",
   "version": "2.0.0-alpha.1",
   "engines": {
-    "node": ">=10.15.0"
+    "node": ">=14.0.0"
   },
   "description": "The base package for client side transports for use with Theta, a framework for next-gen applications.",
   "main": "./dist/index.js",
