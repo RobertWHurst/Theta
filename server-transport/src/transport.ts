@@ -1,4 +1,4 @@
-import { TransportConnection } from './transport-connection'
+import { TransportConnection } from "./transport-connection"
 
 export interface Transport {
   listen(): Promise<void>

@@ -1,7 +1,7 @@
-import { Message } from './message'
-import { Pattern, Params, createChannelId } from '@thetaapp/pattern'
-import { Config } from './config'
-import { Socket } from './socket'
+import { Message } from "./message"
+import { Pattern, Params, createChannelId } from "@thetaapp/pattern"
+import { Config } from "./config"
+import { Socket } from "./socket"
 
 export class Context {
   public next?: (err?: Error) => Promise<void>
@@ -15,49 +15,49 @@ export class Context {
   public socket: Socket
   public message: Message | null
 
-  constructor (_config: Config, message: Message | null, socket: Socket) {
+  constructor(_config: Config, message: Message | null, socket: Socket) {
     this.message = message
     this.socket = socket
   }
 
-  public get rawPath (): string {
-    return this.message?.rawPath ?? ''
+  public get rawPath(): string {
+    return this.message?.rawPath ?? ""
   }
 
-  public get channel (): string {
+  public get channel(): string {
     return this.message?.channel ?? createChannelId()
   }
 
-  public get path (): string {
-    return this.message?.path ?? ''
+  public get path(): string {
+    return this.message?.path ?? ""
   }
 
-  public get params (): Params {
+  public get params(): Params {
     return this.message?.params ?? {}
   }
 
-  public get data (): any {
+  public get data(): any {
     return this.message?.data
   }
 
-  public get currentStatus (): string {
-    return this.$$status ?? 'ok'
+  public get currentStatus(): string {
+    return this.$$status ?? "ok"
   }
 
-  public get error (): Error | void {
+  public get error(): Error | void {
     return this.$$error
   }
 
-  public status (status: string): this {
+  public status(status: string): this {
     this.$$status = status
     return this
   }
 
-  public async send (path: string, data?: any): Promise<void> {
+  public async send(path: string, data?: any): Promise<void> {
     await this.socket.$$send(this.currentStatus, path, data)
   }
 
-  public async request (data?: any): Promise<Context> {
+  public async request(data?: any): Promise<Context> {
     return await new Promise((resolve, reject) => {
       this.socket.$$subHandle(this.rawPath, resolve)
       // TODO: handle timeout by generating a timed out context and routing it to
@@ -66,17 +66,17 @@ export class Context {
     })
   }
 
-  public async reply (data?: any): Promise<void> {
+  public async reply(data?: any): Promise<void> {
     await this.send(this.rawPath, data)
     this.end()
   }
 
-  public end (): void {
+  public end(): void {
     this.$$handled = true
   }
 
-  public timeout (ms?: number): this {
-    if (typeof ms === 'number') {
+  public timeout(ms?: number): this {
+    if (typeof ms === "number") {
       this.$$timeout = ms
     }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -84,12 +84,12 @@ export class Context {
     return this
   }
 
-  public clearError (): this {
+  public clearError(): this {
     delete this.$$error
     return this
   }
 
-  public $$tryToApplyPattern (pattern: Pattern): boolean {
+  public $$tryToApplyPattern(pattern: Pattern): boolean {
     return this.message ? this.message.$$tryToApplyPattern(pattern) : false
   }
 }

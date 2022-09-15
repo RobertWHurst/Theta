@@ -15,10 +15,10 @@ export const defaultEncoder: Encoder = {
   encode: async (bundledData: any) => JSON.stringify(bundledData),
   decode: async (encodedData: any) => JSON.parse(encodedData),
   expand: async (decodedData: any) => {
-    let path = ''
-    let status = ''
-    let data = ''
-    if (decodedData && typeof decodedData === 'object') {
+    let path = ""
+    let status = ""
+    let data = ""
+    if (decodedData && typeof decodedData === "object") {
       path = decodedData.path
       status = decodedData.status
       data = decodedData.data
@@ -28,6 +28,6 @@ export const defaultEncoder: Encoder = {
   bundle: async (status: string, path: string, data: any) => ({
     status,
     path,
-    data
-  })
+    data,
+  }),
 }

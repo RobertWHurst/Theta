@@ -1,9 +1,11 @@
-import { Config } from './config'
-import { Segment } from './segment'
-import { rxEscChars } from './regex-escape-chars'
-import { Match } from './match'
+import { Config } from "./config"
+import { Segment } from "./segment"
+import { rxEscChars } from "./regex-escape-chars"
+import { Match } from "./match"
 
-interface Channels { [s: string]: boolean }
+interface Channels {
+  [s: string]: boolean
+}
 const regExpCache = new Map<string, RegExp>()
 
 export class Pattern {
@@ -14,10 +16,10 @@ export class Pattern {
   private readonly _hasChannels: boolean
   private readonly _channels: Channels
 
-  constructor (_: Config, src: string) {
+  constructor(_: Config, src: string) {
     const s = src
-    let r = '' // raw pattern
-    let c = '' // segment
+    let r = "" // raw pattern
+    let c = "" // segment
     let n = false // has channel
     const na: Channels = {} // channels
     const sa = [] // all segments
@@ -26,45 +28,50 @@ export class Pattern {
     let pnEsc = false // in sub pattern escape sequence
 
     for (let i = 0; i < s.length; i += 1) {
-      if (!pnEsc && s[i] === '\\') {
+      if (!pnEsc && s[i] === "\\") {
         if (esc) {
           esc = false
-          c += '\\\\'
-          r += '\\\\'
+          c += "\\\\"
+          r += "\\\\"
         } else {
           esc = true
         }
-      } else if (!esc && !pnEsc && s[i] === '(') {
-        c += '('
-        r += '('
+      } else if (!esc && !pnEsc && s[i] === "(") {
+        c += "("
+        r += "("
         pnEsc = true
-      } else if (pnEsc && s[i] === ')') {
-        c += ')'
-        r += ')'
+      } else if (pnEsc && s[i] === ")") {
+        c += ")"
+        r += ")"
         pnEsc = false
-      } else if (!esc && !pnEsc && sa.length === 0 && s[i] === '@') {
+      } else if (!esc && !pnEsc && sa.length === 0 && s[i] === "@") {
         c = c
-          .split('')
+          .split("")
           .map(c => (rxEscChars[c] ? `\\${c}` : c))
-          .join('')
+          .join("")
         n = true
         na[c] = true
-        c = ''
-        r += '@'
-      } else if (!esc && !pnEsc && s[i] === '/') {
-        if (c) { sa.push(c) }
-        if (c && i !== s.length - 1) { r += '/' }
-        c = ''
-      } else if (!esc && !pnEsc && i === s.length - 1 && s[i] === '+') {
+        c = ""
+        r += "@"
+      } else if (!esc && !pnEsc && s[i] === "/") {
+        if (c) {
+          sa.push(c)
+        }
+        if (c && i !== s.length - 1) {
+          r += "/"
+        }
+        c = ""
+      } else if (!esc && !pnEsc && i === s.length - 1 && s[i] === "+") {
         cap = true
-        r += '+'
+        r += "+"
       } else {
-        if (
-          esc &&
-          (s[i] === '(' || s[i] === ')' || s[i] === '@' || s[i] === '/')
-        ) { r += '\\' }
+        if (esc && (s[i] === "(" || s[i] === ")" || s[i] === "@" || s[i] === "/")) {
+          r += "\\"
+        }
         r += s[i]
-        if (esc) { esc = false }
+        if (esc) {
+          esc = false
+        }
         c += s[i]
       }
     }
@@ -77,8 +84,8 @@ export class Pattern {
     this._channels = na
 
     const segmentPatterns = this.segments.map(s => s.subPatternStr)
-    const patternStr = `^(?:([^@]+)@)?/?(${segmentPatterns.join('/')}${
-      this.capture ? '.*)' : '/?)$'
+    const patternStr = `^(?:([^@]+)@)?/?(${segmentPatterns.join("/")}${
+      this.capture ? ".*)" : "/?)$"
     }`
     let pattern = regExpCache.get(patternStr)
     if (!pattern) {
@@ -88,7 +95,7 @@ export class Pattern {
     this.pattern = pattern
   }
 
-  public tryMatch (path: string): Match | void {
+  public tryMatch(path: string): Match | void {
     const matches = path.match(this.pattern)
     if (!matches || (this._hasChannels && !this._channels[matches[1]])) {
       return
@@ -97,11 +104,11 @@ export class Pattern {
     return {
       channel: matches[1],
       path: matches[2],
-      params: matches.groups ?? {}
+      params: matches.groups ?? {},
     }
   }
 
-  public static raw (str: string): string {
+  public static raw(str: string): string {
     return new Pattern({}, str).raw
   }
 }

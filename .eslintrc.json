@@ -1,51 +1,15 @@
 {
-  "parserOptions": {
-    "parser": "@typescript-eslint/parser",
-    "project": "./tsconfig.json",
-    "extraFileExtensions": [
-      ".vue"
-    ]
-  },
-  "env": {
-    "node": true
-  },
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["prettier", "@typescript-eslint"],
   "extends": [
-    "standard-with-typescript",
-    "plugin:vue/recommended"
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
   ],
   "rules": {
-    "no-void": "off",
-    "@typescript-eslint/strict-boolean-expressions": "off",
-    "@typescript-eslint/require-await": "off",
-    "@typescript-eslint/no-floating-promises": [
-      "error",
-      {
-        "ignoreVoid": true
-      }
-    ],
-    "@typescript-eslint/no-unnecessary-condition": "error"
-  },
-  "overrides": [
-    {
-      "files": [
-        "**/test/**"
-      ],
-      "env": {
-        "mocha": true
-      },
-      "rules": {
-        "no-new": "off",
-        "@typescript-eslint/no-non-null-assertion": "off",
-        "@typescript-eslint/consistent-type-assertions": "off"
-      }
-    }
-  ],
-  "root": true,
-  "ignorePatterns": [
-    ".*/",
-    "**/node_modules/",
-    "**/coverage/",
-    "**/lib/",
-    "**/dist/"
-  ]
+    "no-empty": ["error", { "allowEmptyCatch": true }],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-non-null-assertion": "off"
+  }
 }

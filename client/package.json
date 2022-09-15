@@ -14,6 +14,7 @@
     "dev": "tsc -w --pretty",
     "build": "tsc --pretty",
     "test": "nyc mocha -r ts-node/register src/test/*.spec.ts --color",
+    "lint": "eslint ./src",
     "cover": "nyc check-coverage",
     "coverage-report": "nyc report --reporter=html",
     "clean": "rimraf dist"

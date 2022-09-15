@@ -1,5 +1,5 @@
-import { Encoder } from '@thetaapp/encoder'
-import { Transport } from '@thetaapp/client-transport'
+import { Encoder } from "@thetaapp/encoder"
+import { Transport } from "@thetaapp/client-transport"
 
 export interface Config {
   url?: string

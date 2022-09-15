@@ -1,4 +1,4 @@
-import { Encoder } from '@thetaapp/encoder'
+import { Encoder } from "@thetaapp/encoder"
 
 export interface Config {
   encoder?: Encoder

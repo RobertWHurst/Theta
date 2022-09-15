@@ -1,4 +1,4 @@
-import { Params } from './params'
+import { Params } from "./params"
 
 export interface Match {
   channel: string

@@ -1,14 +1,14 @@
-import sinon from 'sinon'
-import { Router } from '../router'
-import { Context } from '../context'
+import sinon from "sinon"
+import { Router } from "../router"
+import { Context } from "../context"
 
-describe('new Router()', () => {
-  it('can be constructed without throwing', () => {
+describe("new Router()", () => {
+  it("can be constructed without throwing", () => {
     new Router({})
   })
 
-  describe('#handle(handler: Handler)', () => {
-    it('binds a handler to all requests', () => {
+  describe("#handle(handler: Handler)", () => {
+    it("binds a handler to all requests", () => {
       const r = new Router({})
       const handler = sinon.stub()
 
@@ -16,20 +16,20 @@ describe('new Router()', () => {
     })
   })
 
-  describe('#handle(pattern: string, handler: Handler)', () => {
-    it('binds a handler to requests matching a given pattern', () => {
+  describe("#handle(pattern: string, handler: Handler)", () => {
+    it("binds a handler to requests matching a given pattern", () => {
       const r = new Router({})
       const handler = sinon.stub()
 
-      r.handle('/path/to/handler', handler)
+      r.handle("/path/to/handler", handler)
     })
   })
 
-  describe('#async route(ctx: Context) -> Promise<void>', () => {
+  describe("#async route(ctx: Context) -> Promise<void>", () => {
     it("tries to match the given context against a hander's pattern", async () => {
       const r = new Router({})
       const handler = sinon.stub()
-      r.handle('/my/path', handler)
+      r.handle("/my/path", handler)
       const ctx = new Context({}, null, null as any)
       ctx.$$tryToApplyPattern = sinon.stub().returns(true)
 
@@ -38,13 +38,13 @@ describe('new Router()', () => {
       sinon.assert.calledOnce(ctx.$$tryToApplyPattern as any)
       sinon.assert.calledWith(
         ctx.$$tryToApplyPattern as any,
-        sinon.match(p => p.raw === 'my/path')
+        sinon.match(p => p.raw === "my/path"),
       )
       sinon.assert.calledOnce(handler)
       sinon.assert.calledWith(handler, ctx)
     })
 
-    it('Will move along the handler chain until it finds a match', async () => {
+    it("Will move along the handler chain until it finds a match", async () => {
       const r = new Router({})
       const badHandler1 = sinon.stub()
       const badHandler2 = sinon.stub()
@@ -55,11 +55,7 @@ describe('new Router()', () => {
       r.handle(goodHandler1)
       r.handle(goodHandler2)
       const ctx = new Context({}, null, null as any)
-      ctx.$$tryToApplyPattern = sinon
-        .stub()
-        .returns(false)
-        .onThirdCall()
-        .returns(true)
+      ctx.$$tryToApplyPattern = sinon.stub().returns(false).onThirdCall().returns(true)
 
       await r.route(ctx)
 
@@ -70,7 +66,7 @@ describe('new Router()', () => {
       sinon.assert.notCalled(goodHandler2)
     })
 
-    it('Will call through to the next matching handler if the current one calls next', async () => {
+    it("Will call through to the next matching handler if the current one calls next", async () => {
       const r = new Router({})
       const badHandler1 = sinon.stub()
       const badHandler2 = sinon.stub()

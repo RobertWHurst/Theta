@@ -1,4 +1,4 @@
-import { Handler } from './handler'
+import { Handler } from "./handler"
 
 export interface Socket {
   $$subHandle(patternStr: string, handler: Handler): void

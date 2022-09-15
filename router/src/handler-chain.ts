@@ -1,11 +1,9 @@
-import { Pattern } from '@thetaapp/pattern'
-import { Config } from './config'
-import { Handler } from './handler'
-import { TimeoutError } from './timeout-error'
-import { Router } from './router'
-import { Context } from './context'
-
-const noop = (): void => {}
+import { Pattern } from "@thetaapp/pattern"
+import { Config } from "./config"
+import { Handler } from "./handler"
+import { TimeoutError } from "./timeout-error"
+import { Router } from "./router"
+import { Context } from "./context"
 
 export class HandlerChain {
   public nextLink?: HandlerChain
@@ -14,11 +12,11 @@ export class HandlerChain {
   private readonly _config: Config
   private readonly _isErrorHandler: boolean
 
-  public constructor (
+  public constructor(
     config: Config,
     patternStr: string,
     handler: Handler | Router,
-    isErrorHandler: boolean
+    isErrorHandler: boolean,
   ) {
     this._config = config
     this._pattern = new Pattern(this._config, patternStr)
@@ -26,26 +24,13 @@ export class HandlerChain {
     this._isErrorHandler = isErrorHandler
   }
 
-  public push (
-    patternStr: string,
-    handler: Handler | Router,
-    isErrorHandler: boolean
-  ): void {
+  public push(patternStr: string, handler: Handler | Router, isErrorHandler: boolean): void {
     this.nextLink
       ? this.nextLink.push(patternStr, handler, isErrorHandler)
-      : (this.nextLink = new HandlerChain(
-        this._config,
-        patternStr,
-        handler,
-        isErrorHandler
-      ))
+      : (this.nextLink = new HandlerChain(this._config, patternStr, handler, isErrorHandler))
   }
 
-  public is (
-    patternStr: string,
-    handler: Handler | Router,
-    isErrorHandler: boolean
-  ): boolean {
+  public is(patternStr: string, handler: Handler | Router, isErrorHandler: boolean): boolean {
     return (
       this._pattern.raw === Pattern.raw(patternStr) &&
       this._handler === handler &&
@@ -53,11 +38,7 @@ export class HandlerChain {
     )
   }
 
-  public remove (
-    patternStr: string,
-    handler: Handler | Router,
-    isErrorHandler: boolean
-  ): boolean {
+  public remove(patternStr: string, handler: Handler | Router, isErrorHandler: boolean): boolean {
     if (!this.nextLink) {
       return false
     }
@@ -68,7 +49,7 @@ export class HandlerChain {
     return this.nextLink.remove(patternStr, handler, isErrorHandler)
   }
 
-  public async route (ctx: Context): Promise<void> {
+  public async route(ctx: Context): Promise<void> {
     const executeNext = async (err?: Error): Promise<void> => {
       if (err) {
         ctx.$$error = err
@@ -92,12 +73,9 @@ export class HandlerChain {
     }
 
     const executeHandler = async (): Promise<void> =>
-      this._handler instanceof Router
-        ? await this.route(ctx)
-        : await this._handler(ctx)
+      this._handler instanceof Router ? await this.route(ctx) : await this._handler(ctx)
 
     const setupTimeout = async (): Promise<never> =>
-      // eslint-disable-next-line promise/param-names
       await new Promise((_resolve, reject) => {
         let timeoutId: NodeJS.Timeout
         const exec = (): void => {
@@ -115,11 +93,12 @@ export class HandlerChain {
         exec()
       })
 
-    const timeout = (ctx.$$timeout ?? this._config.timeout) ?? -1
+    const timeout = ctx.$$timeout ?? this._config.timeout ?? -1
 
     try {
       if (timeout === -1) {
-        ctx.$$resetTimeout = noop
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        ctx.$$resetTimeout = () => {}
         return await executeHandler()
       }
       await Promise.race([setupTimeout(), executeHandler()])

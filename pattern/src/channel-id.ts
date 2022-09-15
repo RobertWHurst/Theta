@@ -9,8 +9,6 @@ export const channelIdLength = 10
 
 export const createChannelId = (): string => {
   return Array.from({ length: channelIdLength })
-    .map(
-      () => channelChars[Math.round(Math.random() * (channelChars.length - 1))]
-    )
-    .join('')
+    .map(() => channelChars[Math.round(Math.random() * (channelChars.length - 1))])
+    .join("")
 }

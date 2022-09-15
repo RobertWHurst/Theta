@@ -1,15 +1,10 @@
-import { v4 as uuidv4 } from 'uuid'
-import { TransportConnection } from '@thetaapp/server-transport'
-import { Encoder } from '@thetaapp/encoder'
-import {
-  Message,
-  Socket as RouterSocket,
-  Handler,
-  Context,
-  Router
-} from '@thetaapp/router'
-import { Config } from './config'
+import { v4 as uuidv4 } from "uuid"
+import { TransportConnection } from "@thetaapp/server-transport"
+import { Encoder } from "@thetaapp/encoder"
+import { Message, Socket as RouterSocket, Handler, Context, Router } from "@thetaapp/router"
+import { Config } from "./config"
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const noopHandler = (_: Context): void => {
   /* noop */
 }
@@ -23,12 +18,7 @@ export class Socket implements RouterSocket {
   private readonly _connection: TransportConnection
   private readonly _encoder: Encoder
 
-  constructor (
-    config: Config,
-    router: Router,
-    connection: TransportConnection,
-    encoder: Encoder
-  ) {
+  constructor(config: Config, router: Router, connection: TransportConnection, encoder: Encoder) {
     this.uuid = uuidv4()
     this.handleMessage = noopHandler
     this.handleError = noopHandler
@@ -39,22 +29,18 @@ export class Socket implements RouterSocket {
     this._connection.handleMessage = async d => await this._handleMessage(d)
   }
 
-  public async send (status: string, rawPath: string, data?: any): Promise<void> {
+  public async send(status: string, rawPath: string, data?: any): Promise<void> {
     return await this.$$send(status, rawPath, data)
   }
 
-  public async $$send (
-    status: string,
-    rawPath: string,
-    data?: any
-  ): Promise<void> {
+  public async $$send(status: string, rawPath: string, data?: any): Promise<void> {
     let bundledData
     try {
       bundledData = await this._encoder.bundle(
         status,
         rawPath,
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        data || undefined
+        data || undefined,
       )
     } catch (err: any) {
       throw new Error(`Error during message bundling: ${err.message as string}`)
@@ -70,19 +56,16 @@ export class Socket implements RouterSocket {
     void this._connection.send(encodedData)
   }
 
-  public $$subHandle (
-    patternStr: string,
-    handler: Handler
-  ): void {
+  public $$subHandle(patternStr: string, handler: Handler): void {
     return this._router.$$subHandle(patternStr, handler)
   }
 
-  private async _handleMessage (encodedData: any): Promise<void> {
+  private async _handleMessage(encodedData: any): Promise<void> {
     let data
     try {
       data = await this._encoder.decode(encodedData)
     } catch (err: any) {
-      this._handleError('decoding', err)
+      this._handleError("decoding", err)
       return
     }
 
@@ -90,22 +73,18 @@ export class Socket implements RouterSocket {
     try {
       expand = await this._encoder.expand(data)
     } catch (err: any) {
-      this._handleError('expanding', err)
+      this._handleError("expanding", err)
       return
     }
 
-    const message = new Message(
-      expand.path,
-      expand.status,
-      expand.data
-    )
+    const message = new Message(expand.path, expand.status, expand.data)
     const ctx = new Context(this._config, message, this)
 
     void this.handleMessage(ctx)
   }
 
-  private _handleError (stageName: string, err: Error): void {
-    const ctx = new Context(this._config, new Message('', '', null), this)
+  private _handleError(stageName: string, err: Error): void {
+    const ctx = new Context(this._config, new Message("", "", null), this)
     ctx.$$error = new Error(`Error during message ${stageName}: ${err.message}`)
     void this.handleError(ctx)
   }

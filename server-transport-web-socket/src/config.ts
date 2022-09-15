@@ -1,2 +1,2 @@
-import WebSocket from 'ws'
+import WebSocket from "ws"
 export type Config = WebSocket.ServerOptions
