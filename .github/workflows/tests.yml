@@ -23,6 +23,6 @@ jobs:
           node-version: ${{matrix.node_version}}
       - run: npm install -g pnpm
       - run: pnpm install
-      - run: pnpm run --workspaces bootstrap
-      - run: pnpm run --workspaces build
-      - run: pnpm run --workspaces test
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
